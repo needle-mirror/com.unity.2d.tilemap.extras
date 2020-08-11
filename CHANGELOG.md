@@ -3,14 +3,29 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.6.1-preview] - 2020-08-11
+- Update samples
+
+## [1.6.0-preview] - 2020-05-27
+### Changed
+- Updated for Unity 2020.1
+- [GameObjectBrush] Allow painting, erasing and picking on Tile Palette
+- Consolidated menu items
+
 ## [1.5.0-preview] - 2020-02-14
 ### Added
 - Added CONTRIBUTING.md
 - Updated LICENSE.md
 
+### Added
+- [PrefabRandomBrush] Split functionality of PrefabBrush to PrefabBrush and PrefabRandomBrush
+- [PrefabBrush/PrefabRandomBrush] Add Erase Any Objects toggle to choose between erasing any Objects or Objects in the Brush
+
+### Changed
+- Consolidated menu items
+
 ### Fixed
 - [WeightedRandomTile] Fixed WeightedRandomTile messing up Random.seed!
-
 
 ## [1.4.0] - 2020-01-07
 ### Added
