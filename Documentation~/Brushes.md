@@ -1,25 +1,13 @@
 # Scriptable Brushes
 
+You can script Brushes to paint items based on the position and conditions of the cell it targets on the Grid Layout. Brush paint behavior can be further modified by the selected editing Tool,  such as __Erase__ or __Floodfill__.
 
+Here are some implementations of **Scriptable Brushes** which can help save time when designing your Tilemap:
 
-Scriptable Brushes are Grid Brushes which can paint items based on the position and conditions of the targeted position on the GridLayout. The paint behavior can be modified by the current editing Tool selected, such as Erase or Floodfill.
-
-
-
-Here are some implementations of Scriptables Brushes which can help save time in designing your Tilemap:
-
-
-
-- [Game Object Brush](GameObjectBrush.md)
+- [GameObject Brush](GameObjectBrush.md)
 - [Random Brush](RandomBrush.md)
-- [Tint Brush](TintBrush.md)
-- [Tint Brush (Smooth)](TintBrushSmooth.md)
-- [Prefab Brush](PrefabBrush.md)
-- [Coordinate Brush](CoordinateBrush.md)
 - [Line Brush](LineBrush.md)
 - [Group Brush](GroupBrush.md)
 
-
-
-The manual page for Scriptable Brushes can be found [here](https://docs.unity3d.com/Manual/Tilemap-ScriptableBrushes.html).
+Refer to the [Scriptable Brushes](https://docs.unity3d.com/Manual/Tilemap-ScriptableBrushes.html) documentation for more information.
 

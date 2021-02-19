@@ -1,20 +1,20 @@
 # Group Brush
 
-This Brush helps to pick Tiles which are grouped together by position. Gaps can be set to identify if Tiles belong to a Group. Limits can be set to ensure that an over-sized Group will not be picked. Use this as an example to create brushes that have the ability to choose and pick whichever Tiles it is interested in. 
+This Brush picks Tiles which are grouped together according to their position and its set properties. Set the __Gap__ value to identify which Tiles belong to the group, and set the __Limit__ value to ensure that the picked group remains within the desired size. Use this Brush as an example to create your own Brushes that can choose and pick specific Tiles 
 
-### Properties
+## Properties
 
 | Property  | Function                                                     |
 | --------- | ------------------------------------------------------------ |
-| __Gap__   | The gap in cell count before stopping to consider a Tile in a Group |
-| __Limit__ | The count in cells beyond the initial position before stopping to consider a Tile in a Group |
+| __Gap__   | This value represents the minimum number of cells that must be in between picked Tiles. Only Tiles that are at least this many cells apart are picked by the Brush and placed in the group. Set this value to 0 to pick up all Tiles that are directly adjacent to each other in the group. |
+| __Limit__ | This value represents the maximum number of cells around the initial picked position. Only Tiles within this range of cells are picked by the Brush and placed in the group. |
 
-### Usage
+## Usage
 
-To select a group of Tiles, select the Pick Tool and pick a position on the Tilemap. The GroupBrush will select a group of Tiles based on its properties and create a Group.
+Select the Group Brush, and use the [Picker Tool](https://docs.unity3d.com/Manual/Tilemap-Painting.html#Picker) and pick a position on the Tilemap. The Group Brush selects a group of Tiles based on its set properties and creates a Group.
 
 ![Scene View with Group Brush](images/GroupBrush.png)
 
-### Implementation
+## Implementation
 
-The GroupBrush inherits from the GridBrush. It overrides the Pick method to pick a group of Tiles based on their position.
+The Group Brush inherits from the Grid Brush. It overrides the `Pick` method when picking a group of Tiles based on their position and its set properties.

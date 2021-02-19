@@ -1,35 +1,33 @@
 # 2D Tilemap Extras
 
-The 2D Tilemap Extras package is a package containing containing helpful reusable 2D and Tilemap Editor scripts which you can use to make your games. Feel free to customise the behavior of the scripts to create new tools for your use case! 
+The 2D Tilemap Extras package contains reusable 2D and Tilemap editor scripts which you can use for your own Projects, and as the basis for your own custom Brushes and Tiles. You can freely customize the behavior of the scripts to create new Brushes that suit different uses or scenarios. To find these additional Brushes, open the Tile Palette window (menu: __Window > 2D > Tile Palette__) and open the Brush drop-down menu near the bottom of the editor. Select from the available Brush options for different effects.
 
-The source code for these scripts can be found in the repository [2d-extras](https://github.com/Unity-Technologies/2d-extras "2d-extras: Extras for 2d features").
+![](images/BrushDropdown.png)
 
-Implemented examples using these scripts can be found in the sister repository [2d-techdemos](https://github.com/Unity-Technologies/2d-techdemos "2d-techdemos: Examples for 2d features").
+The source code for these scripts can be found in the repository [2d-extras](https://github.com/Unity-Technologies/2d-extras "2d-extras: Extras for 2d features"), and examples of the implemented scripts can be found in the sister repository [2d-techdemos](https://github.com/Unity-Technologies/2d-techdemos "2d-techdemos: Examples for 2d features").
 
-##### Brushes
+## Scriptable Brushes
 
-- **Coordinate**: This Brush displays the cell coordinates it is targeting in the SceneView. Use this as an example to create brushes which have extra visualization features when painting onto a Tilemap.
-- **Line**: This Brush helps draw lines of Tiles onto a Tilemap. The first click of the mouse sets the starting point of the line and the second click sets the ending point of the line and draws the lines of Tiles. Use this as an example to modify brush painting behaviour to making painting quicker with less actions.
-- **Random**: This Brush helps to place random Tiles onto a Tilemap. Use this as an example to create brushes which store specific data per brush and to make brushes which randomize behaviour.
-- **Prefab**: This Brush instances and places a randomly selected Prefabs onto the targeted location and parents the instanced object to the paint target. Use this as an example to quickly place an assorted type of GameObjects onto structured locations.
-- **GameObject**: This Brush instances, places and manipulates GameObjects onto the scene. Use this as an example to create brushes which targets objects other than tiles for manipulation.
-- **TintBrush**: Brush to edit Tilemap per-cell tint colors.
-- **TintBrushSmooth**: Advanced tint brush for interpolated tint color per-cell. Requires the use of custom shader (see TintedTilemap.shader) and helper component TileTextureGenerator.
-- **Group**: This Brush helps to pick Tiles which are grouped together by position. Gaps can be set to identify if Tiles belong to a Group. Limits can be set to ensure that an over-sized Group will not be picked. Use this as an example to create brushes that have the ability to choose and pick whichever Tiles it is interested in. 
+- [GameObject](GameObjectBrush.md): This Brush instances, places and manipulates GameObjects onto the Scene. Use this as an example to create Brushes which targets GameObjects, other than Tiles, for instancing and manipulation.
 
-##### Tiles
+- [Group](GroupBrush.md): This Brush picks groups of Tiles based on their positions relative to each other. Adjust the size of groups the Brush picks by setting the Gap and Limit properties. Use this Brush as an example to create Brushes that pick Tiles based on specific criteria.
 
-- **Animated**: Animated Tiles are tiles which run through and display a list of sprites in sequence.
-- **Pipeline**: Pipeline Tiles are tiles which take into consideration its orthogonal neighboring tiles and displays a sprite depending on whether the neighboring tile is the same tile.
-- **Random**: Random Tiles are tiles which pseudo-randomly pick a sprite from a given list of sprites and a target location, and displays that sprite.
-- **Terrain**: Terrain Tiles, similar to Pipeline Tiles, are tiles which take into consideration its orthogonal and diagonal neighboring tiles and displays a sprite depending on whether the neighboring tile is the same tile.
-- **RuleTile**: Generic visual tile for creating different tilesets like terrain, pipeline, random or animated tiles.
-- **Hexagonal Rule Tile**: A Rule Tile for use with Hexagonal Grids. Enable Flat Top for Flat Top Hexagonal Grids and disable for Pointed Top Hexagonal Grids.
-- **Isometric Rule Tile**: A Rule Tile for use with Isometric Grids.
-- **RuleOverrideTile**: Rule Override Tiles are Tiles which can override a subset of Rules for a given Rule Tile to provide specialised behaviour while keeping most of the Rules originally set in the Rule Tile.
-- **Weighted Random**: Weighted Random Tiles are tiles which randomly pick a sprite from a given list of sprites and a target location, and displays that sprite. The sprites can be weighted with a value to change its probability of appearing.
+- [Line](LineBrush.md): This Brush draws a line of Tiles between two points onto a Tilemap. Use this as an example to modify Brush painting behavior to make painting more efficient.
 
-##### Other
+- [Random](RandomBrush.md): This Brush places random Tiles onto a Tilemap. Use this as an example to create Brushes which store specific data per Brush and to make Brushes which randomize behavior.
 
-- **GridInformation**: A simple MonoBehaviour that stores and provides information based on Grid positions and keywords.
-- **Custom Rules for RuleTile**: This helps to create new custom Rules for the Rule Tile.
+## Scriptable Tiles
+
+The following are the [Scriptable Tiles](Tiles.md) included in this package. You can create (menu: __Create > Tiles__ ) the following additional Tile types that are included with this package.
+
+- [Animated](AnimatedTile.md): This Tile runs through and displays a list of Sprites in sequence to create a frame-by-frame animation.
+- [Rule Tile](RuleTile.md): This is a generic visual Tile that accepts rules you create with the __Tiling Rules__ editor to create different Tilesets. Rule Tiles are the basis of the Terrain, Pipeline, Random or Animated Tiles. There are different types of Rule Tiles for each of the [Tilemap grid types](https://docs.unity3d.com/Manual/class-Grid.html). The default Rule Tile is only used with the Rectangle Grid type Tilemap, while the Hexagonal and Isometric Rule Tiles are used with their respective Grid types.
+- __Hexagonal Rule Tile__: A Rule Tile for [Hexagonal Grids](https://docs.unity3d.com/Documentation/Manual/Tilemap-Hexagonal.html). Enable the **Flat Top** property for a Flat Top Hexagonal Grid, or clear it for a Pointed Top Hexagonal Grid.
+- __Isometric Rule Tile__: A Rule Tile for use with [Isometric Grids](https://docs.unity3d.com/Documentation/Manual/Tilemap-Isometric-CreateIso.html).
+- [Rule Override Tile](RuleOverrideTile.md): This Tile can override Sprites and GameObjects for a given [Rule Tile](RuleTile.md) to provide different behaviour without changing the original Rules.
+- [Advanced Rule Override Tile](AdvancedRuleOverrideTile.md): This Tile can override a subset of Rules for a given [Rule Tile](RuleTile.md) to provide specialized behavior, while keeping the rest of the original Rules intact.
+
+## Other
+
+- [GridInformation](GridInformation.md): A simple MonoBehavior that stores and provides information based on Grid positions and keywords.
+- [Custom Rules for RuleTile](CustomRulesForRuleTile.md): This helps to create new custom Rules for the Rule Tile with more options.

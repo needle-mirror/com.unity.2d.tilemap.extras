@@ -3,14 +3,51 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.6.0-preview.1] - 2021-02-19
+- [HexagonalRuleTile] Fix issue with mirror rule
+- [RuleTile] Add min and max animation speedup
+- [RuleOverrideTile] Fix import issue when upgrading from a previous version of RuleOverrideTile
+- [RuleTileEditor] Add new rule below selected rule in RuleTileEditor
+- [RuleTileEditor] Add dropdown to duplicate Rule
+
+## [1.5.1-preview] - 2020-09-25
+### Changed
+- Update samples
+- Update documentation
+- Add contribution notice in README.md
+- Update Third Party Notices.md
+- [PrefabBush] Add pick
+- [PrefabBush] Add tooltip for "Erase Any Objects" field
+- [PrefabBrush][GameObjectBrush] Account for Anchor when using GetObjectsInCell in PrefabBrush and GameObjectBrush
+- [CustomRuleTileScript] Allow Custom Rule Tile template script to be created regardless of where template script is installed (from a package or in the project)
+- [RuleTile/RuleOverrideTile/AdvancedRuleOverrideTile] Renamed Game Object to GameObject
+- [RuleTile] Fix menu order for RuleOverrideTile
+- [RuleOverrideTile] Fix menu order for RuleOverrideTile
+- [AdvancedRuleOverrideTile] Fix Rule toggle for AdvancedRuleOverrideTile
+- [GameObjectBrush] Use correct position when ClearSceneCell 
+- [GameObjectBrush] Update cells when size changes
+- [GameObjectBrush] Clear cell for Prefabs
+- [LineBrush] Clear previews from base.OnPaintSceneGUI
+- [GameObjectBrush] Add Paint on Scene view to GameObjectBrush
+- [PrefabBush] Add BoxFill to PrefabBrush
+- [PrefabBush] Add Rotation to PrefabBrush
+- [PrefabBrush] Fix box erase
+- Consolidated menu items
+
 ## [1.5.0-preview] - 2020-02-14
 ### Added
 - Added CONTRIBUTING.md
 - Updated LICENSE.md
 
+### Added
+- [PrefabRandomBrush] Split functionality of PrefabBrush to PrefabBrush and PrefabRandomBrush
+- [PrefabBrush/PrefabRandomBrush] Add Erase Any Objects toggle to choose between erasing any Objects or Objects in the Brush
+
+### Changed
+- Consolidated menu items
+
 ### Fixed
 - [WeightedRandomTile] Fixed WeightedRandomTile messing up Random.seed!
-
 
 ## [1.4.0] - 2020-01-07
 ### Added

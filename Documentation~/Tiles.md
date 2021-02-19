@@ -1,22 +1,11 @@
 # Scriptable Tiles
 
+You can script Tiles to adapt to different criteria and conditions, such as its position on the Tilemap. It then displays the Sprite which meets its scripted requirements. This allows you to create different Tiles that can help you save time and be more efficient when creating Tilemaps. Refer to the [Scriptable Tiles](https://docs.unity3d.com/Manual/Tilemap-ScriptableTiles.html) page for more information.
 
-
-Scriptable Tiles are Tiles which you script which adapt to the position and conditions of the Tilemap it is placed and displays the relevant Sprite there.
-
-
-
-Here are some implementations of Scriptables Tiles which can help save time in designing your Tilemap:
+The following **Scriptable Tiles** are included in this package, with examples of how they are implemented. You can use these Tiles as the base for your own custom Tiles as well.
 
 
 - [Animated Tile](AnimatedTile.md)
-- [Pipeline Tile](PipelineTile.md)
-- [Random Tile](RandomTile.md)
 - [Rule Tile](RuleTile.md)
 - [Rule Override Tile](RuleOverrideTile.md)
-- [Terrain Tile](TerrainTile.md)
-- [Weighted Random Tile](WeightedRandomTile.md)
 
-
-
-You can create your own Scriptable Tiles for your own needs. The manual page for Scriptable Tiles can be found [here](https://docs.unity3d.com/Manual/Tilemap-ScriptableTiles.html).
