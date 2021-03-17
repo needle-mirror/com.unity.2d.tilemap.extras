@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
+using UnityEngine.Serialization;
 
 namespace UnityEngine
 {
@@ -74,9 +75,15 @@ namespace UnityEngine
             /// </summary>
             public GameObject m_GameObject;
             /// <summary>
-            /// The output Animation Speed for this Rule.
+            /// The output minimum Animation Speed for this Rule.
             /// </summary>
-            public float m_AnimationSpeed = 1f;
+            [FormerlySerializedAs("m_AnimationSpeed")]
+            public float m_MinAnimationSpeed = 1f;
+            /// <summary>
+            /// The output maximum Animation Speed for this Rule.
+            /// </summary>
+            [FormerlySerializedAs("m_AnimationSpeed")]
+            public float m_MaxAnimationSpeed = 1f;
             /// <summary>
             /// The perlin scale factor for this Rule.
             /// </summary>
@@ -188,6 +195,24 @@ namespace UnityEngine
             /// </summary>
             public Transform m_RuleTransform;
 
+            public TilingRule Clone()
+            {
+                TilingRule rule = new TilingRule();
+                rule.m_Neighbors = new List<int>(m_Neighbors);
+                rule.m_NeighborPositions = new List<Vector3Int>(m_NeighborPositions);
+                rule.m_RuleTransform = m_RuleTransform;
+                rule.m_Sprites = new Sprite[m_Sprites.Length];
+                Array.Copy(m_Sprites, rule.m_Sprites, m_Sprites.Length);
+                rule.m_GameObject = m_GameObject;
+                rule.m_MinAnimationSpeed = m_MinAnimationSpeed;
+                rule.m_MaxAnimationSpeed = m_MaxAnimationSpeed;
+                rule.m_PerlinScale = m_PerlinScale;
+                rule.m_Output = m_Output;
+                rule.m_ColliderType = m_ColliderType;
+                rule.m_RandomTransform = m_RandomTransform;
+                return rule;
+            }
+            
             /// <summary>
             /// Returns all neighbors of this Tile as a dictionary
             /// </summary>
@@ -490,7 +515,7 @@ namespace UnityEngine
                     if (RuleMatches(rule, position, tilemap, ref transform))
                     {
                         tileAnimationData.animatedSprites = rule.m_Sprites;
-                        tileAnimationData.animationSpeed = rule.m_AnimationSpeed;
+                        tileAnimationData.animationSpeed = Random.Range( rule.m_MinAnimationSpeed, rule.m_MaxAnimationSpeed);
                         return true;
                     }
                 }

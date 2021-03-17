@@ -3,6 +3,16 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [2.0.0] - 2021-03-17
+- Update version to 2.0.0
+
+## [2.0.0-pre.3] - 2021-02-19
+- [HexagonalRuleTile] Fix issue with mirror rule
+- [RuleTile] Add min and max animation speedup
+- [RuleOverrideTile] Fix import issue when upgrading from a previous version of RuleOverrideTile
+- [RuleTileEditor] Add new rule below selected rule in RuleTileEditor
+- [RuleTileEditor] Add dropdown to duplicate Rule
+
 ## [2.0.0-pre.2] - 2020-11-26
 ### Changed
 - Update documentation
@@ -14,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - [CustomRuleTileScript] Allow Custom Rule Tile template script to be created regardless of where template script is installed (from a package or in the project)
 
 ## [2.0.0-pre.1] - 2020-10-14
+- Update version to 2.0.0-pre.1
 
 ## [1.6.2-preview] - 2020-09-25
 ### Changed
