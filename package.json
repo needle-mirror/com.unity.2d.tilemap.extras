@@ -1,7 +1,7 @@
 {
   "name": "com.unity.2d.tilemap.extras",
   "displayName": "2D Tilemap Extras",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "unity": "2021.1",
   "description": "2D Tilemap Extras is a package that contains extra scripts for use with 2D Tilemap features in Unity. These include custom Tiles and Brushes for the Tilemap feature.\n\nThe following are included in the package:\nBrushes: GameObject Brush, Group Brush, Line Brush, Random Brush\nTiles: Animated Tile, Rule Tile, Rule Override Tile\nOther: Grid Information, Custom Rules for Rule Tile",
   "keywords": [
@@ -10,10 +10,12 @@
   "category": "2D",
   "dependencies": {
     "com.unity.modules.tilemap": "1.0.0",
-    "com.unity.2d.tilemap": "1.0.0"
+    "com.unity.2d.tilemap": "1.0.0",
+    "com.unity.ugui": "1.0.0",
+    "com.unity.modules.jsonserialize": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.2d.tilemap.extras.tests": "2.0.0"
+    "com.unity.2d.tilemap.extras.tests": "2.2.0"
   },
   "samples": [
     {
@@ -33,11 +35,11 @@
     }
   ],
   "upmCi": {
-    "footprint": "9c40c1e49cbd14d9da2009faf03dd0aabf276fb3"
+    "footprint": "c96d7f0f3a91f107a201e2b8e3195bf15e641234"
   },
   "repository": {
     "url": "https://github.com/Unity-Technologies/2d-extras.git",
     "type": "git",
-    "revision": "dc1c26a83c330e23776675c91c2c0f22764de9c7"
+    "revision": "9e95426d54e44a24dacc109491c976906c207fd9"
   }
 }
