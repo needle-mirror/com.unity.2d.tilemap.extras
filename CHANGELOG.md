@@ -3,7 +3,9 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [2.2.1] - 2021-08-24
+## [3.0.0] - 2021-08-06
+- Update version to 3.0.0 for Unity 2022.1
+
 ### Changed
 - [GameObjectBrush] Add canChangePosition
 - [GameObjectBrush] Use GridLayout from BrushTarget if it has one
@@ -22,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - [RuleTile] Fixed error in RuleTileEditor when removing all Rules and adding a new Rule
 
 ## [2.2.0] - 2021-06-01
+### Changed
 - [RuleTileEditor] Add tooltips to fields
 - Add required package dependencies
 
