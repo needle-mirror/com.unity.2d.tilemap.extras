@@ -62,7 +62,13 @@ namespace UnityEditor.Tilemaps
         /// <summary>Number of brush cells based on size.</summary>
         public int sizeCount
         {
-            get { return m_Size.x * m_Size.y * m_Size.y; }
+            get { return m_Size.x * m_Size.y * m_Size.z; }
+        }
+        /// <summary>Whether the brush can change Z Position</summary>
+        public bool canChangeZPosition
+        {
+            get { return m_CanChangeZPosition; }
+            set { m_CanChangeZPosition = value; }
         }
         
         /// <summary>
@@ -123,9 +129,8 @@ namespace UnityEditor.Tilemaps
         {
             Vector3Int min = position - pivot;
             BoundsInt bounds = new BoundsInt(min, m_Size);
-            
-            if (brushTarget == hiddenGrid)
-                brushTarget = null;
+
+            GetGrid(ref gridLayout, ref brushTarget);
             BoxFill(gridLayout, brushTarget, bounds);
         }
 
@@ -152,9 +157,8 @@ namespace UnityEditor.Tilemaps
         {
             Vector3Int min = position - pivot;
             BoundsInt bounds = new BoundsInt(min, m_Size);
-            
-            if (brushTarget == hiddenGrid)
-                brushTarget = null;
+
+            GetGrid(ref gridLayout, ref brushTarget);
             BoxErase(gridLayout, brushTarget, bounds);
         }
 
@@ -172,8 +176,7 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The bounds to box fill data into.</param>
         public override void BoxFill(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
-            if (brushTarget == hiddenGrid)
-                brushTarget = null;
+            GetGrid(ref gridLayout, ref brushTarget);
             
             foreach (Vector3Int location in position.allPositionsWithin)
             {
@@ -192,8 +195,7 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">The bounds to erase data from.</param>
         public override void BoxErase(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
-            if (brushTarget == hiddenGrid)
-                brushTarget = null;
+            GetGrid(ref gridLayout, ref brushTarget);
             
             foreach (Vector3Int location in position.allPositionsWithin)
             {
@@ -270,8 +272,7 @@ namespace UnityEditor.Tilemaps
             Reset();
             UpdateSizeAndPivot(new Vector3Int(position.size.x, position.size.y, 1), new Vector3Int(pivot.x, pivot.y, 0));
 
-            if (brushTarget == hiddenGrid)
-                brushTarget = null;
+            GetGrid(ref gridLayout, ref brushTarget);
             
             foreach (Vector3Int pos in position.allPositionsWithin)
             {
@@ -318,8 +319,7 @@ namespace UnityEditor.Tilemaps
             Reset();
             UpdateSizeAndPivot(new Vector3Int(position.size.x, position.size.y, 1), Vector3Int.zero);
 
-            if (brushTarget == hiddenGrid)
-                brushTarget = null;
+            GetGrid(ref gridLayout, ref brushTarget);
 
             var targetTransform = brushTarget != null ? brushTarget.transform : null;
             foreach (Vector3Int pos in position.allPositionsWithin)
@@ -339,10 +339,23 @@ namespace UnityEditor.Tilemaps
         /// <param name="position">Position where the move operation has ended.</param>
         public override void MoveEnd(GridLayout gridLayout, GameObject brushTarget, BoundsInt position)
         {
+            GetGrid(ref gridLayout, ref brushTarget);
             Paint(gridLayout, brushTarget, position.min);
             Reset();
         }
 
+        private void GetGrid(ref GridLayout gridLayout, ref GameObject brushTarget)
+        {
+            if (brushTarget == hiddenGrid)
+                brushTarget = null;
+            if (brushTarget != null)
+            {
+                var targetGridLayout = brushTarget.GetComponent<GridLayout>();
+                if (targetGridLayout != null)
+                    gridLayout = targetGridLayout;
+            }
+        }
+        
         /// <summary>Clears all data of the brush.</summary>
         public void Reset()
         {
@@ -505,7 +518,7 @@ namespace UnityEditor.Tilemaps
 
         private GameObject GetObjectInCell(GridLayout grid, Transform parent, Vector3Int position)
         {
-            int childCount = 0;
+            int childCount;
             GameObject[] sceneChildren = null;
             if (parent == null)
             {
@@ -540,7 +553,7 @@ namespace UnityEditor.Tilemaps
                 position.z >= 0 && position.z < size.z;
             if (!valid)
                 throw new ArgumentException(string.Format("Position {0} is an invalid cell position. Valid range is between [{1}, {2}).", position, Vector3Int.zero, size));
-            return valid;
+            return true;
         }
 
         internal void SizeUpdated(bool keepContents = false)
@@ -559,7 +572,7 @@ namespace UnityEditor.Tilemaps
             if (go == null)
                 return;
 
-            GameObject instance = null;
+            GameObject instance;
             if (PrefabUtility.IsPartOfPrefabAsset(go))
             {
                 instance = (GameObject) PrefabUtility.InstantiatePrefab(go, parent != null ? parent.root.gameObject.scene : SceneManager.GetActiveScene());
@@ -654,13 +667,13 @@ namespace UnityEditor.Tilemaps
             /// <returns>A hash code of the brush cell.</returns>
             public override int GetHashCode()
             {
-                int hash = 0;
+                int hash;
                 unchecked
                 {
                     hash = gameObject != null ? gameObject.GetInstanceID() : 0;
-                    hash = hash * 33 + m_Offset.GetHashCode();
-                    hash = hash * 33 + m_Scale.GetHashCode();
-                    hash = hash * 33 + m_Orientation.GetHashCode();
+                    hash = hash * 33 + offset.GetHashCode();
+                    hash = hash * 33 + scale.GetHashCode();
+                    hash = hash * 33 + orientation.GetHashCode();
                 }
                 return hash;
             }
@@ -681,6 +694,13 @@ namespace UnityEditor.Tilemaps
         /// </summary>
         public GameObjectBrush brush { get { return target as GameObjectBrush; } }
 
+        /// <summary> Whether the GridBrush can change Z Position. </summary>
+        public override bool canChangeZPosition
+        {
+            get { return brush.canChangeZPosition; }
+            set { brush.canChangeZPosition = value; }
+        }
+        
         /// <summary>
         /// Callback for painting the GUI for the GridBrush in the Scene View.
         /// The GameObjectBrush Editor overrides this to draw the preview of the brush when drawing lines.
@@ -746,8 +766,12 @@ namespace UnityEditor.Tilemaps
             get
             {
                 StageHandle currentStageHandle = StageUtility.GetCurrentStageHandle();
-                var results = currentStageHandle.FindComponentsOfType<GridLayout>().Where(x => x.gameObject.scene.isLoaded 
-                    && x.gameObject.activeInHierarchy).Select(x => x.gameObject);
+                var results = currentStageHandle.FindComponentsOfType<GridLayout>().Where(x =>
+                {
+                    GameObject gameObject;
+                    return (gameObject = x.gameObject).scene.isLoaded
+                           && gameObject.activeInHierarchy;
+                }).Select(x => x.gameObject);
                 return results.Prepend(brush.hiddenGrid).ToArray();
             }
         }
