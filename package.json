@@ -1,7 +1,7 @@
 {
   "name": "com.unity.2d.tilemap.extras",
   "displayName": "2D Tilemap Extras",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "unity": "2022.1",
   "description": "2D Tilemap Extras is a package that contains extra scripts for use with 2D Tilemap features in Unity. These include custom Tiles and Brushes for the Tilemap feature.\n\nThe following are included in the package:\nBrushes: GameObject Brush, Group Brush, Line Brush, Random Brush\nTiles: Animated Tile, Rule Tile, Rule Override Tile\nOther: Grid Information, Custom Rules for Rule Tile",
   "keywords": [
@@ -15,7 +15,7 @@
     "com.unity.modules.jsonserialize": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.2d.tilemap.extras.tests": "3.0.0"
+    "com.unity.2d.tilemap.extras.tests": "3.0.1"
   },
   "samples": [
     {
@@ -34,12 +34,15 @@
       "path": "Samples~/DungeonRuleTile"
     }
   ],
+  "upm": {
+    "changelog": "- [AnimatedTileEditor] -Fix undo when setting number of Sprites for Animated Tile\r\n- [RuleTile] -Fix data for custom container fields not being transferred in RuleOverrideTiles overriding a Custom Rule Tile\r\n- [RuleTileEditor] -Fix undo when setting number of Rules for Rule Tile\r\n- [RuleTileEditor] -Use different text color for Extend Neighbors with dark and light skin"
+  },
   "upmCi": {
-    "footprint": "820eda622ff8ba7c58a1e09f527735cf92176847"
+    "footprint": "203208612a1accec08f6a5da187778018f0a6948"
   },
   "repository": {
     "url": "https://github.com/Unity-Technologies/2d-extras.git",
     "type": "git",
-    "revision": "0dea89acc6b7d375f0aa85c65c7a19bac94b2fa3"
+    "revision": "e27c9810a5154a8b9c97605565fc19e59723f461"
   }
 }
