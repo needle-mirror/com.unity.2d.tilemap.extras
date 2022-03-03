@@ -301,8 +301,11 @@ namespace UnityEngine.Tilemaps
         /// </summary>
         public void PrepareOverride()
         {
+            // Create clone of instanceTile to keep data from collections being overridden by JsonUtility
+            var tempTile = Instantiate(m_InstanceTile);
+            
             var customData = m_InstanceTile.GetCustomFields(true)
-                .ToDictionary(field => field, field => field.GetValue(m_InstanceTile));
+                .ToDictionary(field => field, field => field.GetValue(tempTile));
 
             JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(m_Tile), m_InstanceTile);
 
@@ -363,6 +366,9 @@ namespace UnityEngine.Tilemaps
             return m_InstanceTile.StartUp(position, tilemap, go);
         }
 
+        /// <summary>
+        /// Callback when the tile is enabled
+        /// </summary>
         public void OnEnable()
         {
             if (m_Tile == null)
