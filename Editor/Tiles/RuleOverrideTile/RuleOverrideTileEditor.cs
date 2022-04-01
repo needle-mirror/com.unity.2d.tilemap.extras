@@ -350,7 +350,10 @@ namespace UnityEditor
             }
 
             if (assetChanged)
+            {
+                EditorUtility.SetDirty(overrideTile.m_InstanceTile);
                 AssetDatabase.SaveAssets();
+            }
         }
 
         /// <summary>
