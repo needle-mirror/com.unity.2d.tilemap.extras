@@ -1,7 +1,7 @@
 {
   "name": "com.unity.2d.tilemap.extras",
   "displayName": "2D Tilemap Extras",
-  "version": "1.8.3-preview",
+  "version": "1.8.4-preview",
   "unity": "2020.1",
   "description": "2D Tilemap Extras is a package that contains extra scripts for use with 2D Tilemap features in Unity. These include custom Tiles and Brushes for the Tilemap feature.",
   "keywords": [
@@ -15,7 +15,7 @@
     "com.unity.modules.jsonserialize": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.2d.tilemap.extras.tests": "1.8.3-preview"
+    "com.unity.2d.tilemap.extras.tests": "1.8.4-preview"
   },
   "samples": [
     {
@@ -34,15 +34,12 @@
       "path": "Samples~/DungeonRuleTile"
     }
   ],
-  "upm": {
-    "changelog": "### Fixed\r\n- [RuleOverrideTile] -Mark RuleOverrideTile InstanceTile as dirty when overriding RuleTile for the RuleOverrideTile changes\r\n- [RuleOverrideTile] -Fix undo for RuleOverrideTile when overriding RuleTile has changed\r\n- [RuleTileEditor] -Fix height for ReorderableList when extending the view for marking Rules"
-  },
   "upmCi": {
-    "footprint": "b6628e6f7dac4da0c6ca30f7254be339ed170c57"
+    "footprint": "9e47e9e6226011b806a0e4fe9956bc11b3d4b369"
   },
   "repository": {
     "url": "https://github.com/Unity-Technologies/2d-extras.git",
     "type": "git",
-    "revision": "28661469c88cadf217e4a97e1041745d90fbac0d"
+    "revision": "070f2b98b550d67f272032f11dae5e7efb19bd1e"
   }
 }
