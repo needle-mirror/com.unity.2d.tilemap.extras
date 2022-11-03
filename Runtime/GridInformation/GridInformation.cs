@@ -29,11 +29,22 @@ namespace UnityEngine.Tilemaps
             public object data;
         }
 
-        [Serializable]
-        internal struct GridInformationKey
+        internal struct GridInformationKey : IEquatable<GridInformationKey>
         {
             public Vector3Int position;
             public String name;
+        
+            public bool Equals(GridInformationKey key)
+            {
+                return position == key.position && name == key.name;
+            }
+
+            public override int GetHashCode()
+            {
+                var hashCode = position.GetHashCode();
+                hashCode = hashCode * 317 ^ name.GetHashCode();
+                return hashCode;
+            }
         }
 
         private Dictionary<GridInformationKey, GridInformationValue> m_PositionProperties = new Dictionary<GridInformationKey, GridInformationValue>();
