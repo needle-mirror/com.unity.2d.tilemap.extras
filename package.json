@@ -1,7 +1,7 @@
 {
   "name": "com.unity.2d.tilemap.extras",
   "displayName": "2D Tilemap Extras",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "unity": "2022.1",
   "description": "2D Tilemap Extras is a package that contains extra scripts for use with 2D Tilemap features in Unity. These include custom Tiles and Brushes for the Tilemap feature.\n\nThe following are included in the package:\nBrushes: GameObject Brush, Group Brush, Line Brush, Random Brush\nTiles: Animated Tile, Rule Tile, Rule Override Tile\nOther: Grid Information, Custom Rules for Rule Tile",
   "keywords": [
@@ -15,7 +15,7 @@
     "com.unity.modules.jsonserialize": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.2d.tilemap.extras.tests": "3.0.3"
+    "com.unity.2d.tilemap.extras.tests": "3.1.0"
   },
   "samples": [
     {
@@ -35,15 +35,15 @@
     }
   ],
   "_upm": {
-    "changelog": "### Fixed\n- [GridInformation] Implement IEquatable for GridInformationKey \n- [PrefabRandomBrush] Fix possible NullReferenceException in PrefabRandomBrush\n- [GameObjectBrush] Fix placement of GameObjects when Cell Gap is set"
+    "changelog": "### Added\n- [AnimatedTileEditor] -Add field to change TileAnimationFlags (For 2022.2.x)\n- [RuleTile] -Add RotatedMirror rule which checks neighbors using both the mirror and rotation Rule in addition to the standard rotation Rule\n\n### Fixed\n- [GameObjectBrush] Fix placement of GameObjects for Hexagon Layouts with Anchor\n- [GameObjectBrush] Align rotation and flip to 2D View in Editor\n- [RandomBrush] Use default color and transform when painting over with RandomBrush\n\n### Changed\n- [AnimatedTileEditor] Moved to Unity.2d.Tilemap.Extras.Editor"
   },
   "upmCi": {
-    "footprint": "bff5c166d08043b48efcc198721fbdc5cfa485fc"
+    "footprint": "1d074ca74a2d695bf3e7e50a2942e2693d5f794c"
   },
-  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@3.0/manual/index.html",
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@3.1/manual/index.html",
   "repository": {
     "url": "https://github.com/Unity-Technologies/2d-extras.git",
     "type": "git",
-    "revision": "78bbbfd9a60bd0618c0d4f3b105d861211da2f22"
+    "revision": "0619ff5c155088e4a8530c994129cd798bcfd97f"
   }
 }
