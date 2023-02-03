@@ -50,7 +50,7 @@ namespace UnityEditor.Tilemaps
         /// <summary>
         /// Anchor Point of the Instantiated GameObject in the cell when painting
         /// </summary>
-        public Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.5f);
+        public Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.0f);
         /// <summary>Size of the brush in cells. </summary>
         public Vector3Int size { get { return m_Size; } set { m_Size = value; SizeUpdated(); } }
         /// <summary>Pivot of the brush. </summary>
@@ -138,7 +138,7 @@ namespace UnityEditor.Tilemaps
             if (cell.gameObject == null)
                 return;
 
-            var existingGO = GetObjectInCell(grid, parent, position);
+            var existingGO = GetObjectInCell(grid, parent, position, m_Anchor);
             if (existingGO == null)
             {
                 SetSceneCell(grid, parent, position, cell.gameObject, cell.offset, cell.scale, cell.orientation, m_Anchor);
@@ -238,13 +238,9 @@ namespace UnityEditor.Tilemaps
             int newPivotY = direction == RotationDirection.Clockwise ? pivot.x : oldSize.x - pivot.x - 1;
             pivot = new Vector3Int(newPivotX, newPivotY, pivot.z);
 
-            Matrix4x4 rotation = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, direction == RotationDirection.Clockwise ? 90f : -90f), Vector3.one);
-            Quaternion orientation = Quaternion.Euler(0f, 0f, direction == RotationDirection.Clockwise ? 90f : -90f);
+            Quaternion orientation = Quaternion.Euler(0f, 0f, direction != RotationDirection.Clockwise ? 90f : -90f);
             foreach (BrushCell cell in m_Cells)
-            {
-                cell.offset = rotation * cell.offset;
                 cell.orientation = cell.orientation * orientation;
-            }
         }
 
         /// <summary>Flips the brush in the given axis.</summary>
@@ -276,14 +272,19 @@ namespace UnityEditor.Tilemaps
             foreach (Vector3Int pos in position.allPositionsWithin)
             {
                 Vector3Int brushPosition = new Vector3Int(pos.x - position.x, pos.y - position.y, 0);
-                PickCell(pos, brushPosition, gridLayout, brushTarget != null ? brushTarget.transform : null);
+                PickCell(pos, brushPosition, gridLayout, brushTarget != null ? brushTarget.transform : null, true);
             }
         }
 
-        private void PickCell(Vector3Int position, Vector3Int brushPosition, GridLayout grid, Transform parent)
+        private void PickCell(Vector3Int position, Vector3Int brushPosition, GridLayout grid, Transform parent, bool withoutAnchor = false)
         {
-            Vector3 cellCenter = grid.LocalToWorld(grid.CellToLocalInterpolated(position + m_Anchor));
-            GameObject go = GetObjectInCell(grid, parent, position);
+            var go = GetObjectInCell(grid, parent, position, m_Anchor);
+            if (go == null)
+            {
+                go = GetObjectInCell(grid, parent, position, Vector3.zero);
+            }
+            var anchorRatio = GetAnchorRatio(grid, m_Anchor);
+            var cellCenter = grid.LocalToWorld(grid.CellToLocalInterpolated(position) + grid.CellToLocalInterpolated(anchorRatio));
 
             if (go != null)
             {
@@ -376,23 +377,16 @@ namespace UnityEditor.Tilemaps
 
             foreach (Vector3Int oldPos in oldBounds.allPositionsWithin)
             {
-                int newX = m_Size.x - oldPos.x - 1;
-                int toIndex = GetCellIndex(newX, oldPos.y, oldPos.z);
-                int fromIndex = GetCellIndex(oldPos);
+                var newX = m_Size.x - oldPos.x - 1;
+                var toIndex = GetCellIndex(newX, oldPos.y, oldPos.z);
+                var fromIndex = GetCellIndex(oldPos);
                 m_Cells[toIndex] = oldCells[fromIndex];
             }
 
-            int newPivotX = m_Size.x - pivot.x - 1;
+            var newPivotX = m_Size.x - pivot.x - 1;
             pivot = new Vector3Int(newPivotX, pivot.y, pivot.z);
-            Matrix4x4 flip = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(-1f, 1f, 1f));
-            Quaternion orientation = Quaternion.Euler(0f, 0f, -180f);
             
-            foreach (BrushCell cell in m_Cells)
-            {
-                Vector3 oldOffset = cell.offset;
-                cell.offset = flip * oldOffset;
-                cell.orientation = cell.orientation*orientation;
-            }
+            FlipCells(ref m_Cells, new Vector3(-1f, 1f, 1f));
         }
 
         private void FlipY()
@@ -402,21 +396,23 @@ namespace UnityEditor.Tilemaps
 
             foreach (Vector3Int oldPos in oldBounds.allPositionsWithin)
             {
-                int newY = m_Size.y - oldPos.y - 1;
-                int toIndex = GetCellIndex(oldPos.x, newY, oldPos.z);
-                int fromIndex = GetCellIndex(oldPos);
+                var newY = m_Size.y - oldPos.y - 1;
+                var toIndex = GetCellIndex(oldPos.x, newY, oldPos.z);
+                var fromIndex = GetCellIndex(oldPos);
                 m_Cells[toIndex] = oldCells[fromIndex];
             }
 
-            int newPivotY = m_Size.y - pivot.y - 1;
+            var newPivotY = m_Size.y - pivot.y - 1;
             pivot = new Vector3Int(pivot.x, newPivotY, pivot.z);
-            Matrix4x4 flip = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, -1f, 1f));
-            Quaternion orientation = Quaternion.Euler(0f, 0f, -180f);
-            foreach (BrushCell cell in m_Cells)
+
+            FlipCells(ref m_Cells, new Vector3(1f, -1f, 1f));
+        }
+        
+        private static void FlipCells(ref BrushCell[] cells, Vector3 scale)
+        {
+            foreach (BrushCell cell in cells)
             {
-                Vector3 oldOffset = cell.offset;
-                cell.offset = flip * oldOffset;
-                cell.orientation = cell.orientation * orientation;
+                cell.scale = Vector3.Scale(cell.scale, scale);
             }
         }
 
@@ -515,7 +511,7 @@ namespace UnityEditor.Tilemaps
             return (x % m_Size.x) + m_Size.x * (y % m_Size.y) + m_Size.x * m_Size.y * (z % m_Size.z);
         }
 
-        private GameObject GetObjectInCell(GridLayout grid, Transform parent, Vector3Int position)
+        private GameObject GetObjectInCell(GridLayout grid, Transform parent, Vector3Int position, Vector3 anchor)
         {
             int childCount;
             GameObject[] sceneChildren = null;
@@ -529,16 +525,14 @@ namespace UnityEditor.Tilemaps
             {
                 childCount = parent.childCount;
             }
-            var anchorCellOffset = Vector3Int.FloorToInt(m_Anchor);
-            var cellSize = grid.cellSize;
-            anchorCellOffset.x = cellSize.x == 0 ? 0 : anchorCellOffset.x;
-            anchorCellOffset.y = cellSize.y == 0 ? 0 : anchorCellOffset.y;
-            anchorCellOffset.z = cellSize.z == 0 ? 0 : anchorCellOffset.z;
 
+            var anchorRatio = GetAnchorRatio(grid, anchor);
+            var anchorWorld = grid.CellToLocalInterpolated(anchorRatio);
             for (var i = 0; i < childCount; i++)
             {
                 var child = sceneChildren == null ? parent.GetChild(i) : sceneChildren[i].transform;
-                if (position == grid.WorldToCell(child.position) - anchorCellOffset)
+                var childCell = grid.LocalToCell(grid.WorldToLocal(child.position) - anchorWorld);
+                if (position == childCell)
                     return child.gameObject;
             }
             return null;
@@ -589,26 +583,32 @@ namespace UnityEditor.Tilemaps
             }
 
             Undo.RegisterCreatedObjectUndo(instance, "Paint GameObject");
+            var anchorRatio = GetAnchorRatio(grid, anchor);
+            
+            instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(position) + grid.CellToLocalInterpolated(anchorRatio));
+            instance.transform.localRotation = orientation;
+            instance.transform.localScale = scale;
+            instance.transform.Translate(offset);
+        }
 
+        private static Vector3 GetAnchorRatio(GridLayout grid, Vector3 cellAnchor)
+        {
             var cellSize = grid.cellSize;
             var cellStride = cellSize + grid.cellGap;
             cellStride.x = Mathf.Approximately(0f, cellStride.x) ? 1f : cellStride.x;
             cellStride.y = Mathf.Approximately(0f, cellStride.y) ? 1f : cellStride.y;
             cellStride.z = Mathf.Approximately(0f, cellStride.z) ? 1f : cellStride.z;
             var anchorRatio = new Vector3(
-                anchor.x * cellSize.x / cellStride.x,
-                anchor.y * cellSize.y / cellStride.y,
-                anchor.z * cellSize.z / cellStride.z
+                cellAnchor.x * cellSize.x / cellStride.x,
+                cellAnchor.y * cellSize.y / cellStride.y,
+                cellAnchor.z * cellSize.z / cellStride.z
             );
-            instance.transform.position = grid.LocalToWorld(grid.CellToLocalInterpolated(position + anchorRatio));
-            instance.transform.localRotation = orientation;
-            instance.transform.localScale = scale;
-            instance.transform.Translate(offset);
+            return anchorRatio;
         }
-
+        
         private void ClearSceneCell(GridLayout grid, Transform parent, Vector3Int position)
         {
-            GameObject erased = GetObjectInCell(grid, parent, new Vector3Int(position.x, position.y, position.z));
+            var erased = GetObjectInCell(grid, parent, position, m_Anchor);
             if (erased != null)
                 Undo.DestroyObjectImmediate(erased);
         }
