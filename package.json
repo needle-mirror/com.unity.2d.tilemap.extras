@@ -1,7 +1,7 @@
 {
   "name": "com.unity.2d.tilemap.extras",
   "displayName": "2D Tilemap Extras",
-  "version": "4.0.0-pre.3",
+  "version": "4.0.0",
   "unity": "2023.1",
   "description": "2D Tilemap Extras is a package that contains extra scripts for use with 2D Tilemap features in Unity. These include custom Tiles and Brushes for the Tilemap feature.\n\nThe following are included in the package:\nBrushes: GameObject Brush, Group Brush, Line Brush, Random Brush\nTiles: Animated Tile, Rule Tile, Rule Override Tile\nOther: Grid Information, Custom Rules for Rule Tile",
   "keywords": [
@@ -15,7 +15,7 @@
     "com.unity.modules.jsonserialize": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.2d.tilemap.extras.tests": "4.0.0-pre.3"
+    "com.unity.2d.tilemap.extras.tests": "4.0.0"
   },
   "samples": [
     {
@@ -35,15 +35,15 @@
     }
   ],
   "_upm": {
-    "changelog": "### Fixed\n- [TintBrush] Replace obsolete method calls.\n- [TintBrushSmooth] Replace obsolete method calls.\n- [GameObjectBrush] Fix placement of GameObjects for Hexagon Layouts with Anchor\n- [GameObjectBrush] Align rotation and flip to 2D View in Editor\n- [RandomBrush] Use default color and transform when painting over with RandomBrush\n\n### Added\n- [AnimatedTileEditor] Add field to change TileAnimationFlags\n\n### Changed\n- [AnimatedTileEditor] Moved to Unity.2d.Tilemap.Extras.Editor"
+    "changelog": "### Added\n- [RuleTile] Add RotatedMirror rule which checks neighbors using both the mirror and rotation Rule in addition to the standard rotation Rule\n\n### Fixed\n- [GameObjectBrush] Validate size of GameObjectBrush when it changes"
   },
   "upmCi": {
-    "footprint": "95749e01960c09bfe2ac4ebf52e1c2a45ba9418a"
+    "footprint": "9700ea727395a7b9e99c30cc1b6d3ab7f7007532"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@4.0/manual/index.html",
   "repository": {
     "url": "https://github.com/Unity-Technologies/2d-extras.git",
     "type": "git",
-    "revision": "0860ac36275ca081196ae54e56078366b73b9c6c"
+    "revision": "9961725b5671e3bdfad54e45abc175e446f2131e"
   }
 }
