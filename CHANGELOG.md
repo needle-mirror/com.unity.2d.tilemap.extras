@@ -4,6 +4,19 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [4.2.1] - 2024-12-10
+
+### Fixed
+
+- [AutoTile] Fix AutoTile Create Asset menu item 
+
+## [4.2.0] - 2024-12-05
+
+### Added
+
+- [AutoTile] Add AutoTile
+- [RuleTile] Add RuleTileTemplate to save RuleTile rules
+
 ## [4.1.0] - 2024-09-18
 
 ### Fixed
