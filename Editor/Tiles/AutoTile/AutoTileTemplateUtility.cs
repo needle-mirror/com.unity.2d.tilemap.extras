@@ -27,6 +27,10 @@ namespace UnityEditor.Tilemaps
                 AutoTileTemplate.kExtension);
             var relativePath = FileUtil.GetProjectRelativePath(templatePath);
             var template = AssetDatabase.LoadAssetAtPath<AutoTileTemplate>(relativePath);
+            if (template == null)
+            {
+                Debug.LogWarningFormat("{0} does not contain a valid AutoTileTemplate.", relativePath);
+            }
             return template;
         }
 
@@ -51,7 +55,10 @@ namespace UnityEditor.Tilemaps
             autoTile.m_MaskType = template.maskType;
             if (autoTile.m_TextureList == null)
                 autoTile.m_TextureList = new List<Texture2D>();
+            if (autoTile.m_TextureScaleList == null)
+                autoTile.m_TextureScaleList = new List<float>();
             autoTile.m_TextureList.Add(texture);
+            autoTile.m_TextureScaleList.Add(AutoTile.s_DefaultTextureScale);
             foreach (var sprite in sprites)
             {
                 foreach (var templateSprite in template.sprites)
