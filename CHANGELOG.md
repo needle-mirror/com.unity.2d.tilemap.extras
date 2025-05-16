@@ -4,7 +4,14 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [4.3.1] - 2025-05-13
+## [5.0.0] - 2025-05-16
+
+### Added
+- [AutoTile] Add Random property. AutoTile randomly picks a Sprite if multiple Sprites share the same mask. Otherwise, uses the first Sprite set with the mask.
+
+### Changed
+- Update minimum Unity version.
+
 ### Fixed
 
 - [AutoTileEditor] Only clear entries for current Texture when loading an AutoTileTemplate for the selected Texture

@@ -15,6 +15,15 @@ namespace UnityEditor.Tilemaps
 
         private static readonly float s_MaxSliderScale = 2.5f;
 
+        private static class Styles
+        {
+            public static readonly string defaultSpriteTooltip = L10n.Tr("The Sprite set when there are no matches.");
+            public static readonly string defaultGameObjectTooltip = L10n.Tr("The GameObject instantiated when set on the Tilemap.");
+            public static readonly string tileColliderTooltip = L10n.Tr("The Collider Type used for generating colliders.");
+            public static readonly string maskTypeTooltip = L10n.Tr("Mask Type for setting Rules for the AutoTile. Use 2x2 for a 16 Sprite ruleset and 3x3 for a 47 Sprite ruleset.");
+            public static readonly string randomTooltip = L10n.Tr("Randomly picks a Sprite if multiple Sprites share the same mask. Otherwise, uses the first Sprite set with the mask.");
+        }
+
         private ListView m_TextureList;
         private ScrollView m_TextureScroller;
 
@@ -39,22 +48,31 @@ namespace UnityEditor.Tilemaps
             var defaultSprite = new ObjectField("Default Sprite");
             defaultSprite.objectType = typeof(Sprite);
             defaultSprite.bindingPath = "m_DefaultSprite";
+            defaultSprite.tooltip = Styles.defaultSpriteTooltip;
             defaultProperties.Add(defaultSprite);
 
             var defaultGameObject = new ObjectField("Default GameObject");
             defaultGameObject.objectType = typeof(GameObject);
             defaultGameObject.bindingPath = "m_DefaultGameObject";
+            defaultGameObject.tooltip = Styles.defaultGameObjectTooltip;
             defaultProperties.Add(defaultGameObject);
 
             var tileColliderType = new EnumField("Tile Collider");
             tileColliderType.bindingPath = "m_DefaultColliderType";
+            tileColliderType.tooltip = Styles.tileColliderTooltip;
             defaultProperties.Add(tileColliderType);
 
             var maskType = new EnumField("Mask Type");
             maskType.bindingPath = "m_MaskType";
+            maskType.tooltip = Styles.maskTypeTooltip;
             maskType.RegisterValueChangedCallback(MaskTypeChanged);
-
             defaultProperties.Add(maskType);
+
+            var random = new Toggle("Random");
+            random.bindingPath = "m_Random";
+            random.tooltip = Styles.randomTooltip;
+            random.RegisterValueChangedCallback(RandomChanged);
+            defaultProperties.Add(random);
 
             Add(defaultProperties);
 
@@ -106,7 +124,7 @@ namespace UnityEditor.Tilemaps
                     if (textureToElementMap.TryGetValue(spriteTexture, out var at))
                     {
                         at.InitialiseSpriteMask(sprite, mask);
-                        if (isDuplicate && mask > 0)
+                        if (!autoTile.random && isDuplicate && mask > 0)
                             at.SetDuplicate(sprite, true);
                     }
                 }
@@ -250,7 +268,7 @@ namespace UnityEditor.Tilemaps
             if (oldMask != 0)
             {
                 var spriteList = autoTile.m_AutoTileDictionary[oldMask].spriteList;
-                if (spriteList.Count > 2)
+                if (!autoTile.random && spriteList.Count > 2)
                 {
                     if (textureToElementMap.TryGetValue(sourceTexture, out var at))
                     {
@@ -258,7 +276,7 @@ namespace UnityEditor.Tilemaps
                     }
                 }
 
-                if (spriteList.Count == 2)
+                if (!autoTile.random &&spriteList.Count == 2)
                 {
                     foreach (var autoTileSprite in spriteList)
                     {
@@ -273,7 +291,7 @@ namespace UnityEditor.Tilemaps
             autoTile.RemoveSprite(sprite, oldMask);
             autoTile.AddSprite(sprite, sourceTexture, newMask);
 
-            if (newMask != 0)
+            if (newMask != 0 && !autoTile.random)
             {
                 var spriteList = autoTile.m_AutoTileDictionary[newMask].spriteList;
                 if (spriteList.Count < 2)
@@ -287,6 +305,12 @@ namespace UnityEditor.Tilemaps
                     }
                 }
             }
+        }
+
+
+        private void RandomChanged(ChangeEvent<bool> evt)
+        {
+            TexturesChanged();
         }
 
         private void ItemListAdded(IEnumerable<int> insertions)
