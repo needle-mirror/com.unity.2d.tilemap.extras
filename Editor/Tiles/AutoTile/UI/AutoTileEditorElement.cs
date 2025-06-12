@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -326,8 +327,18 @@ namespace UnityEditor.Tilemaps
         private void ItemListRemoved(IEnumerable<int> removals)
         {
             // Note: m_AutoTile.m_TextureList is reduced after this method ends
+            int count = 0;
+            NativeArray<int> removalNative = new NativeArray<int>(m_AutoTile.m_TextureScaleList.Count, Allocator.Temp);
             foreach (var i in removals)
-                m_AutoTile.m_TextureScaleList.RemoveAt(i);
+            {
+                removalNative[count++] = i;
+            }
+            for (var idx = count - 1; idx >= 0; idx--)
+            {
+                m_AutoTile.m_TextureScaleList.RemoveAt(removalNative[idx]);
+            }
+            removalNative.Dispose();
+
             SaveTile();
             m_TextureList.Rebuild();
             TexturesChanged();

@@ -1,7 +1,7 @@
 {
   "name": "com.unity.2d.tilemap.extras",
   "displayName": "2D Tilemap Extras",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "unity": "6000.2",
   "unityRelease": "0a10",
   "description": "2D Tilemap Extras is a package that contains extra scripts for use with 2D Tilemap features in Unity. These include custom Tiles and Brushes for the Tilemap feature.\n\nThe following are included in the package:\nBrushes: GameObject Brush, Group Brush, Line Brush, Random Brush\nTiles: Animated Tile, Rule Tile, Rule Override Tile\nOther: Grid Information, Custom Rules for Rule Tile",
@@ -15,7 +15,7 @@
     "com.unity.modules.jsonserialize": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.2d.tilemap.extras.tests": "5.0.0"
+    "com.unity.2d.tilemap.extras.tests": "5.0.1"
   },
   "samples": [
     {
@@ -35,15 +35,15 @@
     }
   ],
   "_upm": {
-    "changelog": "### Added\n- [AutoTile] Add Random property. AutoTile randomly picks a Sprite if multiple Sprites share the same mask. Otherwise, uses the first Sprite set with the mask.\n\n### Changed\n- Update minimum Unity version.\n\n### Fixed\n\n- [AutoTileEditor] Only clear entries for current Texture when loading an AutoTileTemplate for the selected Texture\n- [AutoTileEditor] Improve duplication checks for entries across multiple Textures"
+    "changelog": "### Fixed\n- [AutoTileEditor] Fix exception thrown when texture count is reduced"
   },
   "upmCi": {
-    "footprint": "c5803ce3b747be43eb444659ca26ae5d959e2a6b"
+    "footprint": "6791e6f11134a8555d2889e63f52688c06e21c02"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@5.0/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/2d.git",
     "type": "git",
-    "revision": "98a4faf22484a3679f8d6a3b60b5d07f5e652cd7"
+    "revision": "b0c25ab984f22def61409df195e4e0b210863e0d"
   }
 }

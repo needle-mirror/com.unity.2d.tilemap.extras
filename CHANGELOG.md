@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [5.0.1] - 2025-06-12
+### Fixed
+- [AutoTileEditor] Fix exception thrown when texture count is reduced
+
 ## [5.0.0] - 2025-05-16
 
 ### Added
@@ -13,7 +17,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Update minimum Unity version.
 
 ### Fixed
-
 - [AutoTileEditor] Only clear entries for current Texture when loading an AutoTileTemplate for the selected Texture
 - [AutoTileEditor] Improve duplication checks for entries across multiple Textures
 
