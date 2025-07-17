@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [6.0.0] - 2025-07-17
+### Changed
+- Update minimum Unity version.
+
 ## [5.0.1] - 2025-06-12
 ### Fixed
 - [AutoTileEditor] Fix exception thrown when texture count is reduced

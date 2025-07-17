@@ -1,9 +1,9 @@
 {
   "name": "com.unity.2d.tilemap.extras",
   "displayName": "2D Tilemap Extras",
-  "version": "5.0.1",
-  "unity": "6000.2",
-  "unityRelease": "0a10",
+  "version": "6.0.0",
+  "unity": "6000.3",
+  "unityRelease": "0a2",
   "description": "2D Tilemap Extras is a package that contains extra scripts for use with 2D Tilemap features in Unity. These include custom Tiles and Brushes for the Tilemap feature.\n\nThe following are included in the package:\nBrushes: GameObject Brush, Group Brush, Line Brush, Random Brush\nTiles: Animated Tile, Rule Tile, Rule Override Tile\nOther: Grid Information, Custom Rules for Rule Tile",
   "keywords": [
     "2d"
@@ -15,7 +15,7 @@
     "com.unity.modules.jsonserialize": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.2d.tilemap.extras.tests": "5.0.1"
+    "com.unity.2d.tilemap.extras.tests": "6.0.0"
   },
   "samples": [
     {
@@ -35,15 +35,15 @@
     }
   ],
   "_upm": {
-    "changelog": "### Fixed\n- [AutoTileEditor] Fix exception thrown when texture count is reduced"
+    "changelog": "### Changed\n- Update minimum Unity version."
   },
   "upmCi": {
-    "footprint": "6791e6f11134a8555d2889e63f52688c06e21c02"
+    "footprint": "fde53602a6f9e3d6f6055ab3b90a805d6514be31"
   },
-  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@5.0/manual/index.html",
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@6.0/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/2d.git",
     "type": "git",
-    "revision": "b0c25ab984f22def61409df195e4e0b210863e0d"
+    "revision": "1ef60d478f22a420064f300ba7c3b3d6d3536dc3"
   }
 }
