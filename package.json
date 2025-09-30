@@ -1,9 +1,9 @@
 {
   "name": "com.unity.2d.tilemap.extras",
   "displayName": "2D Tilemap Extras",
-  "version": "6.0.1",
-  "unity": "6000.3",
-  "unityRelease": "0a2",
+  "version": "7.0.0",
+  "unity": "6000.4",
+  "unityRelease": "0a1",
   "description": "2D Tilemap Extras is a package that contains extra scripts for use with 2D Tilemap features in Unity. These include custom Tiles and Brushes for the Tilemap feature.\n\nThe following are included in the package:\nBrushes: GameObject Brush, Group Brush, Line Brush, Random Brush\nTiles: Animated Tile, Rule Tile, Rule Override Tile\nOther: Grid Information, Custom Rules for Rule Tile",
   "keywords": [
     "2d"
@@ -15,7 +15,7 @@
     "com.unity.modules.jsonserialize": "1.0.0"
   },
   "relatedPackages": {
-    "com.unity.2d.tilemap.extras.tests": "6.0.1"
+    "com.unity.2d.tilemap.extras.tests": "7.0.0"
   },
   "samples": [
     {
@@ -35,15 +35,15 @@
     }
   ],
   "_upm": {
-    "changelog": "### Added\n- [AutoTile] Add Has Physics Shape property if Collider Type is set to Sprite. AutoTile will set Collider Type to Sprite if the Sprite has physics shape and set Collider Type to None if the Sprite has no physics shape.\n\n### Fixed\n- [RuleTileEditor] Fix exception thrown when a Rule is added to an empty RuleTile, removed and added again.\n- [AutoTileEditor] Fix minimum texture scale size when texture is smaller than 256 pixels\n- [AutoTileEditor] Fix texture display when texture is removed from AutoTile"
+    "changelog": "### Changed\n- Update Unity min version for package.\n\n### Added\n- [AutoTile] Add Has Physics Shape property if Collider Type is set to Sprite. AutoTile will set Collider Type to Sprite if the Sprite has physics shape and set Collider Type to None if the Sprite has no physics shape."
   },
   "upmCi": {
-    "footprint": "d3c756d92c6752f77079c4f31f91788fa5180fc1"
+    "footprint": "4e248e08a9f559c8e35f4527212d6fa7cc00a6ee"
   },
-  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@6.0/manual/index.html",
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@7.0/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/2d.git",
     "type": "git",
-    "revision": "0f527ad8312724fd801fb3b317d1f4be2f019652"
+    "revision": "a6b03a859e241b6576bbc1b321144153f3cfe3f3"
   }
 }
