@@ -23,10 +23,13 @@ namespace UnityEditor.Tilemaps
             public static readonly string tileColliderTooltip = L10n.Tr("The Collider Type used for generating colliders.");
             public static readonly string maskTypeTooltip = L10n.Tr("Mask Type for setting Rules for the AutoTile. Use 2x2 for a 16 Sprite ruleset and 3x3 for a 47 Sprite ruleset.");
             public static readonly string randomTooltip = L10n.Tr("Randomly picks a Sprite if multiple Sprites share the same mask. Otherwise, uses the first Sprite set with the mask.");
+            public static readonly string physicsShapeCheckTooltip = L10n.Tr("Checks whether the Sprite used has a physics shape. If not, the Collider Type will be set to None.");
         }
 
         private ListView m_TextureList;
         private ScrollView m_TextureScroller;
+
+        private Toggle m_PhysicsShapeCheckToggle;
 
         private Dictionary<Texture2D, AutoTileTextureSource> textureToElementMap =
             new Dictionary<Texture2D, AutoTileTextureSource>();
@@ -61,7 +64,14 @@ namespace UnityEditor.Tilemaps
             var tileColliderType = new EnumField("Tile Collider");
             tileColliderType.bindingPath = "m_DefaultColliderType";
             tileColliderType.tooltip = Styles.tileColliderTooltip;
+            tileColliderType.RegisterValueChangedCallback(ColliderTypeChanged);
             defaultProperties.Add(tileColliderType);
+
+            m_PhysicsShapeCheckToggle = new Toggle("Has Physics Shape");
+            m_PhysicsShapeCheckToggle.name = m_PhysicsShapeCheckToggle.label;
+            m_PhysicsShapeCheckToggle.bindingPath = "m_PhysicsShapeCheck";
+            m_PhysicsShapeCheckToggle.tooltip = Styles.physicsShapeCheckTooltip;
+            defaultProperties.Add(m_PhysicsShapeCheckToggle);
 
             var maskType = new EnumField("Mask Type");
             maskType.bindingPath = "m_MaskType";
@@ -70,6 +80,7 @@ namespace UnityEditor.Tilemaps
             defaultProperties.Add(maskType);
 
             var random = new Toggle("Random");
+            random.name = random.label;
             random.bindingPath = "m_Random";
             random.tooltip = Styles.randomTooltip;
             random.RegisterValueChangedCallback(RandomChanged);
@@ -102,6 +113,8 @@ namespace UnityEditor.Tilemaps
         {
             if (autoTile == null)
                 return;
+
+            m_PhysicsShapeCheckToggle.SetEnabled(autoTile.m_DefaultColliderType == Tile.ColliderType.Sprite);
 
             m_TextureList.itemsSource = m_AutoTile.m_TextureList;
             m_TextureList.Rebuild();
@@ -237,11 +250,12 @@ namespace UnityEditor.Tilemaps
                 he.Add(saveButton);
 
                 var minLength = Math.Max(texture2D.width, texture2D.height);
-                var start = 256.0f / minLength;
-
+                var start = 0.5f;
+                if (minLength > 512.0f)
+                    start = 256.0f / minLength;
                 var sliderValue = Math.Min(Mathf.Max(start, m_AutoTile.m_TextureScaleList[i]), s_MaxSliderScale);
-
                 var slider = new Slider("Scale", start, s_MaxSliderScale, SliderDirection.Horizontal, 0.1f);
+                slider.name = "ScaleSlider";
                 slider.style.flexGrow = 0.9f;
                 slider.value = Mathf.Max(start, sliderValue);
                 slider.userData = i;
@@ -308,9 +322,19 @@ namespace UnityEditor.Tilemaps
             }
         }
 
+        private void ColliderTypeChanged(ChangeEvent<Enum> evt)
+        {
+            m_PhysicsShapeCheckToggle.SetEnabled((Tile.ColliderType) evt.newValue == Tile.ColliderType.Sprite);
+        }
 
         private void RandomChanged(ChangeEvent<bool> evt)
         {
+            TexturesChanged();
+        }
+
+        private void UpdateTextureList()
+        {
+            m_TextureList.Rebuild();
             TexturesChanged();
         }
 
@@ -320,8 +344,7 @@ namespace UnityEditor.Tilemaps
             foreach (var i in insertions)
                 m_AutoTile.m_TextureScaleList.Insert(i, AutoTile.s_DefaultTextureScale);
             SaveTile();
-            m_TextureList.Rebuild();
-            TexturesChanged();
+            m_TextureList.schedule.Execute(UpdateTextureList);
         }
 
         private void ItemListRemoved(IEnumerable<int> removals)
@@ -340,8 +363,7 @@ namespace UnityEditor.Tilemaps
             removalNative.Dispose();
 
             SaveTile();
-            m_TextureList.Rebuild();
-            TexturesChanged();
+            m_TextureList.schedule.Execute(UpdateTextureList);
         }
 
         private void TexturesChanged()

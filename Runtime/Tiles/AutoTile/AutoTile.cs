@@ -97,10 +97,17 @@ namespace UnityEngine.Tilemaps
 
         [SerializeField] private bool m_Random;
 
+        [SerializeField] private bool m_PhysicsShapeCheck;
+
         /// <summary>
         /// Use random Sprite for mask
         /// </summary>
         public bool random { get { return m_Random; } set { m_Random = value; } }
+
+        /// <summary>
+        /// Checks Physics Shape of Sprite before determining Collider Type
+        /// </summary>
+        internal bool physicsShapeCheck { get { return m_PhysicsShapeCheck; } set { m_PhysicsShapeCheck = value; } }
 
         [SerializeField, HideInInspector] internal AutoTileDictionary m_AutoTileDictionary = new AutoTileDictionary();
 
@@ -204,6 +211,10 @@ namespace UnityEngine.Tilemaps
                 }
                 tileData.sprite = sprite;
             }
+            if (physicsShapeCheck && tileData.sprite != null && tileData.colliderType == Tile.ColliderType.Sprite)
+                tileData.colliderType = tileData.sprite.GetPhysicsShapeCount() > 0
+                    ? Tile.ColliderType.Sprite
+                    : Tile.ColliderType.None;
         }
 
         internal void AddSprite(Sprite sprite, Texture2D texture, uint mask)
