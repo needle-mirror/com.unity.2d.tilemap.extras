@@ -4,15 +4,27 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [6.0.1] - 2025-09-25
+## [7.0.0-exp.1] - 2025-12-05
+### Added
+- [EntityIdTileBase] Add EntityIdTileBase and Unity Job support for Tiles deriving from EntityIdTileBase
+- [EntityIdTile] Add EntityIdTile, the Tile equivalent using Entity Ids
+- [AnimatedEntityIdTile] Add AnimatedEntityIdTile, the AnimatedTile equivalent using Entity Ids
+- [AutoEntityIdTile] Add AutoEntityIdTile, the AutoTile equivalent using Entity Ids
+- [RuleEntityIdTile] Add RuleEntityIdTile, the RuleTile equivalent using Entity Ids
+
+### Changed
+- Update Unity min version for package.
+
 ### Added
 - [AutoTile] Add Has Physics Shape property if Collider Type is set to Sprite. AutoTile will set Collider Type to Sprite if the Sprite has physics shape and set Collider Type to None if the Sprite has no physics shape.
+
+## [6.0.1] - 2025-09-25
 
 ### Fixed
 - [RuleTileEditor] Fix exception thrown when a Rule is added to an empty RuleTile, removed and added again.
 - [AutoTileEditor] Fix minimum texture scale size when texture is smaller than 256 pixels
 - [AutoTileEditor] Fix texture display when texture is removed from AutoTile
-  
+
 ## [6.0.0] - 2025-07-17
 
 ### Changed
