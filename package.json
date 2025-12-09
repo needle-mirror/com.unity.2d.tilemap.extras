@@ -1,9 +1,9 @@
 {
   "name": "com.unity.2d.tilemap.extras",
   "displayName": "2D Tilemap Extras",
-  "version": "7.0.0",
+  "version": "8.0.0-exp.1",
   "unity": "6000.4",
-  "unityRelease": "0a1",
+  "unityRelease": "0a2",
   "description": "2D Tilemap Extras is a package that contains extra scripts for use with 2D Tilemap features in Unity. These include custom Tiles and Brushes for the Tilemap feature.\n\nThe following are included in the package:\nBrushes: GameObject Brush, Group Brush, Line Brush, Random Brush\nTiles: Animated Tile, Rule Tile, Rule Override Tile\nOther: Grid Information, Custom Rules for Rule Tile",
   "keywords": [
     "2d"
@@ -12,38 +12,40 @@
   "dependencies": {
     "com.unity.modules.tilemap": "1.0.0",
     "com.unity.2d.tilemap": "1.0.0",
-    "com.unity.modules.jsonserialize": "1.0.0"
+    "com.unity.modules.jsonserialize": "1.0.0",
+    "com.unity.burst": "1.8.25",
+    "com.unity.collections": "2.5.7"
   },
   "relatedPackages": {
-    "com.unity.2d.tilemap.extras.tests": "7.0.0"
+    "com.unity.2d.tilemap.extras.tests": "8.0.0-exp.1"
   },
   "samples": [
     {
       "displayName": "Waterfall Animated Tile",
-      "description": "An example implementation of an Animated Tile.",
+      "description": "An example implementation of an Animated Tile and Animated Entity Id Tile.",
       "path": "Samples~/WaterfallAnimatedTile"
     },
     {
       "displayName": "Pipe Rule Tile",
-      "description": "An example implementation of a Rule Tile with rules matching four-way orthogonal neighbors.",
+      "description": "An example implementation of a Rule Tile and Rule Entity Id Tile with rules matching four-way orthogonal neighbors.",
       "path": "Samples~/PipeRuleTile"
     },
     {
       "displayName": "Dungeon Rule Tile",
-      "description": "An example implementation of a Rule Tile with rules matching eight-way orthogonal and diagonal neighbors.",
+      "description": "An example implementation of a Rule Tile and Rule Entity Id Tile with rules matching eight-way orthogonal and diagonal neighbors.",
       "path": "Samples~/DungeonRuleTile"
     }
   ],
   "_upm": {
-    "changelog": "### Changed\n- Update Unity min version for package.\n\n### Added\n- [AutoTile] Add Has Physics Shape property if Collider Type is set to Sprite. AutoTile will set Collider Type to Sprite if the Sprite has physics shape and set Collider Type to None if the Sprite has no physics shape."
+    "changelog": "### Added\n- [EntityIdTileBase] Add EntityIdTileBase and Unity Job support for Tiles deriving from EntityIdTileBase\n- [EntityIdTile] Add EntityIdTile, the Tile equivalent using Entity Ids\n- [AnimatedEntityIdTile] Add AnimatedEntityIdTile, the AnimatedTile equivalent using Entity Ids\n- [AutoEntityIdTile] Add AutoEntityIdTile, the AutoTile equivalent using Entity Ids\n- [RuleEntityIdTile] Add RuleEntityIdTile, the RuleTile equivalent using Entity Ids\n\n### Changed\n- Update Unity min version for package.\n\n### Added\n- [AutoTile] Add Has Physics Shape property if Collider Type is set to Sprite. AutoTile will set Collider Type to Sprite if the Sprite has physics shape and set Collider Type to None if the Sprite has no physics shape."
   },
   "upmCi": {
-    "footprint": "4e248e08a9f559c8e35f4527212d6fa7cc00a6ee"
+    "footprint": "393287621a7fea8d67bfd18c17ebe7498835c08f"
   },
-  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@7.0/manual/index.html",
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@8.0/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/2d.git",
     "type": "git",
-    "revision": "a6b03a859e241b6576bbc1b321144153f3cfe3f3"
+    "revision": "bfd12c1a415885d766d6e094ce5c12c44d587aa0"
   }
 }

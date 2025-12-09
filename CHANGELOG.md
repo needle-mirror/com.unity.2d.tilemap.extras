@@ -4,7 +4,14 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [7.0.0] - 2025-09-30
+## [8.0.0-exp.1] - 2025-12-09
+### Added
+- [EntityIdTileBase] Add EntityIdTileBase and Unity Job support for Tiles deriving from EntityIdTileBase
+- [EntityIdTile] Add EntityIdTile, the Tile equivalent using Entity Ids
+- [AnimatedEntityIdTile] Add AnimatedEntityIdTile, the AnimatedTile equivalent using Entity Ids
+- [AutoEntityIdTile] Add AutoEntityIdTile, the AutoTile equivalent using Entity Ids
+- [RuleEntityIdTile] Add RuleEntityIdTile, the RuleTile equivalent using Entity Ids
+
 ### Changed
 - Update Unity min version for package.
 
