@@ -528,7 +528,7 @@ namespace UnityEditor.Tilemaps
             return x % m_Size.x + m_Size.x * (y % m_Size.y) + m_Size.x * m_Size.y * (z % m_Size.z);
         }
 
-        private GameObject GetObjectInCell(GridLayout grid, Transform parent, Vector3Int position, Vector3 anchor,
+        internal static GameObject GetObjectInCell(GridLayout grid, Transform parent, Vector3Int position, Vector3 anchor,
             Vector3 offset)
         {
             int childCount;
@@ -580,11 +580,11 @@ namespace UnityEditor.Tilemaps
                     m_Cells[GetCellIndex(pos)] = new BrushCell();
         }
 
-        private static void SetSceneCell(GridLayout grid, Transform parent, Vector3Int position, GameObject go,
+        internal static GameObject SetSceneCell(GridLayout grid, Transform parent, Vector3Int position, GameObject go,
             Vector3 offset, Vector3 scale, Quaternion orientation, Vector3 anchor)
         {
             if (go == null)
-                return;
+                return null;
 
             GameObject instance;
             if (PrefabUtility.IsPartOfPrefabAsset(go))
@@ -610,9 +610,10 @@ namespace UnityEditor.Tilemaps
             instance.transform.localRotation = orientation;
             instance.transform.localScale = scale;
             instance.transform.Translate(offset);
+            return instance;
         }
 
-        private static Vector3 GetAnchorRatio(GridLayout grid, Vector3 cellAnchor)
+        internal static Vector3 GetAnchorRatio(GridLayout grid, Vector3 cellAnchor)
         {
             var cellSize = grid.cellSize;
             var cellStride = cellSize + grid.cellGap;
@@ -752,10 +753,36 @@ namespace UnityEditor.Tilemaps
 
         private Texture2D m_BrushIcon;
 
+        private GameObject[] m_CachedGridSelectionGOs;
+
+        private static class Styles
+        {
+            public static GUIContent offsetLabel =  new GUIContent("Offset");
+            public static GUIContent rotationLabel =  new GUIContent("Rotation");
+            public static GUIContent scaleLabel =  new GUIContent("Scale");
+        }
+
         /// <summary>
         ///     The GameObjectBrush for this Editor
         /// </summary>
         public GameObjectBrush brush => target as GameObjectBrush;
+
+        private void OnEnable()
+        {
+            GridSelection.gridSelectionChanged += GridSelectionChanged;
+            Undo.undoRedoPerformed += GridSelectionChanged;
+        }
+
+        private void OnDisable()
+        {
+            if (hiddenGridEditor != null)
+            {
+                Object.DestroyImmediate(hiddenGridEditor);
+                hiddenGridEditor = null;
+            }
+            GridSelection.gridSelectionChanged -= GridSelectionChanged;
+            Undo.undoRedoPerformed -= GridSelectionChanged;
+        }
 
         /// <summary> Whether the GridBrush can change Z Position. </summary>
         public override bool canChangeZPosition
@@ -866,6 +893,110 @@ namespace UnityEditor.Tilemaps
                 }
 
                 EditorGUI.indentLevel--;
+            }
+        }
+
+        private void GridSelectionChanged()
+        {
+            if (!GridSelection.active)
+            {
+                m_CachedGridSelectionGOs = null;
+                return;
+            }
+
+            var gameObject = GridSelection.target;
+            var selection = GridSelection.position;
+            var grid = GridSelection.grid;
+            var halfCellSize = (grid.cellSize + grid.cellGap) * 0.5f;
+            var anchorRatio = GameObjectBrush.GetAnchorRatio(grid, brush.m_Anchor);
+
+            m_CachedGridSelectionGOs = new GameObject[selection.size.x * selection.size.y * selection.size.z];
+            var i = 0;
+            foreach (var pos in selection.allPositionsWithin)
+            {
+                var cellLocalPosition = grid.CellToLocalInterpolated(pos);
+                var anchorLocalPosition = grid.CellToLocalInterpolated(anchorRatio);
+                var cellCenter = grid.LocalToWorld(cellLocalPosition + anchorLocalPosition);
+
+                var cellGo = GameObjectBrush.GetObjectInCell(grid, gameObject.transform, pos, brush.m_Anchor, Vector3.zero);
+                if (cellGo == null)
+                    cellGo = GameObjectBrush.GetObjectInCell(grid, gameObject.transform, pos, Vector3.zero, Vector3.zero);
+
+                // Remove shared cell duplicates
+                if (cellGo != null)
+                {
+                    var offset = cellGo.transform.position - cellCenter;
+                    if ((halfCellSize.x > 0 && halfCellSize.x < Mathf.Abs(offset.x))
+                        || (halfCellSize.y > 0 && halfCellSize.y < Mathf.Abs(offset.y))
+                        || (halfCellSize.z > 0 && halfCellSize.z < Mathf.Abs(offset.z)))
+                    {
+                        cellGo = null;
+                    }
+                    else if ((halfCellSize.x > 0 && Mathf.Approximately(halfCellSize.x, offset.x))
+                             || (halfCellSize.y > 0 && Mathf.Approximately(halfCellSize.y, offset.y))
+                             || (halfCellSize.z > 0 && Mathf.Approximately(halfCellSize.z, offset.z)))
+                    {
+                        cellGo = null;
+                    }
+                }
+                m_CachedGridSelectionGOs[i++] = cellGo;
+            }
+        }
+
+        /// <summary>Callback for drawing the Inspector GUI when there is an active GridSelection made in a Tilemap.</summary>
+        public override void OnSelectionInspectorGUI()
+        {
+            if (m_CachedGridSelectionGOs == null)
+                return;
+
+            var gameObject = GridSelection.target;
+            var selection = GridSelection.position;
+
+            var canEditTilemap = !GridPaintingState.IsPartOfActivePalette(gameObject)
+                                 || GridPaintingState.isPaletteEditable;
+
+            var grid = GridSelection.grid;
+            using (new EditorGUI.DisabledScope(!canEditTilemap))
+            {
+                var i = 0;
+                foreach (var pos in selection.allPositionsWithin)
+                {
+                    EditorGUI.BeginChangeCheck();
+                    var go = EditorGUILayout.ObjectField($"{pos}", m_CachedGridSelectionGOs[i], typeof(GameObject), true) as GameObject;
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        if (m_CachedGridSelectionGOs[i] != null)
+                            Undo.DestroyObjectImmediate(m_CachedGridSelectionGOs[i]);
+                        m_CachedGridSelectionGOs[i] = GameObjectBrush.SetSceneCell(grid, gameObject.transform, pos, go, Vector3.zero, Vector3.one, Quaternion.identity, brush.m_Anchor);
+                    }
+
+                    if (go != null)
+                    {
+                        EditorGUI.indentLevel++;
+                        var anchorRatio = GameObjectBrush.GetAnchorRatio(grid, brush.m_Anchor);
+                        var cellLocalPosition = grid.CellToLocalInterpolated(pos);
+                        var anchorLocalPosition = grid.CellToLocalInterpolated(anchorRatio);
+                        var cellCenter = grid.LocalToWorld(cellLocalPosition + anchorLocalPosition);
+
+                        EditorGUI.BeginChangeCheck();
+                        var offset = EditorGUILayout.Vector3Field(Styles.offsetLabel, go.transform.position - cellCenter);
+                        var rotation = EditorGUILayout.Vector3Field(Styles.rotationLabel, go.transform.localEulerAngles);
+                        var scale = EditorGUILayout.Vector3Field(Styles.scaleLabel, go.transform.localScale);
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            Undo.RecordObject(go.transform, "Change Transform");
+                            go.transform.position =
+                                grid.LocalToWorld(grid.CellToLocalInterpolated(pos) + grid.CellToLocalInterpolated(anchorRatio));
+                            go.transform.localEulerAngles = rotation;
+                            go.transform.localScale = scale;
+                            go.transform.Translate(offset);
+                        }
+
+                        EditorGUI.indentLevel--;
+                    }
+
+                    i++;
+                }
             }
         }
 

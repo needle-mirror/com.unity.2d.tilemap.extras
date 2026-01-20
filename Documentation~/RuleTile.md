@@ -136,7 +136,3 @@ Paint with the Rule Tile in the same way as other Tiles by using the Tile Palett
 For optimization, please set the most common Rule at the top of the list of Rules and follow with next most common Rule
 and so on. When matching Rules during the placement of the Tile, the Rule Tile algorithm will check the first Rule
 first, before proceeding with the next Rules.
-
-# Rule Entity Id Tile
-
-The Rule Entity Id Tile is a Rule Tile that uses Entity Ids to reference managed objects. It has the same properties as a RuleTile and caches the Entity Ids of these properties on the "OnEnable" call. By not referencing managed objects and using simple blittable data types, the Tilemap is able to utilize Unity Jobs and Burst to calculate and retrieve data from the Entity Id Tile, improving performance when you set these Tiles onto the Tilemap.

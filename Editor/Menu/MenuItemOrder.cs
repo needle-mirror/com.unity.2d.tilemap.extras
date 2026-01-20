@@ -1,4 +1,3 @@
-using Unity.Tilemaps.Experimental;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -16,11 +15,6 @@ namespace UnityEditor.Tilemaps
         CustomRuleTile,
         RandomTile = 200,
         WeightedRandomTile,
-        AnimatedEntityIdTile = 300,
-        AutoEntityIdTile,
-        RuleEntityIdTile,
-        IsometricRuleEntityIdTile,
-        HexagonalRuleEntityIdTile,
         PipelineTile,
         TerrainTile
     }
@@ -79,36 +73,6 @@ namespace UnityEditor.Tilemaps
         private static void CreateRuleTile()
         {
             ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<RuleTile>(), "New Rule Tile.asset");
-        }
-
-        [MenuItem("Assets/Create/2D/Tiles/Animated Entity Id Tile", priority = (int)ETilesMenuItemOrder.AnimatedEntityIdTile)]
-        private static void CreateAnimatedEntityIdTile()
-        {
-            ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<AnimatedEntityIdTile>(), "New Animated Entity Id Tile.asset");
-        }
-
-        [MenuItem("Assets/Create/2D/Tiles/Auto Entity Id Tile", priority = (int)ETilesMenuItemOrder.AutoEntityIdTile)]
-        private static void CreateAutoEntityIdTile()
-        {
-            ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<AutoEntityIdTile>(), "New Auto Entity Id Tile.asset");
-        }
-
-        [MenuItem("Assets/Create/2D/Tiles/Rule Entity Id Tile", priority = (int)ETilesMenuItemOrder.RuleEntityIdTile)]
-        private static void CreateRuleEntityIdTile()
-        {
-            ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<RuleEntityIdTile>(), "New Rule Entity Id Tile.asset");
-        }
-
-        [MenuItem("Assets/Create/2D/Tiles/Isometric Rule Entity Id Tile", priority = (int)ETilesMenuItemOrder.IsometricRuleEntityIdTile)]
-        private static void CreateIsometricRuleEntityIdTile()
-        {
-            ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<IsometricRuleEntityIdTile>(), "New Isometric Rule Entity Id Tile.asset");
-        }
-
-        [MenuItem("Assets/Create/2D/Tiles/Hexagonal Rule Entity Id Tile", priority = (int)ETilesMenuItemOrder.HexagonalRuleEntityIdTile)]
-        private static void CreateHexagonalRuleEntityIdTile()
-        {
-            ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<HexagonalRuleEntityIdTile>(), "New Hexagonal Rule Entity Id Tile.asset");
         }
     }
 }

@@ -58,9 +58,3 @@ the following additional Tile types that are included with this package.
   positions and keywords.
 - [Custom Rules for RuleTile](CustomRulesForRuleTile.md): This helps to create new custom Rules for the Rule Tile with
   more options.
-
-## Experimental
-
-- [Entity Id Tile](EntityIdTile.md): A Tile which uses Entity Ids to reference managed Unity objects for performance
-- [Custom Entity Id Tiles](CustomEntityIdTiles.md): A guide to implementing custom Entity Id Tiles
-- [Tile Asset Converter](TileAssetConverter.md): A tool which converts the Types of Tile Assets

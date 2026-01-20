@@ -33,6 +33,28 @@ namespace UnityEngine
 
         private static TileBase[] m_AllocatedUsedTileArr = Array.Empty<TileBase>();
 
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            m_CacheTilemapsNeighborPositions = new();
+            m_AllocatedUsedTileArr = Array.Empty<TileBase>();
+        }
+
+        internal static bool ValidateRuleTileStatics()
+        {
+            if (m_CacheTilemapsNeighborPositions == null || m_CacheTilemapsNeighborPositions.Count > 0)
+            {
+                return false;
+            }
+            if (m_AllocatedUsedTileArr == null || m_AllocatedUsedTileArr.Length > 0)
+            {
+                return false;
+            }
+            return true;
+        }
+#endif
+
         /// <summary>
         ///     The Default Sprite set when creating a new Rule.
         /// </summary>
@@ -95,43 +117,41 @@ namespace UnityEngine
             positions.Clear();
 
             foreach (var rule in m_TilingRules)
+            foreach (var neighbor in rule.GetNeighbors())
             {
-                foreach (var neighbor in rule.GetNeighbors())
-                {
-                    var position = neighbor.Key;
-                    positions.Add(position);
+                var position = neighbor.Key;
+                positions.Add(position);
 
-                    // Check rule against rotations of 0, 90, 180, 270
-                    if (rule.m_RuleTransform == TilingRuleOutput.Transform.Rotated)
+                // Check rule against rotations of 0, 90, 180, 270
+                if (rule.m_RuleTransform == TilingRuleOutput.Transform.Rotated)
+                {
+                    for (var angle = m_RotationAngle; angle < 360; angle += m_RotationAngle)
+                        positions.Add(GetRotatedPosition(position, angle));
+                }
+                // Check rule against x-axis, y-axis mirror
+                else if (rule.m_RuleTransform == TilingRuleOutput.Transform.MirrorXY)
+                {
+                    positions.Add(GetMirroredPosition(position, true, true));
+                    positions.Add(GetMirroredPosition(position, true, false));
+                    positions.Add(GetMirroredPosition(position, false, true));
+                }
+                // Check rule against x-axis mirror
+                else if (rule.m_RuleTransform == TilingRuleOutput.Transform.MirrorX)
+                {
+                    positions.Add(GetMirroredPosition(position, true, false));
+                }
+                // Check rule against y-axis mirror
+                else if (rule.m_RuleTransform == TilingRuleOutput.Transform.MirrorY)
+                {
+                    positions.Add(GetMirroredPosition(position, false, true));
+                }
+                else if (rule.m_RuleTransform == TilingRuleOutput.Transform.RotatedMirror)
+                {
+                    var mirroredPosition = GetMirroredPosition(position, true, false);
+                    for (var angle = m_RotationAngle; angle < 360; angle += m_RotationAngle)
                     {
-                        for (var angle = m_RotationAngle; angle < 360; angle += m_RotationAngle)
-                            positions.Add(GetRotatedPosition(position, angle));
-                    }
-                    // Check rule against x-axis, y-axis mirror
-                    else if (rule.m_RuleTransform == TilingRuleOutput.Transform.MirrorXY)
-                    {
-                        positions.Add(GetMirroredPosition(position, true, true));
-                        positions.Add(GetMirroredPosition(position, true, false));
-                        positions.Add(GetMirroredPosition(position, false, true));
-                    }
-                    // Check rule against x-axis mirror
-                    else if (rule.m_RuleTransform == TilingRuleOutput.Transform.MirrorX)
-                    {
-                        positions.Add(GetMirroredPosition(position, true, false));
-                    }
-                    // Check rule against y-axis mirror
-                    else if (rule.m_RuleTransform == TilingRuleOutput.Transform.MirrorY)
-                    {
-                        positions.Add(GetMirroredPosition(position, false, true));
-                    }
-                    else if (rule.m_RuleTransform == TilingRuleOutput.Transform.RotatedMirror)
-                    {
-                        var mirroredPosition = GetMirroredPosition(position, true, false);
-                        for (var angle = m_RotationAngle; angle < 360; angle += m_RotationAngle)
-                        {
-                            positions.Add(GetRotatedPosition(position, angle));
-                            positions.Add(GetRotatedPosition(mirroredPosition, angle));
-                        }
+                        positions.Add(GetRotatedPosition(position, angle));
+                        positions.Add(GetRotatedPosition(mirroredPosition, angle));
                     }
                 }
             }
