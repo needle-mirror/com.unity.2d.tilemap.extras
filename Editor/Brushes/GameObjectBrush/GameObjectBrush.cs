@@ -13,7 +13,7 @@ namespace UnityEditor.Tilemaps
     /// </summary>
     [HelpURL(
         "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/GameObjectBrush.html")]
-    [CustomGridBrush(true, false, false, "GameObject Brush")]
+    [CustomGridBrush(true, false, false, "Game Object Brush")]
     public class GameObjectBrush : GridBrushBase
     {
         [SerializeField] private BrushCell[] m_Cells;
@@ -95,7 +95,7 @@ namespace UnityEditor.Tilemaps
         private void OnEnable()
         {
             hiddenGrid = new GameObject();
-            hiddenGrid.name = "(Paint on SceneRoot)";
+            hiddenGrid.name = "(Paint on Scene Root)";
             hiddenGrid.hideFlags = HideFlags.HideAndDontSave;
             hiddenGrid.transform.position = Vector3.zero;
             var grid = hiddenGrid.AddComponent<Grid>();
@@ -871,7 +871,7 @@ namespace UnityEditor.Tilemaps
             base.OnInspectorGUI();
             if (EditorGUI.EndChangeCheck() && brush.cellCount != brush.sizeCount) brush.SizeUpdated(true);
 
-            hiddenGridFoldout = EditorGUILayout.Foldout(hiddenGridFoldout, "SceneRoot Grid", true);
+            hiddenGridFoldout = EditorGUILayout.Foldout(hiddenGridFoldout, "Scene Root Grid", true);
             if (hiddenGridFoldout)
             {
                 EditorGUI.indentLevel++;

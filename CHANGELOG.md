@@ -4,6 +4,15 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [8.0.1] - 2026-02-10
+### Added
+- [GameObjectBrushEditor] Change GameObject Brush name to Game Object Brush
+- [GameObjectBrushEditor] Change SceneRoot Grid name to Scene Root Grid
+- [AutoTile] Add AutoTile (3x3 mask) sample
+
+### Changed
+- [AutoTile] Update images for AutoTile documentation
+
 ## [8.0.0] - 2026-01-20
 
 

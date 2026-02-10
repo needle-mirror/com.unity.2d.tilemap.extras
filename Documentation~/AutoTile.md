@@ -1,5 +1,7 @@
 # AutoTile
 
+![AutoTile](images/AutoTile.png)
+
 AutoTiles match themselves based on the mask set on Textures to generate the AutoTile ruleset. Two types of Masks are
 available for the AutoTile, the 2x2 type for 16 Sprites and the 3x3 type for 47 Sprites set.
 
@@ -55,5 +57,3 @@ without having to set up the masks again. The example below shows an AutoTile wi
 AutoTileTemplate created from the AutoTile above.
 
 ![Similar Texture with loaded AutoTile Template](images/LoadAutoTileTemplate.png)
-
-Assets used are from https://kenney.nl/assets/top-down-shooter
