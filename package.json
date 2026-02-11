@@ -1,1 +1,51 @@
-{"name":"com.unity.2d.tilemap.extras","displayName":"2D Tilemap Extras","version":"8.0.2","unity":"6000.5","unityRelease":"0a7","description":"2D Tilemap Extras is a package that contains extra scripts for use with 2D Tilemap features in Unity. These include custom Tiles and Brushes for the Tilemap feature.\n\nThe following are included in the package:\nBrushes: GameObject Brush, Group Brush, Line Brush, Random Brush\nTiles: Animated Tile, Auto Tile, Rule Tile, Rule Override Tile\nOther: Grid Information, Custom Rules for Rule Tile","keywords":["2d"],"category":"2D","dependencies":{"com.unity.modules.tilemap":"1.0.0","com.unity.2d.tilemap":"1.0.0","com.unity.modules.jsonserialize":"1.0.0"},"relatedPackages":{"com.unity.2d.tilemap.extras.tests":"8.0.2"},"samples":[{"displayName":"Waterfall Animated Tile","description":"An example implementation of an Animated Tile.","path":"Samples~/WaterfallAnimatedTile"},{"displayName":"Pipe Rule Tile","description":"An example implementation of a Rule Tile with rules matching four-way orthogonal neighbors.","path":"Samples~/PipeRuleTile"},{"displayName":"Dungeon Rule Tile","description":"An example implementation of a Rule Tile with rules matching eight-way orthogonal and diagonal neighbors.","path":"Samples~/DungeonRuleTile"},{"displayName":"Auto Tile (3x3)","description":"An example implementation of Auto Tiles with 3x3 mask and a template.","path":"Samples~/AutoTile3"}],"repository":{"revision":"f8e53a70e5899e2369434cfc183391caa5a5ace1","type":"git","url":"https://github.cds.internal.unity3d.com/unity/2d.git"},"documentationUrl":"https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@8.0/manual/index.html","_upm":{"changelog":"## [8.0.1] - 2026-02-10\n### Added\n- [GameObjectBrushEditor] Change GameObject Brush name to Game Object Brush\n- [GameObjectBrushEditor] Change SceneRoot Grid name to Scene Root Grid\n- [AutoTile] Add AutoTile (3x3 mask) sample\n\n### Changed\n- [AutoTile] Update images for AutoTile documentation"}}
+{
+  "name": "com.unity.2d.tilemap.extras",
+  "displayName": "2D Tilemap Extras",
+  "version": "8.88.0-exp.1",
+  "unity": "6000.4",
+  "unityRelease": "0a2",
+  "description": "2D Tilemap Extras is a package that contains extra scripts for use with 2D Tilemap features in Unity. These include custom Tiles and Brushes for the Tilemap feature.\n\nThe following are included in the package:\nBrushes: GameObject Brush, Group Brush, Line Brush, Random Brush\nTiles: Animated Tile, Rule Tile, Rule Override Tile\nOther: Grid Information, Custom Rules for Rule Tile",
+  "keywords": [
+    "2d"
+  ],
+  "category": "2D",
+  "dependencies": {
+    "com.unity.modules.tilemap": "1.0.0",
+    "com.unity.2d.tilemap": "1.0.0",
+    "com.unity.modules.jsonserialize": "1.0.0",
+    "com.unity.burst": "1.8.25",
+    "com.unity.collections": "2.5.7"
+  },
+  "relatedPackages": {
+    "com.unity.2d.tilemap.extras.tests": "8.88.0-exp.1"
+  },
+  "samples": [
+    {
+      "displayName": "Waterfall Animated Tile",
+      "description": "An example implementation of an Animated Tile and Animated Entity Id Tile.",
+      "path": "Samples~/WaterfallAnimatedTile"
+    },
+    {
+      "displayName": "Pipe Rule Tile",
+      "description": "An example implementation of a Rule Tile and Rule Entity Id Tile with rules matching four-way orthogonal neighbors.",
+      "path": "Samples~/PipeRuleTile"
+    },
+    {
+      "displayName": "Dungeon Rule Tile",
+      "description": "An example implementation of a Rule Tile and Rule Entity Id Tile with rules matching eight-way orthogonal and diagonal neighbors.",
+      "path": "Samples~/DungeonRuleTile"
+    }
+  ],
+  "_upm": {
+    "changelog": "### Changed\n- Update experimental package version."
+  },
+  "upmCi": {
+    "footprint": "52eeaa2be7eee5f5022805caba0ce9bd03000c09"
+  },
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@8.88/manual/index.html",
+  "repository": {
+    "url": "https://github.cds.internal.unity3d.com/unity/2d.git",
+    "type": "git",
+    "revision": "5d7a22c6485d4fd4ae99b4c369a85b125ddbd274"
+  }
+}

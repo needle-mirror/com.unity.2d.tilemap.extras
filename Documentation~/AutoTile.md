@@ -1,7 +1,5 @@
 # AutoTile
 
-![AutoTile](images/AutoTile.png)
-
 AutoTiles match themselves based on the mask set on Textures to generate the AutoTile ruleset. Two types of Masks are
 available for the AutoTile, the 2x2 type for 16 Sprites and the 3x3 type for 47 Sprites set.
 
@@ -57,3 +55,9 @@ without having to set up the masks again. The example below shows an AutoTile wi
 AutoTileTemplate created from the AutoTile above.
 
 ![Similar Texture with loaded AutoTile Template](images/LoadAutoTileTemplate.png)
+
+Assets used are from https://kenney.nl/assets/top-down-shooter
+
+# Auto Entity Id Tile
+
+The Auto Entity Id Tile is an Auto Tile that uses Entity Ids to reference managed objects. It has the same properties as an Auto Tile and caches the Entity Ids of these properties on the "OnEnable" call. By not referencing managed objects and using simple blittable data types, the Tilemap is able to utilize Unity Jobs and Burst to calculate and retrieve data from the Entity Id Tile, improving performance when you set these Tiles onto the Tilemap.

@@ -4,36 +4,23 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [8.0.2] - 2026-02-17
-## [8.0.1] - 2026-02-10
-### Added
-- [GameObjectBrushEditor] Change GameObject Brush name to Game Object Brush
-- [GameObjectBrushEditor] Change SceneRoot Grid name to Scene Root Grid
-- [AutoTile] Add AutoTile (3x3 mask) sample
-
+## [8.88.0-exp.1] - 2026-02-11
 ### Changed
-- [AutoTile] Update images for AutoTile documentation
-
-## [8.0.0] - 2026-01-20
-
-
-### Changed
-- Update Unity min version for package.
-
+- Update experimental package version.
+  
+## [8.0.0-exp.1] - 2025-12-09
 ### Added
-- [GameObjectBrushEditor] Add OnSelectionInspectorGUI to allow swapping of GameObjects and Transform changes for selection
+- [EntityIdTileBase] Add EntityIdTileBase and Unity Job support for Tiles deriving from EntityIdTileBase
+- [EntityIdTile] Add EntityIdTile, the Tile equivalent using Entity Ids
+- [AnimatedEntityIdTile] Add AnimatedEntityIdTile, the AnimatedTile equivalent using Entity Ids
+- [AutoEntityIdTile] Add AutoEntityIdTile, the AutoTile equivalent using Entity Ids
+- [RuleEntityIdTile] Add RuleEntityIdTile, the RuleTile equivalent using Entity Ids
 
-### Fixed
-- [GameObjectBrushEditor] Clean up Scene Root Grid editor when Game Object Brush Editor is disabled
-
-## [7.0.0] - 2025-09-30
 ### Changed
 - Update Unity min version for package.
 
 ### Added
 - [AutoTile] Add Has Physics Shape property if Collider Type is set to Sprite. AutoTile will set Collider Type to Sprite if the Sprite has physics shape and set Collider Type to None if the Sprite has no physics shape.
-- [RuleTile] Add support for Fast Enter PlayMode for RuleTile
-- [HexagonalRuleTile] Add support for Fast Enter PlayMode for HexagonalRuleTile
 
 ## [6.0.1] - 2025-09-25
 

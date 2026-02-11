@@ -1,10 +1,11 @@
 {
   "name": "Unity.2D.Tilemap.Extras.Editor",
+    "rootNamespace": "",
   "references": [
     "GUID:613783dc1674e844b87788ea74ede0f6",
-    "GUID:3a9781db4804a9945b9883f3a7c46d45"
+        "GUID:3a9781db4804a9945b9883f3a7c46d45",
+        "GUID:a7ab70131df248648456948412f51d5a"
   ],
-  "optionalUnityReferences": [],
   "includePlatforms": [
     "Editor"
   ],
@@ -14,5 +15,6 @@
   "precompiledReferences": [],
   "autoReferenced": true,
   "defineConstraints": [],
-  "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }
