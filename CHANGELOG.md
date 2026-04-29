@@ -4,7 +4,15 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [6.0.2] - 2026-04-29
+### Changed
+- [AutoTile] Change uss for extra right margin for listview entries
+
+### Fixed
+- [AutoTileEditor] Fix error when cancelling loading of AutoTileTemplate
+
 ## [6.0.1] - 2025-09-25
+
 ### Added
 - [AutoTile] Add Has Physics Shape property if Collider Type is set to Sprite. AutoTile will set Collider Type to Sprite if the Sprite has physics shape and set Collider Type to None if the Sprite has no physics shape.
 

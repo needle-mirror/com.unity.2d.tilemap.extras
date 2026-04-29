@@ -1,3 +1,7 @@
+.unity-base-field__inspector-field {
+    margin-right: 3px;
+}
+
 .ImageBase {
     border-width: 2px;
     border-color: lightslategrey;
