@@ -1,34 +1,26 @@
-# Line Brush ![Line Brush Icon](images/LineBrushIcon.png)
+# Paint a line of tiles
 
-__Contribution by :__  [CraigGraff](https://github.com/CraigGraff)
+To paint a line of tiles, use the line brush in the **Tile Palette** window. Follow these steps:
 
-This Brush draws a line of Tiles onto a Tilemap. With this Brush selected, click once to set the starting point of the
-line and click again at another position to set the ending point of the line. This Brush then draws a line of Tiles
-between the two points.
+1. Open the [**Tile Palette** window](https://docs.unity3d.com/Manual/tilemaps/tile-palettes/tile-palette-editor-reference.html).
+2. In the Brush Inspector section at the bottom, set the brush to **Line Brush**.
+3. Select the **Paint with Active Brush** (<span class="iconClr-Animation-Brush" aria-label="Brush"></span>) tool and select a tile.
+4. Click once in the **Scene** view to start the line, and again to end the line. 
 
-Use this as an example to create custom Brush behavior to make painting more efficient.
+To avoid gaps when you paint diagonal lines, enable **Fill Gaps** in the Brush Inspector window.
 
-## Properties
+![Left: A diagonal line of tiles with Fill Gaps disabled. Right: The same line with Fill Gaps enabled. There are now no tiles connected only diagonally.](images/LineBrush.png)
 
-| Property              | Function                                                                                                    |
-|-----------------------|-------------------------------------------------------------------------------------------------------------|
-| __Line Start Active__ | Indicates whether the Line Brush has started drawing a line.                                                |
-| __Fill Gaps__         | Ensures that there are orthogonal connections between all Tiles that connect the start and end of the line. |
-| __Line Start__        | The current starting point of the line.                                                                     |
+## Line Brush Inspector window properties
 
-## Usage
+| **Property** | **Function** |
+|:--|:--|
+| **Fill Gaps** | Adds extra tiles to prevent gaps when tiles connect only diagonally. |
+| **Line Start** | After you click once in the **Scene** view to start the line, displays the position of the start tile. Enter different values to change the position of the start tile. |
+| **Lock Z Position** | Locks all the tiles in the line to the z position of the start tile. |
+| **Scene View Z Position** | Paints the line at this z position. This property is available only if you disable **Lock Z Position**. |
+| **Palette Z Position** | Paints a line in the tile palette at this z position. This property is available only if you disable **Lock Z Position**. |
 
-Select the Line Brush, then click once on a cell of the Tilemap to set the starting point of the line, then click on a
-second cell to set the ending point of the line. The Brush then draws the line of Tiles between the two set points. When
-the Line Brush is active, a blue outline will indicate the starting point of the line.
+## Additional resources
 
-![Scene View with Line Brush](images/LineBrush.png)
-
-To have Tiles which are orthogonally connected from start to end, enable the __Fill Gaps__ property in the Brush Editor.
-
-![Scene View with Line Brush with Fill Gaps](images/LineBrushFillGaps.png)
-
-## Implementation
-
-The Line Brush inherits from the Grid Brush and overrides the `Paint` method to implement the line painting
-functionality.
+- [Paint random tiles](RandomBrush.md)

@@ -225,6 +225,9 @@ namespace UnityEngine.Tilemaps
                 throw new ArgumentOutOfRangeException($"Mask {mask} is not valid for {m_MaskType}");
             }
 
+            if (mask == 0)
+                return;
+
             if (!m_AutoTileDictionary.TryGetValue(mask, out var autoTileData))
             {
                 autoTileData = new AutoTileData();
@@ -283,7 +286,7 @@ namespace UnityEngine.Tilemaps
                 {
                     var sprite = autoTileData.spriteList[i];
                     var texture = autoTileData.textureList[i];
-                    if (m_TextureList.Contains(texture))
+                    if (m_TextureList.Contains(texture) && sprite != null)
                     {
                         ++i;
                     }

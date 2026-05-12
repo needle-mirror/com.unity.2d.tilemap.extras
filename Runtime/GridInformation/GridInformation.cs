@@ -448,6 +448,7 @@ namespace UnityEngine.Tilemaps
         internal struct GridInformationValue
         {
             public GridInformationType type;
+            [SerializeReference]
             public object data;
         }
 

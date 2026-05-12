@@ -815,6 +815,9 @@ namespace UnityEngine
                 /// </summary>
                 public const int NotThis = 2;
             }
+
+            [SerializeField]
+            internal Vector2 m_Scroll = new Vector2(0.5f, 0.5f);
         }
 
         /// <summary>

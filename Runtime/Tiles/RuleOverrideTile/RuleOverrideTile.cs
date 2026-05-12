@@ -113,8 +113,10 @@ namespace UnityEngine.Tilemaps
         /// <summary>
         ///     Callback when the tile is enabled
         /// </summary>
-        public void OnEnable()
+        public new void OnEnable()
         {
+            base.OnEnable();
+
             if (m_Tile == null)
                 return;
 

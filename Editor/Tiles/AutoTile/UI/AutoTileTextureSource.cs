@@ -63,26 +63,29 @@ namespace UnityEditor.Tilemaps
         {
             foreach (var item in m_SpriteToElementMap)
             {
-                item.Value.InitialiseMask(0);
-                foreach (var sprite in template.sprites)
+                var sprite = item.Key;
+                var atss = item.Value;
+                atss.SetMask(0);
+                atss.SetDuplicate(false);
+                foreach (var spriteData in template.sprites)
                 {
                     var match = false;
                     if (matchExact)
                     {
-                        match = Mathf.Approximately(sprite.x, item.Key.rect.x)
-                                && Mathf.Approximately(sprite.y, item.Key.rect.y);
+                        match = Mathf.Approximately(spriteData.x, sprite.rect.x)
+                                && Mathf.Approximately(spriteData.y, sprite.rect.y);
                     }
                     else
                     {
-                        match = Mathf.Approximately(sprite.x / template.width,
-                                    item.Key.rect.x / m_TextureElement.image.width)
-                                && Mathf.Approximately(sprite.y / template.height,
-                                    item.Key.rect.y / m_TextureElement.image.height);
+                        match = Mathf.Approximately(spriteData.x / template.width,
+                                    sprite.rect.x / m_TextureElement.image.width)
+                                && Mathf.Approximately(spriteData.y / template.height,
+                                    sprite.rect.y / m_TextureElement.image.height);
                     }
 
                     if (match)
                     {
-                        SetSpriteMask(item.Key, sprite.mask);
+                        SetSpriteMask(sprite, spriteData.mask);
                         break;
                     }
                 }
@@ -93,8 +96,8 @@ namespace UnityEditor.Tilemaps
         {
             foreach (var item in m_SpriteToElementMap)
             {
-                item.Value.InitialiseMask(0);
                 SetSpriteMask(item.Key, 0);
+                item.Value.InitialiseMask(0);
                 break;
             }
         }

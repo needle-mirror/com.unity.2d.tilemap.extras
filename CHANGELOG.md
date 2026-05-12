@@ -4,6 +4,21 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [8.0.3] - 2026-05-12
+### Changed
+- [AutoTile] Change uss for extra right margin for listview entries
+- [RuleTileEditor] Add scrolling to Rules
+
+### Fixed
+- [AutoTile] Fix errors when used Sprites are deleted
+- [AutoTileEditor] Fix previous entries remaining in AutoTile when loading a new template
+- [GridInformation] Fix serialization warning
+- [GroupBrush] Fix serialization warning
+- [RuleTile] Fix serialization warning
+- [RuleOverrideTile] Fix OnEnable warning
+- [AutoTileEditor] Fix error when cancelling loading of AutoTileTemplate
+- [LineBrushEditor] Fix start marquee when Grid has different cell sizes or Tilemap has a changed Transform
+
 ## [8.0.2] - 2026-02-17
 ## [8.0.1] - 2026-02-10
 ### Added
@@ -15,7 +30,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - [AutoTile] Update images for AutoTile documentation
 
 ## [8.0.0] - 2026-01-20
-
 
 ### Changed
 - Update Unity min version for package.
