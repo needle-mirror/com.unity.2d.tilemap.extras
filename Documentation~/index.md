@@ -36,8 +36,7 @@ the following additional Tile types that are included with this package.
 - [Animated](AnimatedTile.md): This Tile runs through and displays a list of Sprites in sequence to create a
   frame-by-frame animation.
 - [Rule Tile](RuleTile.md): This is a generic visual Tile that accepts rules you create with the __Tiling Rules__ editor
-  to create different Tilesets. Rule Tiles are the basis of the Terrain, Pipeline, Random or Animated Tiles. There are
-  different types of Rule Tiles for each of the [Tilemap grid types](https://docs.unity3d.com/Manual/class-Grid.html).
+  to create different Tilesets. There are different types of Rule Tiles for each of the [Tilemap grid types](https://docs.unity3d.com/Manual/class-Grid.html).
   The default Rule Tile is only used with the Rectangle Grid type Tilemap, while the Hexagonal and Isometric Rule Tiles
   are used with their respective Grid types.
 - __Hexagonal Rule Tile__: A Rule Tile
@@ -58,9 +57,3 @@ the following additional Tile types that are included with this package.
   positions and keywords.
 - [Custom Rules for RuleTile](CustomRulesForRuleTile.md): This helps to create new custom Rules for the Rule Tile with
   more options.
-
-## Experimental
-
-- [Entity Id Tile](EntityIdTile.md): A Tile which uses Entity Ids to reference managed Unity objects for performance
-- [Custom Entity Id Tiles](CustomEntityIdTiles.md): A guide to implementing custom Entity Id Tiles
-- [Tile Asset Converter](TileAssetConverter.md): A tool which converts the Types of Tile Assets

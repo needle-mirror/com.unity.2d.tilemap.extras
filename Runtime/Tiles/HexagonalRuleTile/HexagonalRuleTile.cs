@@ -25,31 +25,57 @@ namespace UnityEngine
         "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/RuleTile.html")]
     public class HexagonalRuleTile : RuleTile
     {
-        private static float[] m_CosAngleArr1 =
+        private static readonly float[] m_CosAngleArr1 =
         {
             Mathf.Cos(0 * Mathf.Deg2Rad), Mathf.Cos(-60 * Mathf.Deg2Rad), Mathf.Cos(-120 * Mathf.Deg2Rad),
             Mathf.Cos(-180 * Mathf.Deg2Rad), Mathf.Cos(-240 * Mathf.Deg2Rad), Mathf.Cos(-300 * Mathf.Deg2Rad)
         };
 
-        private static float[] m_SinAngleArr1 =
+        private static readonly float[] m_SinAngleArr1 =
         {
             Mathf.Sin(0 * Mathf.Deg2Rad), Mathf.Sin(-60 * Mathf.Deg2Rad), Mathf.Sin(-120 * Mathf.Deg2Rad),
             Mathf.Sin(-180 * Mathf.Deg2Rad), Mathf.Sin(-240 * Mathf.Deg2Rad), Mathf.Sin(-300 * Mathf.Deg2Rad)
         };
 
-        private static float[] m_CosAngleArr2 =
+        private static readonly float[] m_CosAngleArr2 =
         {
             Mathf.Cos(0 * Mathf.Deg2Rad), Mathf.Cos(60 * Mathf.Deg2Rad), Mathf.Cos(120 * Mathf.Deg2Rad),
             Mathf.Cos(180 * Mathf.Deg2Rad), Mathf.Cos(240 * Mathf.Deg2Rad), Mathf.Cos(300 * Mathf.Deg2Rad)
         };
 
-        private static float[] m_SinAngleArr2 =
+        private static readonly float[] m_SinAngleArr2 =
         {
             Mathf.Sin(0 * Mathf.Deg2Rad), Mathf.Sin(60 * Mathf.Deg2Rad), Mathf.Sin(120 * Mathf.Deg2Rad),
             Mathf.Sin(180 * Mathf.Deg2Rad), Mathf.Sin(240 * Mathf.Deg2Rad), Mathf.Sin(300 * Mathf.Deg2Rad)
         };
 
-        private static float m_TilemapToWorldYScale = Mathf.Pow(1 - Mathf.Pow(0.5f, 2f), 0.5f);
+        private static readonly float m_TilemapToWorldYScale = Mathf.Pow(1 - Mathf.Pow(0.5f, 2f), 0.5f);
+
+#if UNITY_EDITOR
+        internal static bool ValidateHexagonalRuleTileStatics()
+        {
+            if (!ValidateRuleTileStatics())
+            {
+                return false;
+            }
+            for (int i = 0; i < m_CosAngleArr1.Length; i++)
+            {
+                if (!Mathf.Approximately(m_CosAngleArr1[i], Mathf.Cos(i * -60 * Mathf.Deg2Rad)))
+                    return false;
+                if (!Mathf.Approximately(m_CosAngleArr2[i], Mathf.Cos(i * 60 * Mathf.Deg2Rad)))
+                    return false;
+                if (!Mathf.Approximately(m_SinAngleArr1[i], Mathf.Sin(i * -60 * Mathf.Deg2Rad)))
+                    return false;
+                if (!Mathf.Approximately(m_SinAngleArr2[i], Mathf.Sin(i * 60 * Mathf.Deg2Rad)))
+                    return false;
+            }
+            if (!Mathf.Approximately(m_TilemapToWorldYScale, Mathf.Pow(1 - Mathf.Pow(0.5f, 2f), 0.5f)))
+            {
+                return false;
+            }
+            return true;
+        }
+#endif
 
         /// <summary>
         ///     Whether this is a flat top Hexagonal Tile

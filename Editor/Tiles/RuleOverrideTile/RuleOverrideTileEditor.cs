@@ -215,20 +215,43 @@ namespace UnityEditor
             rect.height -= k_PaddingBetweenRules;
 
             rect.xMax = rect.xMax / 2.0f;
-            using (new EditorGUI.DisabledScope(true))
-            {
-                EditorGUI.ObjectField(new Rect(rect.xMin, rect.yMin, rect.height, rect.height), originalSprite,
-                    typeof(Sprite), false);
-            }
+            DrawSprite(new Rect(rect.xMin, rect.yMin, rect.height, rect.height), originalSprite);
 
             rect.xMin = rect.xMax;
             rect.xMax *= 2.0f;
 
             EditorGUI.BeginChangeCheck();
-            overrideSprite = EditorGUI.ObjectField(new Rect(rect.xMin, rect.yMin, rect.height, rect.height),
-                overrideSprite, typeof(Sprite), false) as Sprite;
+            overrideSprite = SpriteWithoutSelectField(new Rect(rect.xMin, rect.yMin, rect.height, rect.height), overrideSprite);
             if (EditorGUI.EndChangeCheck())
                 m_Sprites[index] = new KeyValuePair<Sprite, Sprite>(originalSprite, overrideSprite);
+        }
+
+        private Sprite SpriteWithoutSelectField(Rect rect, Sprite sprite)
+        {
+            sprite = EditorGUI.ObjectField(rect, sprite, typeof(Sprite), false) as Sprite;
+
+            // Overdraw Sprite without Select button
+            if (Event.current.type != EventType.Repaint
+                || sprite == null
+                || rect.Contains(Event.current.mousePosition)
+                || (DragAndDrop.objectReferences != null && DragAndDrop.objectReferences.Length > 0 &&
+                    DragAndDrop.objectReferences[0] is Sprite))
+                return sprite;
+            DrawSprite(rect, sprite);
+            return sprite;
+        }
+
+        private void DrawSprite(Rect rect, Sprite sprite)
+        {
+            if (Event.current.type != EventType.Repaint)
+                return;
+
+            Styles.objectFieldThumb.Draw(rect, GUIContent.none, false, false, false, false);
+            Rect previewRect = Styles.objectFieldThumb.padding.Remove(rect);
+            GUI.DrawTexture(previewRect, transparentCheckerTexture, ScaleMode.StretchToFill, false);
+            Texture2D preview = AssetPreview.GetAssetPreview(sprite);
+            if (preview != null)
+                GUI.DrawTexture(previewRect, preview, ScaleMode.StretchToFill, true);
         }
 
         /// <summary>
@@ -441,6 +464,23 @@ namespace UnityEditor
         {
             public static readonly GUIContent overrideTile = EditorGUIUtility.TrTextContent("Tile"
                 , "The Rule Tile to override.");
+
+            public static readonly GUIStyle objectFieldThumb = EditorStyles.objectFieldThumb;
+        }
+
+        private static Texture2D transparentCheckerTexture
+        {
+            get
+            {
+                if (EditorGUIUtility.isProSkin)
+                {
+                    return EditorGUIUtility.LoadRequired("Previews/Textures/textureCheckerDark.png") as Texture2D;
+                }
+                else
+                {
+                    return EditorGUIUtility.LoadRequired("Previews/Textures/textureChecker.png") as Texture2D;
+                }
+            }
         }
     }
 }

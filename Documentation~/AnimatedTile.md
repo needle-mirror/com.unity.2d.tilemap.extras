@@ -29,7 +29,3 @@ editor, then paint the Animated Tile with
 the [Tile Palette tools](https://docs.unity3d.com/Manual/Tilemap-Painting.html).
 
 ![Example: Game view, painted with the Group Brush.](images/AnimatedTile.png)<br/>Game view, painted with the [Group Brush](GroupBrush.md).
-
-# Animated Entity Id Tile
-
-The Animated Entity Id Tile is an Animated Tile that uses Entity Ids to reference managed objects. It has the same properties as an Animated Tile and caches the Entity Ids of these properties on the "OnEnable" call. By not referencing managed objects and using simple blittable data types, the Tilemap is able to utilize Unity Jobs and Burst to calculate and retrieve data from the Entity Id Tile, improving performance when you set these Tiles onto the Tilemap.

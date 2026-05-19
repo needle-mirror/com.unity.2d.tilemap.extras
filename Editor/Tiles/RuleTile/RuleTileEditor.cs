@@ -118,6 +118,7 @@ namespace UnityEditor
         /// <summary>
         ///     Preview Utility for rendering previews
         /// </summary>
+        [NonSerialized]
         public PreviewRenderUtility m_PreviewUtility;
 
         /// <summary>
@@ -171,6 +172,21 @@ namespace UnityEditor
                 }
 
                 return s_AutoTransforms;
+            }
+        }
+
+        private static Texture2D transparentCheckerTexture
+        {
+            get
+            {
+                if (EditorGUIUtility.isProSkin)
+                {
+                    return EditorGUIUtility.LoadRequired("Previews/Textures/textureCheckerDark.png") as Texture2D;
+                }
+                else
+                {
+                    return EditorGUIUtility.LoadRequired("Previews/Textures/textureChecker.png") as Texture2D;
+                }
             }
         }
 
@@ -338,14 +354,33 @@ namespace UnityEditor
             var height = rect.height - k_PaddingBetweenRules;
             var matrixSize = GetMatrixSize(bounds);
 
-            var spriteRect = new Rect(rect.xMax - k_DefaultElementHeight - 5f, yPos, k_DefaultElementHeight,
-                k_DefaultElementHeight);
-            var matrixRect = new Rect(rect.xMax - matrixSize.x - spriteRect.width - 10f, yPos, matrixSize.x,
-                matrixSize.y);
-            var inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixSize.x - spriteRect.width - 20f, height);
+            // Determine matrix size
+            var currentViewWidth = rect.width;
+            var limitedMatrixSize = new Vector2(Mathf.Min(0.5f * currentViewWidth, matrixSize.x), matrixSize.y);
+            const float reservedWidth = 64f + 80f + k_DefaultElementHeight;
+            float startX = 0f;
+            if (limitedMatrixSize.x <= currentViewWidth - reservedWidth)
+            {
+                // Draw Inspector if there is enough space
+                var inspectorRect = new Rect(rect.xMin, yPos, rect.width - limitedMatrixSize.x - k_DefaultElementHeight - 24f, height);
+                RuleInspectorOnGUI(inspectorRect, rule);
+                startX += inspectorRect.width + 6f;
+            }
+            else
+            {
+                // Use full remaining space for Matrix
+                limitedMatrixSize.x = currentViewWidth - k_DefaultElementHeight - 18f;
+            }
 
-            RuleInspectorOnGUI(inspectorRect, rule);
-            RuleMatrixOnGUI(tile, matrixRect, bounds, rule);
+            var matrixRect = new Rect(rect.xMin + startX + 6f, yPos, limitedMatrixSize.x,
+                matrixSize.y + 2);
+            var matrixFullRect = new Rect(0, 0, matrixSize.x, matrixSize.y);
+            rule.m_Scroll = GUI.BeginScrollView(matrixRect, rule.m_Scroll, matrixFullRect);
+            RuleMatrixOnGUI(tile, matrixFullRect, bounds, rule);
+            GUI.EndScrollView();
+
+            var spriteRect = new Rect(rect.xMax - k_DefaultElementHeight - 6f, yPos, k_DefaultElementHeight,
+                k_DefaultElementHeight);
             SpriteOnGUI(spriteRect, rule);
         }
 
@@ -762,20 +797,22 @@ namespace UnityEditor
         /// <param name="tilingRule">Rule to draw Rule Matrix for.</param>
         public virtual void RuleMatrixOnGUI(RuleTile tile, Rect rect, BoundsInt bounds, RuleTile.TilingRule tilingRule)
         {
+            var r = new Rect(rect.xMin + 1, rect.yMin + 1, rect.size.x - 2, rect.size.y - 2);
+
             Handles.color = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.2f) : new Color(0f, 0f, 0f, 0.2f);
-            var w = rect.width / bounds.size.x;
-            var h = rect.height / bounds.size.y;
+            var w = r.size.x / bounds.size.x;
+            var h = r.size.y / bounds.size.y;
 
             for (var y = 0; y <= bounds.size.y; y++)
             {
-                var top = rect.yMin + y * h;
-                Handles.DrawLine(new Vector3(rect.xMin, top), new Vector3(rect.xMax, top));
+                var top = r.yMin + y * h;
+                Handles.DrawLine(new Vector3(r.xMin, top), new Vector3(r.xMin + r.size.x, top));
             }
 
             for (var x = 0; x <= bounds.size.x; x++)
             {
-                var left = rect.xMin + x * w;
-                Handles.DrawLine(new Vector3(left, rect.yMin), new Vector3(left, rect.yMax));
+                var left = r.xMin + x * w;
+                Handles.DrawLine(new Vector3(left, r.yMin), new Vector3(left, r.yMin + r.size.y));
             }
 
             Handles.color = Color.white;
@@ -786,9 +823,9 @@ namespace UnityEditor
             for (var x = bounds.xMin; x < bounds.xMax; x++)
             {
                 var pos = new Vector3Int(x, y, 0);
-                var r = new Rect(rect.xMin + (x - bounds.xMin) * w, rect.yMin + (-y + bounds.yMax - 1) * h, w - 1,
+                var ri = new Rect(r.xMin + (x - bounds.xMin) * w, r.yMin + (-y + bounds.yMax - 1) * h, w - 1,
                     h - 1);
-                RuleMatrixIconOnGUI(tilingRule, neighbors, pos, r);
+                RuleMatrixIconOnGUI(tilingRule, neighbors, pos, ri);
             }
         }
 
@@ -833,6 +870,21 @@ namespace UnityEditor
         {
             tilingRule.m_Sprites[0] =
                 EditorGUI.ObjectField(rect, tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
+
+            // Overdraw Sprite without Select button
+            if (Event.current.type != EventType.Repaint
+                ||tilingRule.m_Sprites[0] == null
+                || rect.Contains(Event.current.mousePosition)
+                || (DragAndDrop.objectReferences != null && DragAndDrop.objectReferences.Length > 0 &&
+                    DragAndDrop.objectReferences[0] is Sprite))
+                return;
+
+            Styles.objectFieldThumb.Draw(rect, GUIContent.none, false, false, false, false);
+            Rect previewRect = Styles.objectFieldThumb.padding.Remove(rect);
+            GUI.DrawTexture(previewRect, transparentCheckerTexture, ScaleMode.StretchToFill,false);
+            Texture2D preview = AssetPreview.GetAssetPreview(tilingRule.m_Sprites[0]);
+            if (preview != null)
+                GUI.DrawTexture(previewRect, preview, ScaleMode.StretchToFill, true);
         }
 
         /// <summary>
@@ -1190,7 +1242,11 @@ namespace UnityEditor
             {
                 var rulesWrapper = new RuleTileRuleWrapper();
                 EditorJsonUtility.FromJsonOverwrite(EditorGUIUtility.systemCopyBuffer, rulesWrapper);
-                tile.m_TilingRules.AddRange(rulesWrapper.rules);
+                if (rulesWrapper.rules != null && rulesWrapper.rules.Count > 0)
+                {
+                    Undo.RecordObject(tile, "Paste Rules");
+                    tile.m_TilingRules.AddRange(rulesWrapper.rules);
+                }
             }
             catch (Exception)
             {
@@ -1270,6 +1326,8 @@ namespace UnityEditor
 
             public static readonly GUIContent tilingRulesAnimationSize = EditorGUIUtility.TrTextContent("Size"
                 , "The number of Sprites in the animation.");
+
+            public static readonly GUIStyle objectFieldThumb = EditorStyles.objectFieldThumb;
 
             public static readonly GUIStyle extendNeighborsLightStyle = new()
             {

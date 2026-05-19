@@ -135,6 +135,10 @@ namespace UnityEditor.Tilemaps
                 foreach (var sprite in autoTileData.spriteList)
                 {
                     var spriteTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GetAssetPath(sprite));
+                    if (spriteTexture == null)
+                    {
+                        continue;
+                    }
                     if (textureToElementMap.TryGetValue(spriteTexture, out var at))
                     {
                         at.InitialiseSpriteMask(sprite, mask);

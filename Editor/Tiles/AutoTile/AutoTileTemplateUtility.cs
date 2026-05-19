@@ -25,6 +25,8 @@ namespace UnityEditor.Tilemaps
 
             var templatePath = EditorUtility.OpenFilePanel("Load AutoTile template", pathToCurrentFolder,
                 AutoTileTemplate.kExtension);
+            if (String.IsNullOrWhiteSpace(templatePath))
+                return null;
             var relativePath = FileUtil.GetProjectRelativePath(templatePath);
             var template = AssetDatabase.LoadAssetAtPath<AutoTileTemplate>(relativePath);
             if (template == null)
@@ -36,7 +38,7 @@ namespace UnityEditor.Tilemaps
         }
 
         /// <summary>
-        /// Applies an AutoTileTemplate to an AutoTile with a source Texture2D 
+        /// Applies an AutoTileTemplate to an AutoTile with a source Texture2D
         /// </summary>
         /// <param name="template">AutoTileTemplate to apply.</param>
         /// <param name="texture">Source Texture2D containing Sprites for the AutoTileTemplate.</param>

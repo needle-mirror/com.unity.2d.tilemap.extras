@@ -4,23 +4,60 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [8.88.0-exp.1] - 2026-02-11
-### Changed
-- Update experimental package version.
-  
-## [8.0.0-exp.1] - 2025-12-09
+## [9.0.0] - 2026-05-19
 ### Added
-- [EntityIdTileBase] Add EntityIdTileBase and Unity Job support for Tiles deriving from EntityIdTileBase
-- [EntityIdTile] Add EntityIdTile, the Tile equivalent using Entity Ids
-- [AnimatedEntityIdTile] Add AnimatedEntityIdTile, the AnimatedTile equivalent using Entity Ids
-- [AutoEntityIdTile] Add AutoEntityIdTile, the AutoTile equivalent using Entity Ids
-- [RuleEntityIdTile] Add RuleEntityIdTile, the RuleTile equivalent using Entity Ids
+- [LineBrushEditor] Add right click to cancel LineBrush line draw
+- [RuleTileEditor] Add Undo when pasting Rules to a RuleTile.
+
+### Changed
+- [AutoTile] Change uss for extra right margin for listview entries
+- [GameObjectBrush] Cap each size element to 100 and total size to 10000
+- [RuleTileEditor] Add scrolling to Rules
+- [RuleTileEditor] Do not show Select button for Sprite field if not interacting with it
+- [RuleTileOverrideEditor] Do not show Select button for Sprite field if not interacting with it
+
+### Fixed
+- [LineBrush] Fix MouseDrag painting for LineBrush
+- [GridInformation] Fix serialization warning
+- [GroupBrush] Fix serialization warning
+- [RuleTile] Fix serialization warning
+- [RuleOverrideTile] Fix OnEnable warning
+- [AutoTile] Fix errors when used Sprites are deleted
+- [AutoTileEditor] Fix previous entries remaining in AutoTile when loading a new template
+- [AutoTileEditor] Fix error when cancelling loading of AutoTileTemplate
+- [AutoTileEditor] Refresh AutoTileEditor when AutoTile textures have changed
+- [LineBrushEditor] Fix start marquee when Grid has different cell sizes or Tilemap has a changed Transform
+- [LineBrushEditor] Fix start marquee for Hexagonal Grid
+
+## [8.0.2] - 2026-02-17
+## [8.0.1] - 2026-02-10
+### Added
+- [GameObjectBrushEditor] Change GameObject Brush name to Game Object Brush
+- [GameObjectBrushEditor] Change SceneRoot Grid name to Scene Root Grid
+- [AutoTile] Add AutoTile (3x3 mask) sample
+
+### Changed
+- [AutoTile] Update images for AutoTile documentation
+
+## [8.0.0] - 2026-01-20
 
 ### Changed
 - Update Unity min version for package.
 
 ### Added
+- [GameObjectBrushEditor] Add OnSelectionInspectorGUI to allow swapping of GameObjects and Transform changes for selection
+
+### Fixed
+- [GameObjectBrushEditor] Clean up Scene Root Grid editor when Game Object Brush Editor is disabled
+
+## [7.0.0] - 2025-09-30
+### Changed
+- Update Unity min version for package.
+
+### Added
 - [AutoTile] Add Has Physics Shape property if Collider Type is set to Sprite. AutoTile will set Collider Type to Sprite if the Sprite has physics shape and set Collider Type to None if the Sprite has no physics shape.
+- [RuleTile] Add support for Fast Enter PlayMode for RuleTile
+- [HexagonalRuleTile] Add support for Fast Enter PlayMode for HexagonalRuleTile
 
 ## [6.0.1] - 2025-09-25
 

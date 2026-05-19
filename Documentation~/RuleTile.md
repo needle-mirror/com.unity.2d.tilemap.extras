@@ -3,9 +3,7 @@
 __Contributions by:
 __ [johnsoncodehk](https://github.com/johnsoncodehk), [DreadBoy](https://github.com/DreadBoy), [AVChemodanov](https://github.com/AVChemodanov), [DoctorShinobi](https://github.com/DoctorShinobi), [n4n0lix](https://github.com/n4n0lix)
 
-This is a generic visual Tile that other Tiles such as
-the [Terrain Tiles](TerrainTile.md), [Pipeline Tile](PipelineTile.md), [Random Tile](RandomTile.md)
-or [Animated Tiles](AnimatedTile.md) are based on. There are specific types of Rule Tiles for each of
+There are specific types of Rule Tiles for each of
 the [Tilemap grid types](https://docs.unity3d.com/Manual/class-Grid.html). The default Rule Tile is for the
 default [Rectangle Grid](https://docs.unity3d.com/Manual/Tilemap-CreatingTilemaps.html) type; the Hexagonal Rule Tile is
 for the [Hexagonal Grid](https://docs.unity3d.com/Manual/Tilemap-Hexagonal.html) type; and the Isometric Rule Tile is
@@ -13,8 +11,6 @@ for the [Isometric Grid](https://docs.unity3d.com/Manual/Tilemap-Isometric.html)
 Tiles all possess the same properties.
 
 ## Properties
-
-![The Rule Tile editor of a Terrain Tile.](images/RuleTileEditor.png)<br/>The Rule Tile editor of a Terrain Tile.
 
 | Property               | Function                                                |
 |------------------------|---------------------------------------------------------|
@@ -136,7 +132,3 @@ Paint with the Rule Tile in the same way as other Tiles by using the Tile Palett
 For optimization, please set the most common Rule at the top of the list of Rules and follow with next most common Rule
 and so on. When matching Rules during the placement of the Tile, the Rule Tile algorithm will check the first Rule
 first, before proceeding with the next Rules.
-
-# Rule Entity Id Tile
-
-The Rule Entity Id Tile is a Rule Tile that uses Entity Ids to reference managed objects. It has the same properties as a RuleTile and caches the Entity Ids of these properties on the "OnEnable" call. By not referencing managed objects and using simple blittable data types, the Tilemap is able to utilize Unity Jobs and Burst to calculate and retrieve data from the Entity Id Tile, improving performance when you set these Tiles onto the Tilemap.
