@@ -1,211 +1,145 @@
-﻿# Scriptable Entity Id Tiles
+# Create a custom entity tile
 
-To improve performance of setting scriptables Tiles onto the Tilemap, you can choose to create your custom Tile by deriving from EntityIdTileBase and implementing the required functions. By doing so, the Tilemap is able to make use of Unity Jobs and Burst to retrieve data from your custom Tile and improve performance. The Tilemap can utilize Unity Jobs and Burst only if all Tiles placed are valid Tiles derived from EntityIdTileBase. If a mixture of standard Tiles and EntityIdTiles are set together, Unity Jobs and Burst will not be utilized.
+Create a tile that stores data in native memory, so the Jobs system and the Burst compiler can store and retrieve the tile data to improve performance.
 
-## Implementing EntityIdTileBase
+> [!NOTE]
+> You can't mix entity tiles and normal tiles. If you do, entity tiles fall back to not using the Job system or the Burst compiler.
 
-The following describes the parts of EntityIdTileBase that should be implemented to create your custom scriptable Entity Id Tile. EntityIdTile will be used as an example of implementation.
+## Prerequisites
 
-To make full use of Unity Jobs and Burst, Tile data should be stored as a `struct` and no references to managed  objects should be used within the struct.
+To create a custom entity tile, you must enable `unsafe` code methods in your project. Follow these steps:
 
-For EntityIdTile, its data is stored in `TileData`, which used `EntityId` to reference managed Unity objects:
+1. From the main menu, select **Edit** &gt; **Project Settings**.
+2. Select the **Player** tab to open the Player settings window.
+3. Enable **Allow 'unsafe' Code**.
 
-    private TileData m_Data;
+> [!NOTE]
+> Use `unsafe` methods with extreme caution to avoid memory leaks, access violations, or data corruption. The `UnsafeUtility` class is intended for scenarios where performance is critical, and the overhead of managed memory safety is prohibitive. For more information, refer to the [UnsafeUtility](https://docs.unity3d.com/ScriptReference/Unity.Collections.LowLevel.Unsafe.UnsafeUtility.html) API.
 
-***
+## Write a custom entity tile script
 
->    public abstract Type structType { get; }
+Follow these steps:
 
-Implement this to return the Type of the `struct` used to store data for your custom Tile.
+1. Create a new C# script and include the following namespaces:
 
-For EntityIdTile, the Type of the `struct` is `TileData`:
+    ```csharp
+    using System;
+    using Unity.Collections.LowLevel.Unsafe;
+    using Unity.Burst;
+    using Unity.Mathematics;
+    using AOT;
+    using Unity.Tilemaps.Experimental;
+    ```
 
-    public override Type structType { get => typeof(TileData); }
+2. Create a class that implements `EntityIdTileBase`.
 
-***
+3. Inside the class, define a struct that stores the tile data in native memory. For example:
 
->    public abstract unsafe void CopyDataStruct(void* outPtr);
-
-Implement this to allow the Tilemap to copy the data contents of your Tile to be used in a Unity Job. The data is copied into `outPtr` and the size of the data must be equal to the size of `structType` declared above. 
-
-For EntityIdTile, its data is directly copied into `outPtr`: 
-
-    public override unsafe void CopyDataStruct(void* outPtr)
+    ```csharp
+    public struct MyTileData
     {
-        UnsafeUtility.CopyStructureToPtr(ref m_Data, outPtr);
+        public EntityId spriteEntityId;
+        public Color color;
+        public Matrix4x4 transform;
     }
+    ```
 
-***
+3. Create an abstract property that returns the type of the struct. For example:
 
->    protected abstract unsafe RefreshTileJobDelegate refreshTileJobDelegate { get; }
+    ```csharp
+    public override Type structType { get => typeof(MyTileData); }
+    ```
+    
+4. Override the `OnEnable` method to initialize the tile data. For example:
 
-This contains the delegate function for refreshing positions on the Tilemap when this Tile is placed on the Tilemap.
+    ```csharp
+    public override void OnEnable()
+    {
+        base.OnEnable();
+        tileData = new MyTileData()
+        {
+            spriteEntityId = mySprite != null ? mySprite.GetEntityId() : EntityId.None,
+            color = myColor,
+            transform = myTransform,
+        };
+    }
+    ```
 
->     public unsafe delegate void RefreshTileJobDelegate(int count, int3* position, void* data, ref TilemapRefreshStruct tilemapRefreshStruct);
+    You must also override `OnDisable` if you allocate native memory, such as a `NativeArray`.
 
-- int count
-  - The number of positions on the Tilemap where this Tile is set
-- int3* position
-  - A pointer containing an array of positions on the Tilemap where this Tile is set with the size `count`
-- void* data
-  - A data pointer containing a copy of this Tile's data (from `CopyDataStruct`)
-- TilemapRefreshStruct tilemapRefreshStruct
-  - Contains data for the Tilemap where the Tile is placed and functions to refresh positions on the Tilemap
+5. Implement the `CopyDataStruct` method. In the method, use the `CopyStructureToPtr` API to copy data from your tile data instance to a pointer for the Jobs system.
 
-To fully utilize Unity Burst, a loop running an array of positions and a count of positions is expected in the implementation of the `RefreshTileJobDelegate`. The `BurstCompile` and `[MonoPInvokeCallback(typeof(RefreshTileJobDelegate))]` attributes should be added as well to ensure Unity Burst can compile and run the delegate properly.  
+    ```csharp
+    public override unsafe void CopyDataStruct(void* pointerForJobsSystem)
+    {
+        UnsafeUtility.CopyStructureToPtr(ref tileData, pointerForJobsSystem);
+    }
+    ```
 
-For EntityIdTile, the `RefreshTileJobDelegate` is implemented as RefreshTileJob: 
+6. Implement the `RefreshTileJobDelegate` delegate method that the Jobs system uses to refresh tilemap positions when you place a tile. For example:
 
+    ```csharp
     protected override unsafe RefreshTileJobDelegate refreshTileJobDelegate => RefreshTileJob;
 
+    // Indicate that the Burst Compiler can compile this method
     [BurstCompile]
+    // Required attribute for the Jobs system
     [MonoPInvokeCallback(typeof(RefreshTileJobDelegate))]
     static unsafe void RefreshTileJob(int count, int3* position, void* data, ref TilemapRefreshStruct tilemapRefreshStruct)
     {
-        for (var i = 0; i < count; ++i)
-        {
-            var pos = position + i;
-            tilemapRefreshStruct.RefreshTile(*pos);
+        // Call the RefreshTile method for each tile instance on the tilemap
+        for (var i = 0; i < count; ++i) {
+            tilemapRefreshStruct.RefreshTile(*(position + i));
         }
     }
+    ```
 
-The EntityIdTile only updates itself at its current position and therefore refreshes only that position.
+    The parameters Unity passes into the method are the following:
 
-***
+    - `count`: The number of tilemap positions that have this tile.
+    - `position`: The pointer to an array of the tilemap positions.
+    - `data`: The tile data from the `CopyDataStruct` method.
+    - `tilemapRefreshStruct`: A struct that contains tilemap methods.
 
-> protected abstract unsafe GetTileDataJobDelegate getTileDataJobDelegate { get; }
+7. Implement the `GetTileDataJobDelegate` delegate method that the Jobs system uses to get tile data. For example:
 
-This contains the delegate function for getting Tile data from this Tile with its position on the Tilemap.
-
->     public unsafe delegate void GetTileDataJobDelegate(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileData* outTileData);
-
-- int count
-  - The number of positions on the Tilemap where this Tile is set
-- int3* position
-  - A pointer containing an array of positions on the Tilemap where this Tile is set with the size `count`
-- void* data
-  - A data pointer containing a copy of this Tile's data (from `CopyDataStruct`)
-- TilemapDataStruct tilemapDataStruct
-  - Contains data for the Tilemap where the Tile is placed and functions to retrieve Tile data from the Tilemap
-- TileData* outTileData
-  - A pointer containing an array of TileData on the Tilemap which should be filled by this delegate function with the size `count`
-
-The `void* data` can be converted back to its original type using:
-
-    TileData tileData = UnsafeUtility.AsRef<TileData>(data);
-
-To fully utilize Unity Burst, a loop running an array of positions and a count of positions is expected in the implementation of the `RefreshTileJobDelegate`. The `BurstCompile` and `[MonoPInvokeCallback(typeof(RefreshTileJobDelegate))]` attributes should be added as well to ensure Unity Burst can compile and run the delegate properly.
-
-For EntityIdTile, the `GetTileDataJobDelegate` is implemented as GetTileDataJob:
+    ```csharp
+    protected override unsafe GetTileDataJobDelegate getTileDataJobDelegate => GetTileDataJob;
 
     [BurstCompile]
     [MonoPInvokeCallback(typeof(GetTileDataJobDelegate))]
     static unsafe void GetTileDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileData* outTileData)
     {
-        for (var i = 0; i < count; ++i)
-        {
-            UnsafeUtility.CopyPtrToStructure(data, out *(outTileData + i));
+        var myTileData = UnsafeUtility.AsRef<MyTileData>(data);
+
+        // Get the data for each tilemap position that has the tile
+        for (var i = 0; i < count; ++i) { 
+            ref TileData tileData = ref *(outTileData + i);
+            tileData.spriteEntityId = myTileData.spriteEntityId;
+            tileData.color = myTileData.color;
+            tileData.transform = myTileData.transform;
         }
     }
+    ```
 
-The Tile's data is directly copied into each corresponding `outTileData` to be used by the Tilemap.
+    The `CopyPtrToStructure` method fills the `outTileData` parameter with the tile data.
 
-***
+8. Implement the `GetTileAnimationDataJobDelegate` delegate method if your tile has animated properties. Otherwise implement `null`. For more information, refer to the [GetTileAnimationDataJobDelegate](xref:Unity.Tilemaps.Experimental.AnimatedEntityIdTile.getTileAnimationDataJobDelegate) API.
 
-> protected abstract unsafe GetTileAnimationDataJobDelegate getTileAnimationDataJobDelegate { get; }
+The recommended best practice is to also implement the following `TileBase` methods in case the entity tile falls back to not using the Jobs system:
 
-This contains the delegate function for getting Tile Animation data from this Tile with its position on the Tilemap. This can be set to `null` if this Tile has no Tile Animation data.
+- `RefreshTile`
+- `GetTileData`
+- `GetTileAnimationData`
+- `StartUp`
 
->     public unsafe delegate void GetTileAnimationDataJobDelegate(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileAnimationEntityIdData* outTileAnimationEntityIdData);
+For more information, refer to [Scriptable tiles](https://docs.unity3d.com/Manual/tilemaps/tiles-for-tilemaps/scriptable-tiles/scriptable-tiles.html) and the [`TileBase`](xref:Unity.Tilemaps.Experimental.EntityIdTileBase) API. 
 
-- int count
-    - The number of positions on the Tilemap where this Tile is set
-- int3* position
-    - A pointer containing an array of positions on the Tilemap where this Tile is set with the size `count`
-- void* data
-    - A data pointer containing a copy of this Tile's data (from `CopyDataStruct`)
-- TilemapDataStruct tilemapDataStruct
-    - Contains data for the Tilemap where the Tile is placed and functions to retrieve Tile data from the Tilemap
-- TileAnimationEntityIdData* outTileAnimationEntityIdData
-    - A pointer containing an array of TileAnimationEntityIdData on the Tilemap which should be filled by this delegate function with the size `count`
+## Example
 
-To fully utilize Unity Burst, a loop running an array of positions and a count of positions is expected in the implementation of the `RefreshTileJobDelegate`. The `BurstCompile` and `[MonoPInvokeCallback(typeof(RefreshTileJobDelegate))]` attributes should be added as well to ensure Unity Burst can compile and run the delegate properly.
+For a full example, in the **Project** window, go to the `Packages/com.unity.2d.tilemap.extras/Tilemap/Runtime/Tiles/AnimatedEntityIdTile` folder, then open the `AnimatedEntityIdTile.cs` script. 
 
-For EntityIdTile, the `GetTileAnimationDataJobDelegate` is implemented as returning null, as it has no Tile Animation data:
+## Additional resources
 
-    protected override unsafe GetTileAnimationDataJobDelegate getTileAnimationDataJobDelegate => null;
-
-For AnimatedEntityIdTile, which does have Tile Animation data, it is implemented as:
-
-    [BurstCompile]
-    [MonoPInvokeCallback(typeof(GetTileAnimationDataJobDelegate))]
-    static unsafe void GetTileAnimationDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileAnimationEntityIdData* outTileAnimationEntityIdData)
-    {
-        AnimatedEntityIdData tileData = UnsafeUtility.AsRef<AnimatedEntityIdData>(data);
-        float animationStartTime = tileData.m_AnimationStartTime;
-        float animationFrameRate = tilemapDataStruct.GetTileAnimationFrameRate();
-        if (0 < tileData.m_AnimationStartFrame
-            && tileData.m_AnimationStartFrame <= tileData.m_AnimatedSpriteEntityIds.Length
-            && tilemapDataStruct.GetTileAnimationFrameRate() > 0)
-        {
-            animationStartTime = (tileData.m_AnimationStartFrame - 1) / animationFrameRate;
-        }
-
-        for (var i = 0; i < count; ++i)
-        {
-            ref TileAnimationEntityIdData outTileAnimationData = ref *(outTileAnimationEntityIdData + i);
-            if (tileData.m_AnimatedSpriteEntityIds.IsCreated)
-                outTileAnimationData.animatedSpritesEntityIds = tileData.m_AnimatedSpriteEntityIds;
-            outTileAnimationData.animationSpeed =
-                tileData.m_Random.NextFloat(tileData.m_MinSpeed, tileData.m_MaxSpeed);
-            outTileAnimationData.animationStartTime = animationStartTime;
-            outTileAnimationData.flags = tileData.m_TileAnimationFlags;
-        }
-    }
-
-The `void* data` is converted back to its original type and is used to fill in the `TileAnimationEntityIdData`.
-
-Common code is placed outside of the loop, such as getting the animation start time, while per-Tile code is put inside of the loop.
-
-***
-
-If `OnEnable` is overrided to initialize any data for your custom Tile, you must call `base.OnEnable` to ensure your custom Tile is properly setup and registered for the Tilemap to work.
-
-For EntityIdTile, `OnEnable` is overrided to store EntityIds for the managed objects it references, such as Sprite and GameObject:
-
-    public override void OnEnable()
-    {
-        base.OnEnable();
-        OnValidate();
-    }
-
-    private void OnValidate()
-    {
-        m_Data = new TileData()
-        {
-            spriteEntityId = m_Sprite != null ? m_Sprite.GetEntityId() : EntityId.None,
-            color = m_Color,
-            transform = m_Transform,
-            gameObjectEntityId = m_InstancedGameObject  != null ? m_InstancedGameObject.GetEntityId() : EntityId.None,
-            flags = m_Flags,
-            colliderType = m_ColliderType,
-        };
-    }
-
-Use `OnDisable` to handle any cleanup for data stored in `OnEnable` if required.  For example, if a NativeArray was allocated in `OnEnable`, it should be disposed properly in `OnDisable`.
-
-***
-
-The basic Scriptable Tile functions must also be implemented as `EntityIdTileBase` is derived from `TileBase`. These will be used if this custom Tile is set together with other non-EntityIdTiles such as RuleTile.
-
-The basic Scriptable Tile functions are:
-
-> RefreshTile
-> 
-> GetTileData
-> 
-> GetTileAnimationData
-> 
-> StartUp
- 
-Refer to the [Scriptable Tiles](https://docs.unity3d.com/Manual/Tilemap-ScriptableTiles.html) page for more information about implementing these basic Scriptable Tile functions. 
+- [Scriptable tiles](https://docs.unity3d.com/Manual/tilemaps/tiles-for-tilemaps/scriptable-tiles/scriptable-tiles.html)
+- [Create an entity tile](IntroductionEntityTiles.md)

@@ -274,6 +274,7 @@ namespace Unity.Tilemaps.Experimental{
                         inPositions = positions.Reinterpret<int3>(),
                         inTileIds = tileIds.Reinterpret<EntityId>(),
                         inIdToIndexMap = entityIdToIndexMap,
+                        inHasAnimations = usedTileHasAnimation,
                         inStructDataStart = structDataStart,
                         inTileStructDatas = tileStructDatas,
                         inFunctionPointers = getTileAnimationDataFunctionPointers,

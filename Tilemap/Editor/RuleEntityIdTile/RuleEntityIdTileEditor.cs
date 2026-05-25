@@ -119,6 +119,7 @@ namespace UnityEditor.Tilemaps.Experimental
         /// <summary>
         ///     Preview Utility for rendering previews
         /// </summary>
+        [NonSerialized]
         public PreviewRenderUtility m_PreviewUtility;
 
         /// <summary>

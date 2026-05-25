@@ -16,6 +16,7 @@ namespace Unity.Tilemaps.Experimental
         [ReadOnly] public NativeArray<int3> inPositions;
         [ReadOnly] public NativeArray<EntityId> inTileIds;
         [ReadOnly] public NativeHashMap<EntityId, int> inIdToIndexMap;
+        [ReadOnly] public NativeArray<bool> inHasAnimations;
         [DeallocateOnJobCompletion] [ReadOnly] public NativeArray<int> inStructDataStart;
         [DeallocateOnJobCompletion] [ReadOnly] public NativeArray<byte> inTileStructDatas;
         [DeallocateOnJobCompletion] [ReadOnly] public NativeArray<FunctionPointer<EntityIdTile.GetTileAnimationDataJobDelegate>> inFunctionPointers;
@@ -37,12 +38,15 @@ namespace Unity.Tilemaps.Experimental
                 {
                     var position = (int3*) inPositions.GetUnsafeReadOnlyPtr() + currentStart;
                     var tileIdx = inIdToIndexMap[currentTileId];
-                    var tileStructData = (byte*) inTileStructDatas.GetUnsafeReadOnlyPtr() + inStructDataStart[tileIdx];
-                    var tileAnimationData = (TileAnimationEntityIdData*) outTileAnimationDatas.GetUnsafePtr() + currentStart;
-                    var function = inFunctionPointers[tileIdx];
+                    var hasAnimation = inHasAnimations[tileIdx];
+                    if (hasAnimation)
+                    {
+                        var tileStructData = (byte*) inTileStructDatas.GetUnsafeReadOnlyPtr() + inStructDataStart[tileIdx];
+                        var tileAnimationData = (TileAnimationEntityIdData*) outTileAnimationDatas.GetUnsafePtr() + currentStart;
+                        var function = inFunctionPointers[tileIdx];
 
-                    function.Invoke(currentIndex - currentStart, position, tileStructData, ref tilemapData, tileAnimationData);
-
+                        function.Invoke(currentIndex - currentStart, position, tileStructData, ref tilemapData, tileAnimationData);
+                    }
                     currentStart = currentIndex;
                     currentTileId = tileId;
                 }
@@ -51,10 +55,16 @@ namespace Unity.Tilemaps.Experimental
             {
                 var position = (int3*) inPositions.GetUnsafeReadOnlyPtr() + currentStart;
                 var tileIdx = inIdToIndexMap[currentTileId];
-                var tileStructData = (byte*) inTileStructDatas.GetUnsafeReadOnlyPtr() + inStructDataStart[tileIdx];
-                var tileAnimationData = (TileAnimationEntityIdData*) outTileAnimationDatas.GetUnsafePtr() + currentStart;
-                var function = inFunctionPointers[tileIdx];
-                function.Invoke(startIndex + count - currentStart, position, tileStructData, ref tilemapData, tileAnimationData);
+                var hasAnimation = inHasAnimations[tileIdx];
+                if (hasAnimation)
+                {
+                    var tileStructData = (byte*)inTileStructDatas.GetUnsafeReadOnlyPtr() + inStructDataStart[tileIdx];
+                    var tileAnimationData =
+                        (TileAnimationEntityIdData*)outTileAnimationDatas.GetUnsafePtr() + currentStart;
+                    var function = inFunctionPointers[tileIdx];
+
+                    function.Invoke(startIndex + count - currentStart, position, tileStructData, ref tilemapData, tileAnimationData);
+                }
             }
         }
     }

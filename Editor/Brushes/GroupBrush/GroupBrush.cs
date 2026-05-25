@@ -19,9 +19,9 @@ namespace UnityEditor.Tilemaps
 
         [SerializeField] private Vector3Int m_Limit = Vector3Int.one * 3;
 
-        [SerializeField] private readonly Stack<Vector3Int> m_NextPosition = new();
+        private readonly Stack<Vector3Int> m_NextPosition = new();
 
-        [SerializeField] private BitArray m_VisitedLocations = new(7 * 7 * 7);
+        private BitArray m_VisitedLocations = new(7 * 7 * 7);
 
         /// <summary>
         ///     The gap in cell count before stopping to consider a Tile in a Group

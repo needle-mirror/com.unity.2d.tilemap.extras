@@ -780,21 +780,22 @@ namespace Unity.Tilemaps.Experimental
             ref TileAnimationData tileAnimationData)
         {
             var tilemapData = new TilemapDataStruct(tilemap.GetComponent<Tilemap>());
+            var pos = position.ToInt3();
             for (var j = 0; j < m_Data.ruleMatchOutputs.Length; j++)
             {
                 var ruleMatchOutput = m_Data.ruleMatchOutputs[j];
                 var transform = AffineTransform.identity;
-                if (ruleMatchOutput.spriteOutput == RuleMatchSerializable.OutputSprite.Animation)
+                var ruleMatch = m_Data.ruleMatchInputs[j];
+                if (RuleMatches(ref ruleMatch, ref tilemapData, ref m_Data, ref pos, ref transform))
                 {
-                    var ruleMatch = m_Data.ruleMatchInputs[j];
-                    var pos = position.ToInt3();
-                    if (RuleMatches(ref ruleMatch, ref tilemapData, ref m_Data, ref pos, ref transform))
+                    if (ruleMatchOutput.spriteOutput == RuleMatchSerializable.OutputSprite.Animation)
                     {
                         tileAnimationData.animatedSprites = m_TilingRules[j].m_Sprites;
                         tileAnimationData.animationSpeed =
                             m_Data.random.NextFloat(ruleMatchOutput.minAnimationSpeed, ruleMatchOutput.maxAnimationSpeed);
                         return true;
                     }
+                    return false;
                 }
             }
             return false;
@@ -812,19 +813,19 @@ namespace Unity.Tilemaps.Experimental
                 for (var j = 0; j < dataStruct.ruleMatchInputs.Length; j++)
                 {
                     var ruleMatchOutput = dataStruct.ruleMatchOutputs[j];
-                    if (ruleMatchOutput.spriteOutput == RuleMatchSerializable.OutputSprite.Animation)
+                    var ruleMatch = dataStruct.ruleMatchInputs[j];
+                    var pos = inPos;
+                    var transform = AffineTransform.identity;
+                    if (RuleMatches(ref ruleMatch, ref tilemapDataStruct, ref dataStruct, ref pos, ref transform))
                     {
-                        var ruleMatch = dataStruct.ruleMatchInputs[j];
-                        var pos = inPos;
-                        var transform = AffineTransform.identity;
-                        if (RuleMatches(ref ruleMatch, ref tilemapDataStruct, ref dataStruct, ref pos, ref transform))
+                        if (ruleMatchOutput.spriteOutput == RuleMatchSerializable.OutputSprite.Animation)
                         {
                             if (ruleMatchOutput.sprites.IsCreated)
                                 tileAnimationData.animatedSpritesEntityIds = ruleMatchOutput.sprites;
                             tileAnimationData.animationSpeed =
                                 dataStruct.random.NextFloat(ruleMatchOutput.minAnimationSpeed, ruleMatchOutput.maxAnimationSpeed);
-                            break;
                         }
+                        break;
                     }
                 }
             }
@@ -838,7 +839,7 @@ namespace Unity.Tilemaps.Experimental
         /// <param name="otherOne">Other Tile to match.</param>
         /// <returns>True if there is a match, False if not.</returns>
         [BurstCompile]
-        public static bool RuleMatch(int neighborRule, EntityId thisOne, EntityId otherOne)
+        public static bool RuleMatch(int neighborRule, in EntityId thisOne, in EntityId otherOne)
         {
             switch (neighborRule)
             {
@@ -874,7 +875,7 @@ namespace Unity.Tilemaps.Experimental
                 GetRotatedPosition(ref neighborOffset, angle);
                 GetOffsetPosition(ref neighborPosition, ref neighborOffset);
                 var other = tilemapData.GetTileId(neighborPosition);
-                if (!RuleMatch(neighbor, tileData.tileId, other)) return false;
+                if (!RuleMatch(neighbor, in tileData.tileId, in other)) return false;
             }
             return true;
         }
@@ -903,7 +904,7 @@ namespace Unity.Tilemaps.Experimental
                 GetMirroredPosition(ref neighborOffset, mirrorX, mirrorY);
                 GetOffsetPosition(ref neighborPosition, ref neighborOffset);
                 var other = tilemapData.GetTileId(neighborPosition);
-                if (!RuleMatch(neighbor, tileData.tileId, other)) return false;
+                if (!RuleMatch(neighbor, in tileData.tileId, in other)) return false;
             }
             return true;
         }
@@ -1208,7 +1209,7 @@ namespace Unity.Tilemaps.Experimental
                 for (var i = 0; i < spritesCount; ++i)
                 {
                     var sprite = m_Sprites[i];
-                    output.sprites[i++] = sprite != null ? sprite.GetEntityId() : EntityId.None;
+                    output.sprites[i] = sprite != null ? sprite.GetEntityId() : EntityId.None;
                 }
                 output.gameObjects[0] = m_GameObject != null ? m_GameObject.GetEntityId() : EntityId.None;
             }

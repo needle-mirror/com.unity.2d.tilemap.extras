@@ -33,6 +33,28 @@ namespace UnityEngine
 
         private static TileBase[] m_AllocatedUsedTileArr = Array.Empty<TileBase>();
 
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            m_CacheTilemapsNeighborPositions = new();
+            m_AllocatedUsedTileArr = Array.Empty<TileBase>();
+        }
+
+        internal static bool ValidateRuleTileStatics()
+        {
+            if (m_CacheTilemapsNeighborPositions == null || m_CacheTilemapsNeighborPositions.Count > 0)
+            {
+                return false;
+            }
+            if (m_AllocatedUsedTileArr == null || m_AllocatedUsedTileArr.Length > 0)
+            {
+                return false;
+            }
+            return true;
+        }
+#endif
+
         /// <summary>
         ///     The Default Sprite set when creating a new Rule.
         /// </summary>
@@ -347,15 +369,19 @@ namespace UnityEngine
         {
             var transform = Matrix4x4.identity;
             foreach (var rule in m_TilingRules)
-                if (rule.m_Output == TilingRuleOutput.OutputSprite.Animation)
-                    if (RuleMatches(rule, position, tilemap, ref transform))
+            {
+                if (RuleMatches(rule, position, tilemap, ref transform))
+                {
+                    if (rule.m_Output == TilingRuleOutput.OutputSprite.Animation)
                     {
                         tileAnimationData.animatedSprites = rule.m_Sprites;
                         tileAnimationData.animationSpeed =
                             Random.Range(rule.m_MinAnimationSpeed, rule.m_MaxAnimationSpeed);
                         return true;
                     }
-
+                    return false;
+                }
+            }
             return false;
         }
 
@@ -795,6 +821,9 @@ namespace UnityEngine
                 /// </summary>
                 public const int NotThis = 2;
             }
+
+            [SerializeField]
+            internal Vector2 m_Scroll = new Vector2(0.5f, 0.5f);
         }
 
         /// <summary>

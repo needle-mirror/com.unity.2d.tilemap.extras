@@ -1,27 +1,21 @@
-# Entity Id Tile
+# Entity Id Tile Inspector window reference
 
-The Entity Id Tile is a Tile that uses Entity Ids to reference managed objects. It has the same properties as a Tile and caches the Entity Ids of these properties on the "OnEnable" call. By not referencing managed objects and using simple blittable data types, the Tilemap is able to utilize Unity Jobs and Burst to calculate and retrieve data from the Entity Id Tile, improving performance when you set these Tiles onto the Tilemap.
+Explore the properties and settings you can use to customize an tile that uses the Job system and Burst compiler to speed up rendering.
 
-## Asset properties
+For more information, refer to [Create an entity tile](IntroductionEntityTiles.md).
 
-| Property                                                     | Function                                                                                                                                                                                                |
-|--------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Preview**                                                  | Displays a visual preview of the selected Tile.                                                                                                                                                         |
-| **Sprite**                                                   | Select the Sprite to be rendered on this Tile. Click the circle icon to the right to open the object picker window to select from the available Sprite Assets, or drag a Sprite directly onto this box. |
-| **Color**                                                    | Tints the Sprite placed on this Tile with the selected Color. When set to white, the Sprite is rendered without a tint.                                                                                 |
-| **Collider Type**                                            | Defines the shape of the Collider generated for the Tile.                                                                                                                                               |
-| &nbsp;&nbsp;&nbsp;&nbsp;**None**                             | No Collider is generated.                                                                                                                                                                               |
-| &nbsp;&nbsp;&nbsp;&nbsp;**Sprite**                           | The Collider shape is generated based on the selected **Sprite's** outline.                                                                                                                             |
-| &nbsp;&nbsp;&nbsp;&nbsp;**Grid**                             | The Collider shape is based on a cell of the **Tilemap**. The shape of a cell depends on the [Cell Layout](../grid-reference) of the Tilemap.                                                           |
-| **GameObject to Instantiate**                                | Instantiates a copy of this GameObject at the Tile's position when the Tile is placed on the Tilemap.                                                                                                   |
-| **Flags**                                                    | Flags controlling the Tile's behaviour.                                                                                                                                                                 |
-| &nbsp;&nbsp;&nbsp;&nbsp;**None**                             | No TileFlags are set.                                                                                                                                                                                   |
-| &nbsp;&nbsp;&nbsp;&nbsp;**LockColor**                        | Tile locks any color set by brushes or the user.                                                                                                                                                        |
-| &nbsp;&nbsp;&nbsp;&nbsp;**LockTransform**                    | Tile locks any transform matrix set by brushes or the user.                                                                                                                                             |
-| &nbsp;&nbsp;&nbsp;&nbsp;**InstantiateGameObjectRuntimeOnly** | Tile does not instantiate its associated GameObject in editor mode and instantiates it only during Play mode.                                                                                           |
-| &nbsp;&nbsp;&nbsp;&nbsp;**KeepGameObjectRuntimeOnly**        | Keeps the Tile's instantiated GameObject in Play mode when replaced with another Tile or erased.                                                                                                        |
-| &nbsp;&nbsp;&nbsp;&nbsp;**LockAll**                          | All lock flags (LockColor and LockTransform).                                                                                                                                                           |
-| **Offset**                                                   | Positional Offset of the Tile from its cell when placed on a Tilemap. Disabled if LockTransform flag is not set.                                                                                        |
-| **Rotation**                                                 | Rotation of the Tile when placed on a Tilemap. Disabled if LockTransform flag is not set.                                                                                                               |
-| **Scale**                                                    | Scale of the Tile when placed on a Tilemap. Disabled if LockTransform flag is not set.                                                                                                                  | 
+| **Property** | **Description** |
+|:--|:--|
+| **Preview** | Displays a preview of the tile. |
+| **Sprite** | Sets the sprite Unity renders. To select a sprite, drag a sprite asset from the **Project** window, or select the picker (**⊙**). |
+| **Color** | Tints the sprite with the selected color. Set the color to white to render without a tint. |
+| **Collider Type** | Sets the shape Unity uses to check for collisions with the tile. The options are:<ul><li>**None**: The tile doesn't collide with anything.</li><li>**Sprite**: Unity uses the shape from the [Custom Physics Shape tab](https://docs.unity3d.com/Manual/sprite/sprite-editor/custom-physics-shape-editor-reference.html) of the Sprite Editor window.</li><li>**Grid**: Unity uses the shape of the tilemap cell.</li></ul> |
+| **GameObject to Instantiate** | Sets the prefab Unity adds to the tilemap at the same position as the sprite. Drag a prefab from the **Project** window to this property. You can't drag an existing instance of a GameObject from the **Hierarchy** window. |
+| **Flags** | Customizes the tile. The options are: <ul><li>**None**: Disables all the options.</li><li>**Everything**: Enables all the options.</li><li>**Lock Color**: Prevents brushes or other tools changing the **Color** of the sprite.</li><li>**Lock Transform**: Prevents brushes or other tools changing the offset position, rotation, or scale of the sprite.</li><li>**Instantiate GameObject Runtime Only**: Instantiates GameObjects only when you enter Play mode or run your built application.</li><li>**Keep GameObject Runtime Only**: In Play mode, keeps a GameObject instantiated if another tile replaces it or the tile is deleted.</li><li>**Lock All**: Enables both **Lock Color** and **Lock Transform**.</li></ul> |
+| **Offset** | The fixed offset position of the tile. This property is available only if you enable **Lock Transform** or **Lock All** in the **Flags** property. |
+| **Rotation** | The fixed rotation of the tile. This property is available only if you enable **Lock Transform** or **Lock All** in the **Flags** property. |
+| **Scale** | The fixed scale of the tile. This property is available only if you enable **Lock Transform** or **Lock All** in the **Flags** property. |
 
+## Additional resources
+
+- [Create an entity tile](IntroductionEntityTiles.md)

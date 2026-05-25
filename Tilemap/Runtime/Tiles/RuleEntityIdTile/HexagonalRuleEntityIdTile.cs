@@ -578,7 +578,7 @@ namespace Unity.Tilemaps.Experimental
                 GetRotatedPosition(ref neighborOffset, angle, tileData.flatTop);
                 GetOffsetPosition(ref neighborPosition, ref neighborOffset);
                 var other = tilemapData.GetTileId(neighborPosition);
-                if (!RuleMatch(neighbor, tileData.tileId, other)) return false;
+                if (!RuleMatch(neighbor, in tileData.tileId, in other)) return false;
             }
             return true;
         }
@@ -607,7 +607,7 @@ namespace Unity.Tilemaps.Experimental
                 GetMirroredPosition(ref neighborOffset, mirrorX, mirrorY, tileData.flatTop);
                 GetOffsetPosition(ref neighborPosition, ref neighborOffset);
                 var other = tilemapData.GetTileId(neighborPosition);
-                if (!RuleMatch(neighbor, tileData.tileId, other)) return false;
+                if (!RuleMatch(neighbor, in tileData.tileId, in other)) return false;
             }
             return true;
         }

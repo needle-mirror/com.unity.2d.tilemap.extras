@@ -239,6 +239,8 @@ namespace UnityEditor.Tilemaps
         private Texture2D m_BrushIcon;
         private LineBrush lineBrush => target as LineBrush;
 
+        private Vector3[] startCells = new Vector3[4];
+
         /// <summary> Returns an icon identifying the Line Brush. </summary>
         public override Texture2D icon
         {
@@ -296,15 +298,33 @@ namespace UnityEditor.Tilemaps
                     var min = lineBrush.lineStart;
                     var max = lineBrush.lineStart + position.size;
 
+                    var cellStride = tilemap.cellSize + tilemap.cellGap;
+                    var cellGap = Vector3.one;
+                    if (!Mathf.Approximately(cellStride.x, 0f))
+                    {
+                        cellGap.x = tilemap.cellSize.x / cellStride.x;
+                    }
+                    if (!Mathf.Approximately(cellStride.y, 0f))
+                    {
+                        cellGap.y = tilemap.cellSize.y / cellStride.y;
+                    }
+
+                    startCells[0] = tilemap.LocalToWorld(tilemap.CellToLocalInterpolated(new Vector3(min.x, min.y, min.z)));
+                    startCells[1] = tilemap.LocalToWorld(tilemap.CellToLocalInterpolated(new Vector3(max.x - 1 + cellGap.x, min.y, min.z)));
+                    startCells[2] = tilemap.LocalToWorld(tilemap.CellToLocalInterpolated(new Vector3(max.x - 1 + cellGap.x, max.y - 1 + cellGap.y, min.z)));
+                    startCells[3] = tilemap.LocalToWorld(tilemap.CellToLocalInterpolated(new Vector3(min.x, max.y - 1 + cellGap.y, min.z)));
+
                     // Draws a box on the picked starting position
                     GL.PushMatrix();
                     GL.MultMatrix(GUI.matrix);
                     GL.Begin(GL.LINES);
-                    Handles.color = Color.blue;
-                    Handles.DrawLine(new Vector3(min.x, min.y, min.z), new Vector3(max.x, min.y, min.z));
-                    Handles.DrawLine(new Vector3(max.x, min.y, min.z), new Vector3(max.x, max.y, min.z));
-                    Handles.DrawLine(new Vector3(max.x, max.y, min.z), new Vector3(min.x, max.y, min.z));
-                    Handles.DrawLine(new Vector3(min.x, max.y, min.z), new Vector3(min.x, min.y, min.z));
+                    GL.Color(Color.blue);
+                    int i = 0;
+                    for (int j = startCells.Length - 1; i < startCells.Length; j = i++)
+                    {
+                        GL.Vertex(startCells[j]);
+                        GL.Vertex(startCells[i]);
+                    }
                     GL.End();
                     GL.PopMatrix();
                 }
