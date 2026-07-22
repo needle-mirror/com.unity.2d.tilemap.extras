@@ -1,15 +1,17 @@
-# Scriptable Brushes
+# Built-in brushes
 
-You can script Brushes to paint items based on the position and conditions of the cell it targets on the Grid Layout.
-Brush paint behavior can be further modified by the selected editing Tool, such as __Erase__ or __Floodfill__.
+Add brushes that paint lines of tiles, random tiles, groups of tiles, or GameObject.
 
-Here are some implementations of **Scriptable Brushes** which can help save time when designing your Tilemap:
+These tiles are examples of [scriptable brushes](https://docs.unity3d.com/Manual/tilemaps/tile-palettes/brushes/create-scriptable-brush.html).
 
-- [GameObject Brush](GameObjectBrush.md)
-- [Random Brush](RandomBrush.md)
-- [Line Brush](LineBrush.md)
-- [Group Brush](GroupBrush.md)
+| **Topic** | **Description** |
+|:---|:---|
+| [Paint a line of tiles](LineBrush.md) | To paint a line of tiles, use the line brush. |
+| [Paint random tiles](RandomBrush.md) | To paint random tiles from a selection, use the random brush. |
+| [Pick a group of tiles automatically](GroupBrush.md) | To automatically pick a group of tiles from the tile palette, use the group brush. |
+| [Paint GameObjects as tiles](GameObjectBrush.md) | To paint GameObjects instead of tiles onto a tilemap grid, use the GameObject brush. |
 
-Refer to the [Scriptable Brushes](https://docs.unity3d.com/Manual/Tilemap-ScriptableBrushes.html) documentation for more
-information.
+## Additional resources
 
+- [Brush Inspector window reference](https://docs.unity3d.com/Manual/tilemaps/tile-palettes/brushes/brush-inspector-reference.html)
+- [2D game art, animation, and lighting for artists](https://unity.com/resources/2d-game-art-animation-lighting-for-artists-ebook?isGated=false)

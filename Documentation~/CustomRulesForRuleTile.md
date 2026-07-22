@@ -1,106 +1,97 @@
-# Custom Rules for Rule Tile
+# Create a custom rule tile
 
-__Contribution by:__ [johnsoncodehk](https://github.com/johnsoncodehk)
+Create a custom rule tile that changes what happens when a tile checks its neighbors.
 
-Use this template script to create new custom [Rule Tiles](RuleTile.md) with matching options that differ from the Rule
-Tile’s [default options](RuleTile.md#Usage) (namely **This** and **Not This**). This creates selectable options for each
-Rule in your custom __Rule Tile__.
+## Create a custom rule tile class
 
-## Template features
+Follow these steps:
 
-- Inheritable Rule Tile.
-- Customizable properties.
-- Expand or rewrite both neighbor Rules and the GUI display of the Rules.
-- Usable with by [RuleOverrideTile](RuleOverrideTile.md)
-- Create from a template script.
-- Neighbor Rules tooltips.
-- Backward compatible.
+1. Create an empty C# script that inherits from `UnityEngine.Tilemaps`.
 
-## Creating a custom Rule Tile script
+2. Create a class that inherits from `RuleTile`.
 
-Create a Custom Rule Tile script by going to __Assets > Create > Custom Rule Tile Script__. Name the newly created file
-when prompted. After creating the file, you can edit it to add new matching options and custom algorithms for testing
-matches.
+3. Add `[CreateAssetMenu]` above the class to add an item in the main menu that instantiates the tile.
 
-### Examples
+    For example:
 
-- Custom properties:
+    ```csharp
+    using UnityEngine;
+    using UnityEngine.Tilemaps;
+
+    [CreateAssetMenu]
+    public class CustomRuleTile : RuleTile {
+    }
+    ```
+
+## Add a custom property
+
+Add a custom property to the top of the `RuleTile` class. The property appears in the **Inspector** window of the rule tile.
+
+For example:
 
 ```csharp
 public class MyTile : RuleTile {
-    public string tileId;
     public bool isWater;
 }
 ```
 
-- Custom rules:
+## Create a custom matching rule
 
-```csharp
-public class MyTile : RuleTile<MyTile.Neighbor> {
-    public class Neighbor {
-        public const int MyRule1 = 0;
-        public const int MyRule2 = 1;
-    }
-    public override bool RuleMatch(int neighbor, TileBase tile) {
-        switch (neighbor) {
-            case Neighbor.MyRule1: return false;
-            case Neighbor.MyRule2: return true;
-        }
-        return true;
-    }
-}
-```
+Create a new type of rule for the grid in the **Rule Tile** Inspector window.
 
-- Expansion rules
+1. Inherit `RuleTile<CustomRuleTile.Neighbor>` instead of `RuleTile`.
 
-```csharp
-public class MyTile : RuleTile<MyTile.Neighbor> {
+2. Create a subclass that inherits from `RuleTile.TilingRule`, and add a new rule number. Unity uses 0, 1, and 2 for the default rules, so custom rules start at 3. For example:
+
+    ```csharp
     public class Neighbor : RuleTile.TilingRule.Neighbor {
-        // 0, 1, 2 is using in RuleTile.TilingRule.Neighbor
-        public const int MyRule1 = 3;
-        public const int MyRule2 = 4;
+        public const int tileIsNull = 3;
     }
+    ```
+
+    When you create an instance of the new rule tile, select **3** as the rule when you click the grid in the **Tiling Rules** section of the **Inspector** window. 
+
+3. Override the `RuleMatch` method to define the new rule. `RuleMatch` runs every time Unity checks the neighbor of a tile. Use a `switch` statement to return `true` or `false` depending on a condition. For example:
+
+    ```csharp
+        public override bool RuleMatch(int neighbor, TileBase tile) {
+            switch (neighbor) {
+                case 3:
+                    if (tile == null)
+                        return true;
+                    else
+                        return false;
+            }
+            return base.RuleMatch(neighbor, tile);
+        }
+    ```
+
+For a full example, from the main menu, select **Assets** &gt; **Create** &gt; **2D** &gt; **Tiles** &gt; **Custom Rule Tile Script**.
+
+### Check for tiles from a list
+
+To check for tiles from a list, follow these steps:
+
+1. In your custom tile class, create a `List` of `TileBase` objects that contains the tiles you want to check for. For example:
+
+    ```csharp
+    public List<TileBase> tilesToCheckFor = new List<TileBase>();
+    ```
+
+2. When you define the rule, use `Contains` to check if the neighbor tile is in the list. For example:
+
+    ```csharp
     public override bool RuleMatch(int neighbor, TileBase tile) {
         switch (neighbor) {
-            case Neighbor.MyRule1: return false;
-            case Neighbor.MyRule2: return true;
+            case Neighbor.IsInList: return tilesToCheckFor.Contains(tile);
         }
         return base.RuleMatch(neighbor, tile);
     }
-}
-```
+    ```
 
-- Siblings Tile 1
+3. After you create an instance of the custom rule tile, add tiles to the list in the **Inspector** window.
 
-```csharp
-public class MyTile : RuleTile<MyTile.Neighbor> {
-    public List<TileBase> sibings = new List<TileBase>();
-    public class Neighbor : RuleTile.TilingRule.Neighbor {
-        public const int Sibing = 3;
-    }
-    public override bool RuleMatch(int neighbor, TileBase tile) {
-        switch (neighbor) {
-            case Neighbor.Sibing: return sibings.Contains(tile);
-        }
-        return base.RuleMatch(neighbor, tile);
-    }
-}
-```
+## Additional resources
 
-- Siblings Tile 2
+- [RuleTile](xref:UnityEngine.RuleTile) API
 
-```csharp
-public class MyTile : RuleTile<MyTile.Neighbor> {
-    public int siblingGroup;
-    public class Neighbor : RuleTile.TilingRule.Neighbor {
-        public const int Sibing = 3;
-    }
-    public override bool RuleMatch(int neighbor, TileBase tile) {
-        MyTile myTile = tile as MyTile;
-        switch (neighbor) {
-            case Neighbor.Sibing: return myTile && myTile.siblingGroup == siblingGroup;
-        }
-        return base.RuleMatch(neighbor, tile);
-    }
-}
-```

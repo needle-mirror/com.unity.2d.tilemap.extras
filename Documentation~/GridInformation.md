@@ -1,42 +1,15 @@
-# Grid Information
+# Store custom data in a grid
 
-This is a simple component that stores and provides information based on Grid positions and keywords.
+To store custom data in a grid, add a Grid Information component. For example, to store and retrieve data you use in [scriptable tiles](https://docs.unity3d.com/Manual/Tilemap-ScriptableTiles.html).
 
-## Usage
+Follow these steps:
 
-Add this Component to a GameObject with a Grid component. To store information on to the Grid Information component, use
-the following APIs:
+1. Select a grid in the **Hierarchy** window.
+2. In the **Inspector** window, select **Add Component**.
+3. Select **Grid Information**.
 
-```C#
-public bool SetPositionProperty(Vector3Int position, String name, int positionProperty)
+To store and retrieve data, use the `SetPositionProperty` and `GetPositionProperty` APIs.
 
-public bool SetPositionProperty(Vector3Int position, String name, string positionProperty)
+## Additional resources
 
-public bool SetPositionProperty(Vector3Int position, String name, float positionProperty)
-
-public bool SetPositionProperty(Vector3Int position, String name, double positionProperty)
-
-public bool SetPositionProperty(Vector3Int position, String name, UnityEngine.Object positionProperty)
-
-public bool SetPositionProperty(Vector3Int position, String name, Color positionProperty)
-```
-
-To retrieve information from the Grid Information component, use the following APIs:
-
-```C#
-public T GetPositionProperty<T>(Vector3Int position, String name, T defaultValue) where T : UnityEngine.Object
-
-public int GetPositionProperty(Vector3Int position, String name, int defaultValue)
-
-public string GetPositionProperty(Vector3Int position, String name, string defaultValue)
-
-public float GetPositionProperty(Vector3Int position, String name, float defaultValue)
-
-public double GetPositionProperty(Vector3Int position, String name, double defaultValue)
-
-public Color GetPositionProperty(Vector3Int position, String name, Color defaultValue)
-```
-
-You can use this in combination with [Scriptable Tiles](https://docs.unity3d.com/Manual/Tilemap-ScriptableTiles.html) to
-get the right [TileData](https://docs.unity3d.com/Manual/Tilemap-ScriptableTiles-TileData.html) when creating the layout
-of your Tilemap.
+- [Grid component reference](https://docs.unity3d.com/Manual/tilemaps/grid-reference.html)
