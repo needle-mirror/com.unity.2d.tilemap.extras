@@ -84,8 +84,13 @@ namespace UnityEditor.Tilemaps
         {
             foreach (var cell in m_Cells)
             {
-                if (cell.gameObject != null && !EditorUtility.IsPersistent(cell.gameObject))
+                // Delete all GameObjects instantiated by GameObject Brush (set to HideAndDontSave)
+                if (cell.gameObject != null
+                    && !EditorUtility.IsPersistent(cell.gameObject)
+                    && (cell.gameObject.hideFlags & HideFlags.HideAndDontSave) == HideFlags.HideAndDontSave)
+                {
                     DestroyImmediate(cell.gameObject);
+                }
                 cell.gameObject = null;
             }
 
@@ -110,14 +115,17 @@ namespace UnityEditor.Tilemaps
             DestroyImmediate(hiddenGrid);
         }
 
+        internal static Vector3Int ClampSize(Vector3Int size)
+        {
+            var clampedX = Math.Clamp(size.x, 1, 100);
+            var clampedY = Math.Clamp(size.y, 1, Math.Min(100, 10000 / clampedX));
+            var clampedZ = Math.Clamp(size.z, 1, Math.Min(100, 10000 / (clampedX * clampedY)));
+            return new Vector3Int(clampedX, clampedY, clampedZ);
+        }
+
         private void OnValidate()
         {
-            if (m_Size.x < 0)
-                m_Size.x = 0;
-            if (m_Size.y < 0)
-                m_Size.y = 0;
-            if (m_Size.z < 0)
-                m_Size.z = 0;
+            m_Size = ClampSize(m_Size);
         }
 
         /// <summary>

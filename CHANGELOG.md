@@ -4,6 +4,32 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [6.0.3] - 2026-08-05
+### Changed
+- [AdvancedRuleOverrideTileEditor] Add scrolling to Rules
+- [RuleTileEditor] Add scrolling to Rules
+- [RuleTileEditor] Do not show Select button for Sprite field if not interacting with it
+- [RuleTileOverrideEditor] Do not show Select button for Sprite field if not interacting with it
+- [RuleTile] Optimise GetTileAnimationData to skip rule matching when no TilingRule has Animation output.
+- [RuleTile] Fix matching for GetTileAnimationData to stop at exact rule matched.
+- [GameObjectBrush] Cap each size element to 100 and total size to 10000
+- [GameObjectBrush] Set minimum of each size element to 1
+- [RandomBrushEditor] Cap each random Set Size element to 100 and total size to 10000
+- [RandomBrushEditor] Add dialog box to confirm changes if total Tile count exceeds 100000
+- [RandomBrushEditor] Set minimum of Number of Sets to 1
+
+### Added
+- [LineBrushEditor] Add right click to cancel LineBrush line draw
+
+### Fixed
+- [GameObjectBrush] Only destroy HideAndDontSave objects set in GameObjectBrush for GameObjectBrush.Reset
+- [LineBrush] Fix MouseDrag painting for LineBrush
+- [LineBrushEditor] Fix start marquee when Grid has different cell sizes or Tilemap has a changed Transform
+- [LineBrushEditor] Fix start marquee for Hexagonal Grid
+- [AutoTileEditor] Fix previous entries remaining in AutoTile when loading a new template
+- [AutoTileEditor] Refresh AutoTileEditor when AutoTile textures have changed
+- [AutoTile] Fix errors when used Sprites are deleted
+
 ## [6.0.2] - 2026-04-29
 ### Changed
 - [AutoTile] Change uss for extra right margin for listview entries

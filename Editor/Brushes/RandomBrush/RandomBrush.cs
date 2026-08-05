@@ -333,6 +333,70 @@ namespace UnityEditor.Tilemaps
             }
         }
 
+        internal const int kMaxTotalTiles = 100000;
+
+        internal static Func<Vector3Int, int, long, bool> s_ConfirmLargeChange = ShowConfirmLargeChangeDialog;
+
+        static bool ShowConfirmLargeChangeDialog(Vector3Int size, int count, long total)
+        {
+            return EditorUtility.DisplayDialog(
+                "Random Brush",
+                $"This change would store {total:N0} tiles " +
+                $"({size.x}x{size.y}x{size.z} x {count} sets), exceeding the recommended limit of {kMaxTotalTiles:N0}. Continue?",
+                "Continue",
+                "Cancel");
+        }
+
+        internal static Vector3Int ClampRandomTileSetSize(Vector3Int size)
+        {
+            var clampedX = Math.Clamp(size.x, 1, 100);
+            var clampedY = Math.Clamp(size.y, 1, Math.Min(100, 10000 / clampedX));
+            var clampedZ = Math.Clamp(size.z, 1, Math.Min(100, 10000 / (clampedX * clampedY)));
+            return new Vector3Int(clampedX, clampedY, clampedZ);
+        }
+
+        internal static void ReconcileRandomTileSets(RandomBrush brush, Vector3Int size, int count)
+        {
+            brush.randomTileSetSize = size;
+
+            if (brush.randomTileSets == null || brush.randomTileSets.Length != count)
+            {
+                Array.Resize(ref brush.randomTileSets, count);
+                Array.Resize(ref brush.randomTileChangeDataSets, count);
+            }
+
+            var sizeCount = brush.randomTileSetSize.x * brush.randomTileSetSize.y * brush.randomTileSetSize.z;
+            for (var i = 0; i < count; ++i)
+            {
+                var oldTiles = brush.randomTileSets[i].randomTiles;
+                var oldData = brush.randomTileChangeDataSets[i].randomTileChangeData;
+                if (oldTiles != null && oldTiles.Length == sizeCount
+                    && oldData != null && oldData.Length == sizeCount)
+                    continue;
+
+                var newTiles = new TileBase[sizeCount];
+                var newData = new TileChangeData[sizeCount];
+
+                var copyTiles = oldTiles != null ? Math.Min(oldTiles.Length, sizeCount) : 0;
+                for (var j = 0; j < copyTiles; ++j)
+                    newTiles[j] = oldTiles[j];
+
+                var copyData = oldData != null ? Math.Min(oldData.Length, sizeCount) : 0;
+                for (var j = 0; j < copyData; ++j)
+                    newData[j] = oldData[j];
+
+                for (var j = copyData; j < sizeCount; ++j)
+                {
+                    newData[j].tile = newTiles[j];
+                    newData[j].transform = Matrix4x4.identity;
+                    newData[j].color = Color.white;
+                }
+
+                brush.randomTileSets[i].randomTiles = newTiles;
+                brush.randomTileChangeDataSets[i].randomTileChangeData = newData;
+            }
+        }
+
         /// <summary>
         ///     Callback for painting the inspector GUI for the RandomBrush in the Tile Palette.
         ///     The RandomBrush Editor overrides this to have a custom inspector for this Brush.
@@ -347,52 +411,28 @@ namespace UnityEditor.Tilemaps
                     EditorGUILayout.Toggle("Add To Random Tiles", randomBrush.addToRandomTiles);
             }
 
-            EditorGUI.BeginChangeCheck();
-            randomBrush.randomTileSetSize =
-                EditorGUILayout.Vector3IntField("Tile Set Size", randomBrush.randomTileSetSize);
-            if (EditorGUI.EndChangeCheck())
-                for (var i = 0; i < randomBrush.randomTileSets.Length; ++i)
-                {
-                    var sizeCount = randomBrush.randomTileSetSize.x * randomBrush.randomTileSetSize.y *
-                                    randomBrush.randomTileSetSize.z;
-                    randomBrush.randomTileSets[i].randomTiles = new TileBase[sizeCount];
-                    randomBrush.randomTileChangeDataSets[i].randomTileChangeData = new TileChangeData[sizeCount];
-                    for (var j = 0; j < sizeCount; ++j)
-                    {
-                        randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].tile =
-                            randomBrush.randomTileSets[i].randomTiles[j];
-                        randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].transform = Matrix4x4.identity;
-                        randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].color = Color.white;
-                    }
-                }
+            var previousTileSetSize = randomBrush.randomTileSetSize;
+            var previousCount = randomBrush.randomTileSets != null ? randomBrush.randomTileSets.Length : 0;
 
-            var randomTileSetCount = EditorGUILayout.DelayedIntField("Number of Tiles",
-                randomBrush.randomTileSets != null ? randomBrush.randomTileSets.Length : 0);
-            randomTileSetCount = Math.Clamp(randomTileSetCount, 0, 1000);
-            if (randomBrush.randomTileSets == null || randomBrush.randomTileSets.Length != randomTileSetCount)
+            var newRandomTileSetSize =
+                EditorGUILayout.Vector3IntField("Random Set Size", randomBrush.randomTileSetSize);
+            newRandomTileSetSize = ClampRandomTileSetSize(newRandomTileSetSize);
+
+            var randomTileSetCount = EditorGUILayout.DelayedIntField("Number of Sets", previousCount);
+            randomTileSetCount = Math.Clamp(randomTileSetCount, 1, 1000);
+
+            var newSizeCount = (long)newRandomTileSetSize.x * newRandomTileSetSize.y * newRandomTileSetSize.z;
+            var previousSizeCount = (long)previousTileSetSize.x * previousTileSetSize.y * previousTileSetSize.z;
+            var newTotalTiles = newSizeCount * randomTileSetCount;
+            var previousTotalTiles = previousSizeCount * previousCount;
+            if (newTotalTiles > kMaxTotalTiles && newTotalTiles > previousTotalTiles
+                && !s_ConfirmLargeChange(newRandomTileSetSize, randomTileSetCount, newTotalTiles))
             {
-                Array.Resize(ref randomBrush.randomTileSets, randomTileSetCount);
-                Array.Resize(ref randomBrush.randomTileChangeDataSets, randomTileSetCount);
-                for (var i = 0; i < randomBrush.randomTileSets.Length; ++i)
-                {
-                    var sizeCount = randomBrush.randomTileSetSize.x * randomBrush.randomTileSetSize.y *
-                                    randomBrush.randomTileSetSize.z;
-                    if (randomBrush.randomTileSets[i].randomTiles == null
-                        || randomBrush.randomTileSets[i].randomTiles.Length != sizeCount)
-                    {
-                        randomBrush.randomTileSets[i].randomTiles = new TileBase[sizeCount];
-                        randomBrush.randomTileChangeDataSets[i].randomTileChangeData = new TileChangeData[sizeCount];
-                        for (var j = 0; j < sizeCount; ++j)
-                        {
-                            randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].tile =
-                                randomBrush.randomTileSets[i].randomTiles[j];
-                            randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].transform =
-                                Matrix4x4.identity;
-                            randomBrush.randomTileChangeDataSets[i].randomTileChangeData[j].color = Color.white;
-                        }
-                    }
-                }
+                newRandomTileSetSize = previousTileSetSize;
+                randomTileSetCount = previousCount;
             }
+
+            ReconcileRandomTileSets(randomBrush, newRandomTileSetSize, randomTileSetCount);
 
             if (randomTileSetCount > 0)
             {
@@ -419,7 +459,8 @@ namespace UnityEditor.Tilemaps
                 }
             }
 
-            if (EditorGUI.EndChangeCheck()) EditorUtility.SetDirty(randomBrush);
+            if (EditorGUI.EndChangeCheck())
+                EditorUtility.SetDirty(randomBrush);
         }
 
         /// <summary>

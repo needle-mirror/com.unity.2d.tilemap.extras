@@ -33,6 +33,16 @@ namespace UnityEngine
 
         private static TileBase[] m_AllocatedUsedTileArr = Array.Empty<TileBase>();
 
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            // Invalidate caches that depend on TilingRule contents.
+            // Inspector edits (e.g. changing a rule's Output type) go through SerializedObject.ApplyModifiedProperties,
+            // which does not call UpdateNeighborPositions, so we must hook OnValidate to keep the cache in sync.
+            m_HasAnimationRule = null;
+        }
+#endif
+
         /// <summary>
         ///     The Default Sprite set when creating a new Rule.
         /// </summary>
@@ -54,6 +64,8 @@ namespace UnityEngine
         [HideInInspector] public List<TilingRule> m_TilingRules = new();
 
         private HashSet<Vector3Int> m_NeighborPositions = new();
+
+        [NonSerialized] private bool? m_HasAnimationRule;
 
         /// <summary>
         ///     Returns the default Neighbor Rule Class type.
@@ -85,11 +97,25 @@ namespace UnityEngine
         }
 
         /// <summary>
+        ///     Returns whether any TilingRule on this RuleTile has Animation output.
+        /// </summary>
+        internal bool hasAnimationRule
+        {
+            get
+            {
+                if (!m_HasAnimationRule.HasValue)
+                    UpdateHasAnimationRule();
+                return m_HasAnimationRule.Value;
+            }
+        }
+
+        /// <summary>
         ///     Updates the neighboring positions of this RuleTile
         /// </summary>
         public void UpdateNeighborPositions()
         {
             m_CacheTilemapsNeighborPositions.Clear();
+            m_HasAnimationRule = null;
 
             var positions = m_NeighborPositions;
             positions.Clear();
@@ -333,6 +359,20 @@ namespace UnityEngine
                         m_CacheTilemapsNeighborPositions);
         }
 
+        private void UpdateHasAnimationRule()
+        {
+            var hasAnimation = false;
+            foreach (var rule in m_TilingRules)
+            {
+                if (rule.m_Output == TilingRuleOutput.OutputSprite.Animation)
+                {
+                    hasAnimation = true;
+                    break;
+                }
+            }
+            m_HasAnimationRule = hasAnimation;
+        }
+
         /// <summary>
         ///     Retrieves any tile animation data from the scripted tile.
         /// </summary>
@@ -343,17 +383,24 @@ namespace UnityEngine
         public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap,
             ref TileAnimationData tileAnimationData)
         {
+            if (!hasAnimationRule)
+                return false;
+
             var transform = Matrix4x4.identity;
             foreach (var rule in m_TilingRules)
-                if (rule.m_Output == TilingRuleOutput.OutputSprite.Animation)
-                    if (RuleMatches(rule, position, tilemap, ref transform))
+            {
+                if (RuleMatches(rule, position, tilemap, ref transform))
+                {
+                    if (rule.m_Output == TilingRuleOutput.OutputSprite.Animation)
                     {
                         tileAnimationData.animatedSprites = rule.m_Sprites;
                         tileAnimationData.animationSpeed =
                             Random.Range(rule.m_MinAnimationSpeed, rule.m_MaxAnimationSpeed);
                         return true;
                     }
-
+                    return false;
+                }
+            }
             return false;
         }
 
@@ -793,6 +840,9 @@ namespace UnityEngine
                 /// </summary>
                 public const int NotThis = 2;
             }
+
+            [SerializeField]
+            internal Vector2 m_Scroll = new Vector2(0.5f, 0.5f);
         }
 
         /// <summary>

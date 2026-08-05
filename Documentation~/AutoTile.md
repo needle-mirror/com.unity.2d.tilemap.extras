@@ -1,59 +1,72 @@
-# AutoTile
+# Create an auto tile
 
-AutoTiles match themselves based on the mask set on Textures to generate the AutoTile ruleset. Two types of Masks are
-available for the AutoTile, the 2x2 type for 16 Sprites and the 3x3 type for 47 Sprites set.
+An auto tile lets you paint an environment using a spritesheet of floor layouts like corners and corridors. Use an auto tile to paint 2D tile environments without setting up [rule tiles](RuleTile.md)
 
-### Properties
+Follow these steps:
 
-| Property               | Function                                                                                                                                                                 |
-|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| __Default Sprite__     | The Sprite set when there are no matches.                                                                                                                                |
-| __Default GameObject__ | The GameObject instantiated when set on the Tilemap.                                                                                                                     |
-| __Tile Collider__      | The Collider Type used for generating colliders.                                                                                                                         |
-| __Has Physics Shape__  | Checks whether the Sprite used has a physics shape. If not, the Collider Type for the Tilemap position will be set to None. Valid if the Tile Collider is set to Sprite. |
-| Mask Type              | Mask Type for setting Rules for the AutoTile. Use 2x2 for a 16 Sprite ruleset and 3x3 for a 47 Sprite ruleset.                                                           |
-| Random                 | Randomly picks a Sprite if multiple Sprites share the same mask. Otherwise, uses the first Sprite set with the mask.                                                     |
-| Used Textures          | Sprites will be used from the selected Textures to make up the ruleset. You will be able to set the appropriate Sprites by painting the masks on the Sprites.            |
+1. Create a spritesheet with your floor layout sprites.
+2. Import the spritesheet into an auto tile asset.
+3. Indicate which sprite corresponds to which floor layout by drawing masks onto the texture.
 
-### Usage
+## Create a texture layout for auto tile
 
-![AutoTile Editor](images/AutoTileEditor.png)
+Create a single spritesheet that contains a sprite for each floor layout. The sprites must be square.
 
-Set up the AutoTile by selecting the appropriate Mask Type and add the required Textures to be used. You can adjust the
-Scale per Texture to have it sized appropriately in the window.
+Use either of the following layouts:
 
-Each Texture will have its Sprites outlined as a rectangle. Depending on the Mask Type set, the rectangle will be split
-into portions, either 2x2 or 3x3. Click on each portion to set a mask on that portion. Doing these sets up the painting
-rule for that Sprite. Paint masks on each Sprite to set up the entire ruleset for the AutoTile.
+- For a simple environment that includes only corners and corridors, create sprites that represent 2 × 2 layouts of floors and walls.
+- For a more complex environment that includes crossroads and T-junctions, create sprites that represent 3 × 3 layouts of floors and walls.
 
-#### 2x2
+![Left: Example of a sprite with a 2 × 2 corner layout. The bottom-right square is the floor, and the other cells are walls. Right: Example of a sprite with a 3 × 3 crossroads layout. The corner cells are walls.](Images/2x2-vs-3x3.png)
 
-Each corner mask must be matched with the same Tiles bordering that corner. For example, if the top right corner is
-masked, for this to be matched, there must be the same Tiles to its top, top right and right for it to be matched.
+For more information and examples of both layouts, refer to [Auto Tile Inspector window reference](AutoTile-Inspector.md).
 
-In the below example, the center Tile has the same Tile on all corners except the top left. This matches the mask on the
-top right, bottom left and bottom right and will use the corresponding Sprite.
+## Create an auto tile asset
 
-![2x2 Mask](images/2x2Mask.png)
+Follow these steps:
 
-#### 3x3
+1. Import your texture into Unity and use the **Slice** settings of the **Sprite Editor** window to cut out the sprites as normal. For more information, refer to [Cut out sprites from a texture](https://docs.unity3d.com/Manual/sprite/sprite-editor/use-editor.html).
 
-Each mask on the borders must be matched with the same Tile for the painted Rule to be matched. The center mask
-determines if this mask rule is active.
+2. In the **Project** window, right-click and select **Create** &gt; **2D** &gt; **Tiles** &gt; **Auto Tile** to create a new auto tile asset.
 
-In the below example, the center Tile has the same Tile on the top, right and bottom. This matches the mask with the
-borders on the top, right and bottom and will use the corresponding Sprite.
+3. Set **Default Sprite** to a sprite that has all floor and no walls.
 
-![3x3 Mask](images/3x3Mask.png)
+4. Set **Mask Type** to **Mask_2x2** or **Mask_3x3** depending on your texture.
 
-If two or more Sprites have the same mask painted on, they will each have a red border to highlight this. If this error
-is not corrected, the first Sprite from the top left will be used when there is a match in the mask.
+5. In the **Used Textures** section, select **Add**.
 
-You can save the finished AutoTile ruleset as a TileTemplate by clicking on the Save button. This exports the ruleset
-for the current Texture. You can load the TileTemplate for another AutoTile using a similar Texture with the same layout
-without having to set up the masks again. The example below shows an AutoTile with a Texture loaded with an
-AutoTileTemplate created from the AutoTile above.
+6. Drag the spritesheet you created from the **Project** window to the Texture 2D property.
 
-![Similar Texture with loaded AutoTile Template](images/LoadAutoTileTemplate.png)
+## Indicate the floor layouts
 
-Assets used are from https://kenney.nl/assets/top-down-shooter
+When you drag in the spritesheet, Unity displays each sprite with a grey outline. To indicate which sprite is which floor layout, click on the sprite to draw red squares over the floor areas.
+
+For example:
+
+- If your texture has 2 × 2 floor layouts, draw an L shape of red squares for the layout that has a corner wall. 
+- If your texture has a 3 × 3 layout, draw a T shape of red squares for the layout that has a T-junction.
+
+**Note:** The center square in a 3 × 3 layout enables and disables the rule.
+
+![Left: Example of a sprite with a 2 × 2 corner layout. The bottom-right cell has its mask enabled to represent the floor. Right: Example of a sprite with a 3 × 3 crossroads layout. The center cells have their mask enabled to represent the floor.](Images/2x2-vs-3x3-mask.png)
+
+For examples with all the possible floor layouts, refer to [Auto Tile Inspector window reference](AutoTile-Inspector.md).
+
+If you create a rule that meets the same criteria as another mask, Unity displays the cell with a red outline. If you don't fix this, Unity uses the sprite closest to the top-left.
+
+## Paint with the auto tile
+
+To paint with the auto tile, add it to a tile palette and paint your environment into the **Scene** view. For more information, refer to [Create a tile palette](https://docs.unity3d.com/Manual/tilemaps/tile-palettes/create-tile-palette.html).
+
+Each tile you paint represents floor. Unity checks surrounding the tiles and paints the correct sprite to create a visual border around the floor.
+
+![The Scene view after drawing with the example 2 × 2 auto tile. When you paint four tiles to represent a large square area of floor, Unity recognizes and uses the top-left corner sprite.](Images/2x2-auto-tile-draw.png)<br/>The Scene view after drawing with the example 2 × 2 auto tile. When you paint four tiles to represent a large square area of floor, Unity recognizes and uses the top-left corner sprite.
+
+![The Scene view after drawing with the example 3 × 3 auto tile. When you paint a crossroads floor, Unity recognizes and uses the crossroads sprite.](Images/3x3-auto-tile-draw.png)<br/>The Scene view after drawing with the example 3 × 3 auto tile. When you paint a crossroads floor, Unity recognizes and uses the crossroads sprite.
+
+![The Scene view with tiles painted using the full example on the right. The full example is a 3 × 3 auto tile texture with all 48 possible floor layouts, and the layout masks in red.](Images/auto-tile-example.png)<br/>The Scene view with tiles painted using the full example on the right. The full example is a 3 × 3 auto tile texture with all 48 possible floor layouts, and the layout masks in red.
+
+## Additional resources
+
+- [Sample projects](./sample-projects.md)
+- [2D game art, animation, and lighting for artists](https://unity.com/resources/2d-game-art-animation-lighting-unity-6-3-lts?isGated=false)

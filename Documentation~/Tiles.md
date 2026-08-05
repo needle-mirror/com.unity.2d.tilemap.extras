@@ -1,14 +1,14 @@
-# Scriptable Tiles
+# Built-in tiles
 
-You can script Tiles to adapt to different criteria and conditions, such as its position on the Tilemap. It then
-displays the Sprite which meets its scripted requirements. This allows you to create different Tiles that can help you
-save time and be more efficient when creating Tilemaps. Refer to
-the [Scriptable Tiles](https://docs.unity3d.com/Manual/Tilemap-ScriptableTiles.html) page for more information.
+Add animated tiles or tiles that change depending on the tiles around them.
 
-The following **Scriptable Tiles** are included in this package, with examples of how they are implemented. You can use
-these Tiles as the base for your own custom Tiles as well.
+These tiles are examples of [scriptable tiles](https://docs.unity3d.com/Manual/tilemaps/tiles-for-tilemaps/scriptable-tiles/scriptable-tiles.html).
 
-- [Animated Tile](AnimatedTile.md)
-- [Rule Tile](RuleTile.md)
-- [Rule Override Tile](RuleOverrideTile.md)
+| **Topic** | **Description** |
+|:--|:--|
+| [Create an animated tile](AnimatedTile.md) | To create a tile that plays an animation of different sprites, create an animated tile asset. |
+| [Automating tile layouts](RuleTile-landing.md) | To change the sprite a tile uses based on its neighboring tiles, create a rule tile or an auto tile. |
 
+## Additional resources
+
+- [Rule tiles](RuleTile-landing.md)
