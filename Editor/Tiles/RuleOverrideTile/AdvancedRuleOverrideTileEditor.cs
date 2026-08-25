@@ -173,31 +173,46 @@ namespace UnityEditor
             {
                 var yPos = rect.yMin + 2f;
                 var height = rect.height - k_PaddingBetweenRules;
-                var matrixWidth = k_DefaultElementHeight;
 
                 var ruleBounds = originalRule.GetBounds();
-                var ruleGuiBounds = ruleTileEditor.GetRuleGUIBounds(ruleBounds, originalRule);
-                var matrixSize = ruleTileEditor.GetMatrixSize(ruleGuiBounds);
-                var matrixSizeRate = matrixSize / Mathf.Max(matrixSize.x, matrixSize.y);
-                var matrixRectSize = new Vector2(matrixWidth * matrixSizeRate.x,
-                    k_DefaultElementHeight * matrixSizeRate.y);
-                var matrixRectPosition = new Vector2(rect.xMax - matrixWidth * 2f - 10f, yPos);
-                matrixRectPosition.x += (matrixWidth - matrixRectSize.x) * 0.5f;
-                matrixRectPosition.y += (k_DefaultElementHeight - matrixRectSize.y) * 0.5f;
+                var bounds = ruleTileEditor.GetRuleGUIBounds(ruleBounds, originalRule);
+                var matrixSize = ruleTileEditor.GetMatrixSize(bounds);
 
-                var inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixWidth * 2f - 20f, height);
-                var matrixRect = new Rect(matrixRectPosition, matrixRectSize);
-                var spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
+                // Determine matrix size
+                var currentViewWidth = rect.width;
+                var limitedMatrixSize = new Vector2(Mathf.Min(0.5f * currentViewWidth, matrixSize.x), matrixSize.y);
+                float reservedWidth = 64f + 80f + k_DefaultElementHeight;
+                float startX = 0f;
+                if (limitedMatrixSize.x <= currentViewWidth - reservedWidth)
+                {
+                    // Draw Inspector if there is enough space
+                    var inspectorRect = new Rect(rect.xMin, yPos, rect.width - limitedMatrixSize.x - k_DefaultElementHeight - 24f, height);
+                    ruleTileEditor.RuleInspectorOnGUI(inspectorRect, rule);
+                    startX += inspectorRect.width + 6f;
+                }
+                else
+                {
+                    // Use full remaining space for Matrix
+                    limitedMatrixSize.x = currentViewWidth - k_DefaultElementHeight - 18f;
+                }
 
-                ruleTileEditor.RuleInspectorOnGUI(inspectorRect, rule);
-                ruleTileEditor.SpriteOnGUI(spriteRect, rule);
-
+                var matrixRect = new Rect(rect.xMin + startX + 6f, yPos, limitedMatrixSize.x,
+                    matrixSize.y + 2);
+                var matrixFullRect = new Rect(0, 0, matrixSize.x, matrixSize.y);
                 if (!isMissing)
+                {
+                    rule.m_Scroll = GUI.BeginScrollView(matrixRect, rule.m_Scroll, matrixFullRect);
                     using (new EditorGUI.DisabledScope(true))
                     {
-                        ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_InstanceTile, matrixRect, ruleGuiBounds,
+                        ruleTileEditor.RuleMatrixOnGUI(overrideTile.m_InstanceTile, matrixFullRect, bounds,
                             originalRule);
                     }
+                    GUI.EndScrollView();
+                }
+
+                var spriteRect = new Rect(rect.xMax - k_DefaultElementHeight - 6f, yPos, k_DefaultElementHeight,
+                    k_DefaultElementHeight);
+                ruleTileEditor.SpriteOnGUI(spriteRect, rule);
             }
         }
 
@@ -211,7 +226,7 @@ namespace UnityEditor
             var originalRule = m_Rules[index].Key;
             var overrideRule = m_Rules[index].Value;
             var height = overrideRule != null
-                ? ruleTileEditor.GetElementHeight(overrideRule)
+                ? Mathf.Max(ruleTileEditor.GetElementHeight(overrideRule), ruleTileEditor.GetElementHeight(originalRule))
                 : ruleTileEditor.GetElementHeight(originalRule);
 
             var isMissing = index >= m_MissingOriginalRuleIndex;

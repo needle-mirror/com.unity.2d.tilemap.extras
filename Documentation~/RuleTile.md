@@ -1,134 +1,64 @@
-# Rule Tile
+# Create a rule tile
 
-__Contributions by:
-__ [johnsoncodehk](https://github.com/johnsoncodehk), [DreadBoy](https://github.com/DreadBoy), [AVChemodanov](https://github.com/AVChemodanov), [DoctorShinobi](https://github.com/DoctorShinobi), [n4n0lix](https://github.com/n4n0lix)
+To change which tile Unity paints based on its surrounding tiles, create a rule tile. For example, you can create a rule tile that paints a specific sprite if ground is beneath.
 
-There are specific types of Rule Tiles for each of
-the [Tilemap grid types](https://docs.unity3d.com/Manual/class-Grid.html). The default Rule Tile is for the
-default [Rectangle Grid](https://docs.unity3d.com/Manual/Tilemap-CreatingTilemaps.html) type; the Hexagonal Rule Tile is
-for the [Hexagonal Grid](https://docs.unity3d.com/Manual/Tilemap-Hexagonal.html) type; and the Isometric Rule Tile is
-for the [Isometric Grid](https://docs.unity3d.com/Manual/Tilemap-Isometric.html) types. The different types of Rule
-Tiles all possess the same properties.
+Follow these steps:
 
-## Properties
+1. In the **Project** window, right-click and select **Create** > **2D** > **Tiles** > **Rule Tile**.
 
-| Property               | Function                                                |
-|------------------------|---------------------------------------------------------|
-| __Default Sprite__     | The default Sprite set when creating a new Rule.        |
-| __Default GameObject__ | The default GameObject set when creating a new Rule.    |
-| __Default Collider__   | The default Collider Type set when creating a new Rule. |
+2. Select the type of rule tile that matches your tilemap. For example, select **Rule Tile** for a regular tilemap, or **Isometric Rule Tile** for an isometric tilemap.
 
-### Tiling Rules
+3. Set **Default Sprite** to the sprite you want to customize. Drag the sprite in from the **Project** window or select the sprite picker.
 
-![Tiling Rules properties.](images/RuleTileRule.png)<br/>Tiling Rules properties
+4. In the **Tiling Rules** section, select **Add** (**+**) to add a new rule.
 
-| Property       | Function                                                                               |
-|----------------|----------------------------------------------------------------------------------------|
-| __Rule__       | The Rule Type for this Rule.                                                           |
-| __GameObject__ | The GameObject for the Tile which fits this Rule.                                      |
-| __Collider__   | The Collider Type for the Tile which fits this Rule                                    |
-| __Output__     | The Output for the Tile which fits this Rule. Each Output type has its own properties. |
+5. Use the 3 × 3 grid to set up what happens to neighboring tiles. For example, click the empty cell on the right to change it to a green arrow, which checks if the right-hand cell matches this rule tile.
 
-### Output: Fixed
+    ![The Tiling Rules section of the Rule Tile Inspector window, with a rule that paints a pipe sprite when the same rule tile is above, on the left, and on the right.](Images/rule-tile-pipe.png)
 
-| Property   | Function                                           |
-|------------|----------------------------------------------------|
-| __Sprite__ | Display this Sprite for Tiles which fit this Rule. |
+    For more information, refer to [Rule Tile Inspector window reference](RuleTile-Inspector.md).
 
-### Output: Random
+    If all the neighbors meet the criteria, the rule matches and Unity applies the GameObject, **Collider** and **Output** properties.
 
-| Property    | Function                                                                                                        |
-|-------------|-----------------------------------------------------------------------------------------------------------------|
-| __Noise__   | The [Perlin noise](https://en.wikipedia.org/wiki/Perlin_noise) factor when placing the Tile.                    |
-| __Shuffle__ | The randomized transform given to the Tile when placing it.                                                     |
-| __Size__    | The number of Sprites to randomize from.                                                                        |
-| __Sprite__  | The Sprite for the Tile which fits this Rule. A random Sprite will be chosen out of this when placing the Tile. |
+6. In the sprite box, add a sprite for Unity to paint if the neighboring tiles match the rules.
 
-### Output: Animation
+7. Add the tile to the tile palette as normal and paint it into the **Scene** view.
 
-| Property     | Function                                                                                                        |
-|--------------|-----------------------------------------------------------------------------------------------------------------|
-| __MinSpeed__ | The minimum speed at which the animation is played.                                                             |
-| __MaxSpeed__ | The maximum speed at which the animation is played.                                                             |
-| __Size__     | The number of Sprites in the animation.                                                                         |
-| __Sprite__   | The Sprite for the Tile which fits this Rule. Sprites will be shown in sequence based on the order of the list. |
+In the example, the rule paints the **Default Sprite** by default, but if it detects an existing rule tile to the right, it paints the sprite from the **Tiling Rules** section instead.
 
-## Editor Properties
+![The Scene view with a tilemap that contains an upside-down T of the example rule tiles. The bottom tile uses the T pipe shape.](Images/rule-tile-pipe-scene-view.png)
 
-| Property            | Function                                                                        |
-|---------------------|---------------------------------------------------------------------------------|
-| __Extend Neighbor__ | Enabling this allows you to increase the range of neighbors beyond the 3x3 box. |
+If you change the rules or sprites after you set up the rule tile, the rule tile updates the tilemap based on the new rules and sprites. 
 
-## <a name="Usage"></a>Setting up a Rule Tile
+You can also detect and paint GameObjects instead of sprites. For more information, refer to [Rule Tile Inspector window reference](RuleTile-Inspector.md).
 
-Set up the Rule Tile with the required rules with the __Rule Tile editor__. In the Rule Tile editor, you can change,
-add, duplicate or remove Rules in the **Tiling Rules** list. Click on the + or - buttons to add or remove Rules. If you
-have a Rule selected, clicking on the + button will allow you to choose between adding a new Rule or duplicating the
-selected Rule. The newly created Rule will be placed after the current selected Rule. Select and hold the top left
-corner of each row to drag them up or down to change the order of the Rules in the list.
+## Optimize multiple rules
 
-![Rule Tile Editor.](images/RuleTileEditor.png)<br/>Rule Tile Editor
+To optimize multiple rules, order the rules in the **Tiling Rules** section by how often you use them in your tilemap, starting with the most common rule. Unity checks each rule in turn, starting at the top.
 
-When you add a new Rule, the Rule editor displays the following: the list of Rule properties, a 3x3 box that visualizes
-the behavior of the set Rules, and a Sprite selector that displays a preview of the selected Sprite.
+## Create variants of a rule tile
 
-![The list of Rule properties, a 3x3 box that visualizes
-the behavior of the set Rules, and a Sprite selector that displays a preview of the selected Sprite.](images/RuleTileRule.png)
+To create variants of a rule tile that use the same rules but different sprites, create a [Rule Override Tile](RuleOverrideTile.md).
 
-The 3x3 box represents the neighbors a Tile can have, where the center represents the Tile itself, and the eight
-bordering cells are its neighboring Tiles in their relative positions to the Tile. Each of the neighboring cells can be
-set with one of three options: **Don't Care**, **This** and **Not This**. These define the behavior of the Rule Tile
-towards these Tiles. Edit the 3x3 box to set up the Rule the Tile must match.
+Follow these steps:
 
-| Options        | Rule Tile behavior                                                                                                                                                       |
-|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| __Don't Care__ | The Rule Tile ignores the contents in this cell.                                                                                                                         |
-| __This__       | The Rule Tile checks if the contents of this cell is an instance of this Rule Tile. If it is an instance, the rule passes. If it is not an instance, the rule fails.     |
-| __Not This__   | The Rule Tile checks if the contents of this cell is not an instance of this Rule Tile. If it is not an instance, the rule passes. If it is an instance, the rule fails. |
+1. In the **Project** window, right-click and select **Create** > **2D** > **Tiles** > **Rule Override Tile**.
+2. In the **Inspector** window, set **Tile** to the rule tile you want to create a variant of.
 
-If all of the neighbors of the Rule Tile match the options set for their respective directions, then the Rule is
-considered matched and the rest of the Rule properties are applied.
+    Unity populates the **Inspector** window with the sprites and GameObjects the rule tile uses.
 
-When the Rule is set to Fixed, the Rule will only match exactly the conditions set for its neighbors. The example below
-will only match if there are the same Rule Tiles to the left and right of it.
+3. Set the sprites in the **Override Sprite** column to use different sprites. Leave a sprite empty to use the original sprite from the rule tile.
+4. Add the tile to the tile palette as normal and paint it into the **Scene** view.
 
-![Rule Tile with Fixed Rule.](images/RuleTileRuleFixed.png)
+To preview the variant rule tile with both its rules and sprites, select the child asset of the rule override tile in the **Project** window.
 
-When the Rule is set to ‘Rotated’, the 3x3 box will be rotated 90 degrees each time the Rule fails to match and it will
-try to match again with this rotated 3x3 box. If the Rule now matches, the contents of this Rule will be applied as well
-as the rotation required to match the Rule. Use this if you want the Rule to match for the four 90 degree rotations if
-rotation is possible.
+To override both the sprites and the rules, create an [Advanced Rule Override Tile](AdvancedRuleOverrideTile.md) instead.
 
-![Rule Tile with Rotated Rule.](images/RuleTileRuleRotated.png)
+## Additional resources
 
-When the Rule is set to Mirror X, Mirror Y or Mirror XY, the 3x3 box will be mirrored in that axis each time the Rule
-fails to match and it will try to match again with this mirrored 3x3 box. If the Rule now matches, the contents of this
-Rule will be applied as well as the mirroring required to match the Rule. Use this if you want the Rule to match for the
-mirrored locations if mirroring is possible.
+- [Sample projects](./sample-projects.md)
+- [2D game art, animation, and lighting for artists](https://unity.com/resources/2d-game-art-animation-lighting-unity-6-3-lts?isGated=false)
+- [How to create rule tiles in Unity](https://www.youtube.com/watch?v=GnNw3tpueyY) on the Unity YouTube channel
 
-![Rule Tile with Mirror XY Rule.](images/RuleTileRuleMirror.png)
 
-If you want the Rule Tile to have a Random output, you can set the Output to Random. This will allow you to specify a
-number of input Sprites to randomize from. The rotation of the Sprites can be randomized as well by changing the _
-_Shuffle__ property.
 
-![Rule Tile with Random Output.](images/RuleTileOutputRandom.png)
-
-If you want the Rule Tile to output a Sprite Animation, you can set the Output to Animation. This will allow you to
-specify a number of Sprites to animate sequentially. The speed of the Animation can be randomized as well by changing
-the __Speed__ property.
-
-![Rule Tile with Animation Output.](images/RuleTileOutputAnimation.png)
-
-When <b>Extend Neighbors</b> is enabled, the 3x3 box can be extended to allow for more specific neighbor matching. The
-Transform rule matching (eg. Rotated, Mirror) will apply for the extended neighbors set.
-
-![Rule Tile with Animation Output.](images/RuleTileRuleExtendNeighbor.png)
-
-Paint with the Rule Tile in the same way as other Tiles by using the Tile Palette tools.
-
-![Scene View with Rule Tile.](images/RuleTile.png)
-
-For optimization, please set the most common Rule at the top of the list of Rules and follow with next most common Rule
-and so on. When matching Rules during the placement of the Tile, the Rule Tile algorithm will check the first Rule
-first, before proceeding with the next Rules.

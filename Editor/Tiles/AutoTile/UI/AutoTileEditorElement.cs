@@ -100,6 +100,8 @@ namespace UnityEditor.Tilemaps
             m_TextureList.itemsAdded += ItemListAdded;
             m_TextureList.itemsRemoved += ItemListRemoved;
             m_TextureList.itemsSourceChanged += TexturesChanged;
+            var sizeField = m_TextureList.Q<TextField>("unity-list-view__size-field");
+            sizeField.onValidateValue += ValidateSizeValue;
             Add(m_TextureList);
 
             m_TextureScroller = new ScrollView(ScrollViewMode.Vertical);
@@ -107,6 +109,13 @@ namespace UnityEditor.Tilemaps
 
             var ss = EditorGUIUtility.Load(s_StylesheetPath) as StyleSheet;
             styleSheets.Add(ss);
+        }
+
+        private string ValidateSizeValue(string value)
+        {
+            if (!int.TryParse(value, out var intValue))
+                return value;
+            return Mathf.Clamp(intValue, 0, 1000).ToString();
         }
 
         private void LoadAutoTileData()

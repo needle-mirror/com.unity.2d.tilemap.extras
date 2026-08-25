@@ -68,6 +68,53 @@ namespace UnityEditor.Tilemaps
             Repaint();
         }
 
+        /// <summary>
+        /// Renders a static preview for the AutoTile asset using its default Sprite,
+        /// or any available Sprite if no default is set.
+        /// </summary>
+        /// <param name="assetPath">The path of the asset.</param>
+        /// <param name="subAssets">Sub-assets of the asset.</param>
+        /// <param name="width">Width of the preview.</param>
+        /// <param name="height">Height of the preview.</param>
+        /// <returns>A Texture2D preview, or null if no Sprite is available.</returns>
+        public override Texture2D RenderStaticPreview(string assetPath, Object[] subAssets, int width, int height)
+        {
+            if (autoTile == null)
+                return base.RenderStaticPreview(assetPath, subAssets, width, height);
+
+            var sprite = autoTile.m_DefaultSprite;
+            if (sprite == null)
+            {
+                foreach (var pair in autoTile.m_AutoTileDictionary)
+                {
+                    var spriteList = pair.Value.spriteList;
+                    if (spriteList == null)
+                        continue;
+                    foreach (var s in spriteList)
+                    {
+                        if (s != null)
+                        {
+                            sprite = s;
+                            break;
+                        }
+                    }
+                    if (sprite != null)
+                        break;
+                }
+            }
+
+            if (sprite == null)
+                return base.RenderStaticPreview(assetPath, subAssets, width, height);
+
+            var preview = AssetPreview.GetAssetPreview(sprite);
+            if (preview == null)
+                return base.RenderStaticPreview(assetPath, subAssets, width, height);
+
+            var tex = new Texture2D(width, height);
+            EditorUtility.CopySerialized(preview, tex);
+            return tex;
+        }
+
         private bool HaveAssetsChanged()
         {
             var currentHash = AssetDatabase.GetAssetDependencyHash(AssetDatabase.GetAssetPath(autoTile));

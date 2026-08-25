@@ -1,42 +1,19 @@
-# Rule Override Tile
+# Rule Override Tile Inspector window reference
 
-__Contributions by:__ [johnsoncodehk](https://github.com/johnsoncodehk), [Autofire](https://github.com/Autofire)
+Explore the properties and settings you can use to [create a variant of a rule tile](RuleTile.md#create-variants-of-a-rule-tile).
 
-__Rule Override Tiles__ are Tiles which can override the Sprites and GameObjects for a given [Rule Tile](RuleTile.md)
-while maintaining the Rule set of the Rule Tile. This allows you to create Tiles that provide variations of a Rule Tile
-without setting new Rules.
+| **Property** | **Sub-property** | **Description** |
+|:--|:--|:--|
+| **Tile** | N/A | Selects the rule tile to create a variant of. Drag a rule from the **Project** window, or select the picker (**⊙**). |
+| **Sprite List** | N/A | Displays the sprites to override. | 
+| N/A | **Original Sprites** | Displays the original sprites from the selected rule tile. |
+| N/A | **Override Sprites** | Sets the sprites to use instead of the original sprites. Leave this property empty to use the original sprite. |
+| **GameObject List** | N/A | Displays the prefabs to override. |
+| N/A | **Original GameObjects** | Displays the original prefabs from the selected rule tile. |
+| N/A | **Override GameObjects** | Sets the prefabs to use instead of the original prefabs. Leave this property empty to use the original prefab. |
 
-## Properties
+## Additional resources
 
-| Property | Function                   |
-|----------|----------------------------|
-| __Tile__ | The Rule Tile to override. |
+- [Rule Tile Inspector window reference](RuleTile-Inspector.md)
+- [Automating tile layouts](RuleTile-landing.md)
 
-Depending on the Rule Tile that is overridden, there may be further properties which you can override here. Any public
-property in the Rule Tile that does not have a `RuleTile.DontOverride` attribute will be shown here and can be
-overridden.
-
-## Usage
-
-First select the Rule Tile to be overridden in the __Tile__ property. The Editor then displays the different Sprites and
-GameObjects in the selected Rule Tile which you can override.
-
-The editor displays the original Sprites that are used in the Rule Tile in the left column. Select the Sprites that
-override each of the respective original Sprites on the right ‘Override’ column. When the Rule Tile has a match that
-would usually output the original Sprite, it will instead output the override Sprite.
-
-Below that, the editor displays the original GameObjects that are used in the Rule Tile in the left column. Select the
-GameObjects that override each of the respective original GameObjects on the right ‘Override’ column. When the Rule Tile
-has a match that would usually output the original GameObject, it will instead output the override GameObject.
-
-![Rule Override Tile Editor](images/RuleOverrideTileEditor.png)
-
-If you have modified the original Rule Tile and changed the Sprites there, the Rule Override Tile will note that the
-original Sprites are missing. You can check the original Rule Tile to see if it is set up correctly or set the Override
-Sprites to None to remove the override.
-
-![Rule Override Tile Editor with Missing Original Sprites](images/RuleOverrideTileEditorMissing.png)
-
-Paint with the Rule Override Tile using the [Tile Palette](https://docs.unity3d.com/Manual/Tilemap-Painting.html) tools.
-
-![Scene View with Rule Override Tile](images/RuleOverrideTile.png)
