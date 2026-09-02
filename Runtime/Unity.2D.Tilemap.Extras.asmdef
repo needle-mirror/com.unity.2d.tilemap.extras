@@ -1,6 +1,19 @@
 {
-  "name": "Unity.2D.Tilemap.Extras",
-  "references": [
-    "GUID:3a9781db4804a9945b9883f3a7c46d45"
-  ]
+    "name": "Unity.2D.Tilemap.Extras",
+    "rootNamespace": "",
+    "references": [
+        "Unity.2D.Tilemap.Editor",
+        "Unity.2D.Tilemap.Runtime",
+        "Unity.Burst",
+        "Unity.Collections"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

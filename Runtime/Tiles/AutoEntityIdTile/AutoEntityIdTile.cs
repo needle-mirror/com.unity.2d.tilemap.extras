@@ -1,14 +1,24 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using AOT;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
+using Unity.Mathematics;
+using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Tilemaps;
 
-namespace UnityEngine.Tilemaps
+namespace Unity.Tilemaps
 {
     /// <summary>
-    /// Tile using AutoTiling mask and rules
+    /// AutoEntityIdTile using AutoTiling mask and rules
     /// </summary>
+    [MovedFrom(true, "Unity.Tilemaps.Experimental", "Unity.2D.Tilemap.Experimental")]
     [HelpURL(
-        "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/AutoTile.html")]
-    public class AutoTile : TileBase
+        "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/EntityIdTile.html")]
+    [BurstCompile]
+    public class AutoEntityIdTile : EntityIdTileBase
     {
         internal static readonly float s_DefaultTextureScale = 1f;
 
@@ -58,7 +68,7 @@ namespace UnityEngine.Tilemaps
         };
 
         /// <summary>
-        /// MaskType for AutoTile
+        /// MaskType for AutoEntityIdTile
         /// </summary>
         public enum AutoTileMaskType
         {
@@ -91,7 +101,7 @@ namespace UnityEngine.Tilemaps
         [SerializeField] public Tile.ColliderType m_DefaultColliderType = Tile.ColliderType.Sprite;
 
         /// <summary>
-        /// Mask Type for the AutoTile
+        /// Mask Type for the AutoEntityIdTile
         /// </summary>
         [SerializeField] public AutoTileMaskType m_MaskType;
 
@@ -102,12 +112,28 @@ namespace UnityEngine.Tilemaps
         /// <summary>
         /// Use random Sprite for mask
         /// </summary>
-        public bool random { get { return m_Random; } set { m_Random = value; } }
+        public bool random
+        {
+            get { return m_Random; }
+            set
+            {
+                m_Random = value;
+                OnValidate();
+            }
+        }
 
         /// <summary>
         /// Checks Physics Shape of Sprite before determining Collider Type
         /// </summary>
-        public bool physicsShapeCheck { get { return m_PhysicsShapeCheck; } set { m_PhysicsShapeCheck = value; } }
+        public bool physicsShapeCheck
+        {
+            get { return m_PhysicsShapeCheck; }
+            set
+            {
+                m_PhysicsShapeCheck = value;
+                OnValidate();
+            }
+        }
 
         [SerializeField, HideInInspector] internal AutoTileDictionary m_AutoTileDictionary = new AutoTileDictionary();
 
@@ -116,22 +142,113 @@ namespace UnityEngine.Tilemaps
         #region Editor Data
 
         /// <summary>
-        /// List of Texture2Ds used by the AutoTile
+        /// List of Texture2Ds used by the AutoEntityIdTile
         /// </summary>
         [SerializeField] public List<Texture2D> m_TextureList = new List<Texture2D>();
 
         /// <summary>
-        /// List of Texture Scale used by the AutoTile
+        /// List of Texture Scale used by the AutoEntityIdTile
         /// </summary>
         [SerializeField] public List<float> m_TextureScaleList = new List<float>();
 
         #endregion
 
-        #region Runtime Data
+        private struct AutoEntityIdTileDataStruct : IDisposable
+        {
+            public EntityId entityId;
+            public int spriteRandom;
+            public TileData defaultTileData;
+            public AutoTileMaskType maskType;
+            public bool hasPhysicsShape;
+            public NativeHashMap<uint, NativeArray<EntityId>> masktoSpriteEntityIdMap;
+            public NativeHashMap<EntityId, bool> entityIdToPhysicsShapeMap;
 
-        private readonly TileBase[] m_CachedTiles = new TileBase[9];
+            public void Dispose()
+            {
+                if (masktoSpriteEntityIdMap.IsCreated)
+                {
+                    foreach (var item in masktoSpriteEntityIdMap)
+                    {
+                        item.Value.Dispose();
+                    }
 
-        #endregion
+                    masktoSpriteEntityIdMap.Dispose();
+                }
+
+                if (entityIdToPhysicsShapeMap.IsCreated)
+                {
+                    entityIdToPhysicsShapeMap.Dispose();
+                }
+            }
+        }
+
+        private AutoEntityIdTileDataStruct m_Data;
+
+        /// <summary>
+        /// Does initialization for AutoEntityIdTile
+        /// </summary>
+        public override void OnEnable()
+        {
+            base.OnEnable();
+            OnValidate();
+        }
+
+        /// <summary>
+        /// Does cleanup for AutoEntityIdTile
+        /// </summary>
+        public override void OnDisable()
+        {
+            Dispose();
+            base.OnDisable();
+        }
+
+        private void Dispose()
+        {
+            m_Data.Dispose();
+        }
+
+        private void OnValidate()
+        {
+            Dispose();
+
+            m_Data = new AutoEntityIdTileDataStruct()
+            {
+                entityId = cachedEntityId,
+                spriteRandom = m_Random ? 1 : 0,
+                defaultTileData = new TileData()
+                {
+                    spriteEntityId = m_DefaultSprite != null ? m_DefaultSprite.GetEntityId() : EntityId.None,
+                    color = Color.white,
+                    transform = Matrix4x4.identity,
+                    gameObjectEntityId =
+                        m_DefaultGameObject != null ? m_DefaultGameObject.GetEntityId() : EntityId.None,
+                    flags = TileFlags.LockAll,
+                    colliderType = m_DefaultColliderType
+                },
+                maskType = m_MaskType,
+                hasPhysicsShape = m_PhysicsShapeCheck,
+                masktoSpriteEntityIdMap =
+                    new NativeHashMap<uint, NativeArray<EntityId>>(m_AutoTileDictionary.Count, Allocator.Persistent),
+                entityIdToPhysicsShapeMap =
+                    new NativeHashMap<EntityId, bool>(m_AutoTileDictionary.Count, Allocator.Persistent),
+            };
+            foreach (var item in m_AutoTileDictionary)
+            {
+                uint mask = item.Key;
+                var spriteEntityIds = new NativeArray<EntityId>(item.Value.spriteList.Count, Allocator.Persistent);
+                for (var i = 0; i < item.Value.spriteList.Count; i++)
+                {
+                    var sprite = item.Value.spriteList[i];
+                    var spriteEntityId = sprite != null ? sprite.GetEntityId() : EntityId.None;
+                    spriteEntityIds[i] = spriteEntityId;
+                    if (m_PhysicsShapeCheck && spriteEntityId != EntityId.None)
+                    {
+                        m_Data.entityIdToPhysicsShapeMap.TryAdd(spriteEntityId, sprite.GetPhysicsOutlineCount() > 0);
+                    }
+                }
+                m_Data.masktoSpriteEntityIdMap[mask] = spriteEntityIds;
+            }
+        }
 
         /// <summary>
         /// This method is called when the tile is refreshed.
@@ -157,64 +274,15 @@ namespace UnityEngine.Tilemaps
         /// <param name="tileData">Data to render the tile.</param>
         public override void GetTileData(Vector3Int position, ITilemap itilemap, ref TileData tileData)
         {
-            var iden = Matrix4x4.identity;
-
-            tileData.sprite = m_DefaultSprite;
-            tileData.gameObject = m_DefaultGameObject;
-            tileData.colliderType = m_DefaultColliderType;
-            tileData.flags = TileFlags.LockAll;
-            tileData.transform = iden;
-
-            uint mask = 0;
-            var index = 0;
-            for (var y = -1; y <= 1; ++y)
+            var tilemapData = new TilemapDataStruct(itilemap.GetComponent<Tilemap>());
+            unsafe
             {
-                for (var x = -1; x <= 1; ++x)
-                {
-                    var tilePosition = new Vector3Int(position.x + x, position.y + y, position.z);
-                    m_CachedTiles[index] = itilemap.GetTile(tilePosition);
-                    if (m_CachedTiles[index] == this)
-                        mask |= (uint)1 << index;
-                    index++;
-                }
+                var pos = position.ToInt3();
+                GetTileDataJob(1, &pos
+                    , UnsafeUtility.AddressOf(ref m_Data)
+                    , ref tilemapData
+                    , (TileData*) UnsafeUtility.AddressOf(ref tileData));
             }
-
-            mask = m_MaskType switch
-            {
-                AutoTileMaskType.Mask_2x2 => Convert2x2Mask(mask),
-                AutoTileMaskType.Mask_3x3 => Convert3x3Mask(mask),
-                _ => mask
-            };
-
-            if (m_AutoTileDictionary.TryGetValue(mask, out var autoTileData))
-            {
-                var sprite = m_DefaultSprite;
-                if (autoTileData.spriteList.Count > 0)
-                {
-                    if (m_Random)
-                    {
-                        long hash = position.x;
-                        hash = hash + 0xabcd1234 + (hash << 15);
-                        hash = (hash + 0x0987efab) ^ (hash >> 11);
-                        hash ^= position.y;
-                        hash = hash + 0x46ac12fd + (hash << 7);
-                        hash = (hash + 0xbe9730af) ^ (hash << 11);
-                        var oldState = Random.state;
-                        Random.InitState((int)hash);
-                        sprite = autoTileData.spriteList[Random.Range(0, autoTileData.spriteList.Count)];
-                        Random.state = oldState;
-                    }
-                    else
-                    {
-                        sprite = autoTileData.spriteList[0];
-                    }
-                }
-                tileData.sprite = sprite;
-            }
-            if (physicsShapeCheck && tileData.sprite != null && tileData.colliderType == Tile.ColliderType.Sprite)
-                tileData.colliderType = tileData.sprite.GetPhysicsOutlineCount() > 0
-                    ? Tile.ColliderType.Sprite
-                    : Tile.ColliderType.None;
         }
 
         internal void AddSprite(Sprite sprite, Texture2D texture, uint mask)
@@ -263,7 +331,7 @@ namespace UnityEngine.Tilemaps
         }
 
         /// <summary>
-        /// Validate AutoTile Data
+        /// Validate AutoEntityIdTile Data
         /// </summary>
         public void Validate()
         {
@@ -307,30 +375,34 @@ namespace UnityEngine.Tilemaps
                     while (m_TextureScaleList.Count - m_TextureList.Count > 0)
                         m_TextureScaleList.RemoveAt(m_TextureScaleList.Count - 1);
             }
+
+            OnValidate();
         }
 
-        private uint Convert2x2Mask(uint mask)
+        [BurstCompile]
+        private static void Convert2x2Mask(uint inMask, ref uint convertedMask)
         {
             // 4 8
             // 1 2
-            uint newMask = 0;
-            if ((mask & 1 << 0) > 0 && (mask & 1 << 1) > 0 && (mask & 1 << 3) > 0)
-                newMask |= 1 << 0;
-            if ((mask & 1 << 1) > 0 && (mask & 1 << 2) > 0 && (mask & 1 << 5) > 0)
-                newMask |= 1 << 1;
-            if ((mask & 1 << 3) > 0 && (mask & 1 << 6) > 0 && (mask & 1 << 7) > 0)
-                newMask |= 1 << 2;
-            if ((mask & 1 << 5) > 0 && (mask & 1 << 7) > 0 && (mask & 1 << 8) > 0)
-                newMask |= 1 << 3;
-            return newMask;
+            convertedMask = 0;
+            if ((inMask & 1 << 0) > 0 && (inMask & 1 << 1) > 0 && (inMask & 1 << 3) > 0)
+                convertedMask |= 1 << 0;
+            if ((inMask & 1 << 1) > 0 && (inMask & 1 << 2) > 0 && (inMask & 1 << 5) > 0)
+                convertedMask |= 1 << 1;
+            if ((inMask & 1 << 3) > 0 && (inMask & 1 << 6) > 0 && (inMask & 1 << 7) > 0)
+                convertedMask |= 1 << 2;
+            if ((inMask & 1 << 5) > 0 && (inMask & 1 << 7) > 0 && (inMask & 1 << 8) > 0)
+                convertedMask |= 1 << 3;
         }
 
-        private uint Convert3x3Mask(uint mask)
+        [BurstCompile]
+        private static void Convert3x3Mask(uint inMask, ref uint convertedMask)
         {
+            convertedMask = inMask;
             // 64 128 256
             //  8  16  32
             //  1   2   4
-            switch (mask)
+            switch (inMask)
             {
                 // Left
                 case 1 + 16 + 32:
@@ -349,7 +421,7 @@ namespace UnityEngine.Tilemaps
                 case 4 + 16 + 32 + 64 + 256:
                 case 1 + 4 + 16 + 32 + 64 + 256:
                 {
-                    mask = 16 + 32;
+                    convertedMask = 16 + 32;
                     break;
                 }
                 // Right
@@ -369,7 +441,7 @@ namespace UnityEngine.Tilemaps
                 case 4 + 8 + 16 + 64 + 256:
                 case 1 + 4 + 8 + 16 + 64 + 256:
                 {
-                    mask = 8 + 16;
+                    convertedMask = 8 + 16;
                     break;
                 }
                 // Top
@@ -389,7 +461,7 @@ namespace UnityEngine.Tilemaps
                 case 1 + 2 + 4 + 16 + 256:
                 case 1 + 2 + 4 + 16 + 64 + 256:
                 {
-                    mask = 2 + 16;
+                    convertedMask = 2 + 16;
                     break;
                 }
                 // Bottom
@@ -409,7 +481,7 @@ namespace UnityEngine.Tilemaps
                 case 4 + 16 + 128:
                 case 1 + 4 + 16 + 128:
                 {
-                    mask = 16 + 128;
+                    convertedMask = 16 + 128;
                     break;
                 }
                 // Vertical Straight
@@ -430,7 +502,7 @@ namespace UnityEngine.Tilemaps
                 case 2 + 4 + 16 + 64 + 128 + 256:
                 case 1 + 2 + 4 + 16 + 64 + 128 + 256:
                 {
-                    mask = 2 + 16 + 128;
+                    convertedMask = 2 + 16 + 128;
                     break;
                 }
                 // Horizontal Straight
@@ -450,7 +522,7 @@ namespace UnityEngine.Tilemaps
                 case 4 + 8 + 16 + 32 + 64 + 256:
                 case 1 + 4 + 8 + 16 + 32 + 64 + 256:
                 {
-                    mask = 8 + 16 + 32;
+                    convertedMask = 8 + 16 + 32;
                     break;
                 }
                 // Top Left Corner
@@ -462,7 +534,7 @@ namespace UnityEngine.Tilemaps
                 case 2 + 4 + 16 + 32 + 64 + 256:
                 case 1 + 2 + 4 + 16 + 32 + 64 + 256:
                 {
-                    mask = 2 + 4 + 16 + 32;
+                    convertedMask = 2 + 4 + 16 + 32;
                     break;
                 }
                 // Bottom Left Corner
@@ -474,7 +546,7 @@ namespace UnityEngine.Tilemaps
                 case 1 + 16 + 32 + 64 + 128 + 256:
                 case 1 + 4 + 16 + 32 + 64 + 128 + 256:
                 {
-                    mask = 16 + 32 + 128 + 256;
+                    convertedMask = 16 + 32 + 128 + 256;
                     break;
                 }
                 // Top Right Corner
@@ -486,7 +558,7 @@ namespace UnityEngine.Tilemaps
                 case 1 + 2 + 4 + 8 + 16 + 256:
                 case 1 + 2 + 4 + 8 + 16 + 64 + 256:
                 {
-                    mask = 1 + 2 + 8 + 16;
+                    convertedMask = 1 + 2 + 8 + 16;
                     break;
                 }
                 // Bottom Right Corner
@@ -498,7 +570,7 @@ namespace UnityEngine.Tilemaps
                 case 4 + 8 + 16 + 64 + 128 + 256:
                 case 1 + 4 + 8 + 16 + 64 + 128 + 256:
                 {
-                    mask = 8 + 16 + 64 + 128;
+                    convertedMask = 8 + 16 + 64 + 128;
                     break;
                 }
                 // Full Top
@@ -506,7 +578,7 @@ namespace UnityEngine.Tilemaps
                 case 1 + 2 + 4 + 8 + 16 + 32 + 256:
                 case 1 + 2 + 4 + 8 + 16 + 32 + 64 + 256:
                 {
-                    mask = 1 + 2 + 4 + 8 + 16 + 32;
+                    convertedMask = 1 + 2 + 4 + 8 + 16 + 32;
                     break;
                 }
                 // Full Bottom
@@ -514,7 +586,7 @@ namespace UnityEngine.Tilemaps
                 case 4 + 8 + 16 + 32 + 64 + 128 + 256:
                 case 1 + 4 + 8 + 16 + 32 + 64 + 128 + 256:
                 {
-                    mask = 8 + 16 + 32 + 64 + 128 + 256;
+                    convertedMask = 8 + 16 + 32 + 64 + 128 + 256;
                     break;
                 }
                 // Full Left
@@ -522,7 +594,7 @@ namespace UnityEngine.Tilemaps
                 case 2 + 4 + 16 + 32 + 64 + 128 + 256:
                 case 1 + 2 + 4 + 16 + 32 + 64 + 128 + 256:
                 {
-                    mask = 2 + 4 + 16 + 32 + 128 + 256;
+                    convertedMask = 2 + 4 + 16 + 32 + 128 + 256;
                     break;
                 }
                 // Full Right
@@ -530,7 +602,7 @@ namespace UnityEngine.Tilemaps
                 case 1 + 2 + 8 + 16 + 64 + 128 + 256:
                 case 1 + 2 + 4 + 8 + 16 + 64 + 128 + 256:
                 {
-                    mask = 1 + 2 + 8 + 16 + 64 + 128;
+                    convertedMask = 1 + 2 + 8 + 16 + 64 + 128;
                     break;
                 }
                 // Top Left Tricorner
@@ -542,7 +614,7 @@ namespace UnityEngine.Tilemaps
                 case 2 + 16 + 32 + 64 + 256:
                 case 1 + 2 + 16 + 32 + 64 + 256:
                 {
-                    mask = 2 + 16 + 32;
+                    convertedMask = 2 + 16 + 32;
                     break;
                 }
                 // Bottom Left Tricorner
@@ -554,7 +626,7 @@ namespace UnityEngine.Tilemaps
                 case 1 + 4 + 16 + 32 + 64 + 128:
                 case 1 + 4 + 16 + 32 + 128:
                 {
-                    mask = 16 + 32 + 128;
+                    convertedMask = 16 + 32 + 128;
                     break;
                 }
                 // Top Right Tricorner
@@ -566,7 +638,7 @@ namespace UnityEngine.Tilemaps
                 case 2 + 4 + 8 + 16 + 256:
                 case 2 + 4 + 8 + 16 + 64 + 256:
                 {
-                    mask = 2 + 8 + 16;
+                    convertedMask = 2 + 8 + 16;
                     break;
                 }
                 // Bottom Right Tricorner
@@ -578,7 +650,7 @@ namespace UnityEngine.Tilemaps
                 case 4 + 8 + 16 + 128 + 256:
                 case 1 + 4 + 8 + 16 + 128 + 256:
                 {
-                    mask = 8 + 16 + 128;
+                    convertedMask = 8 + 16 + 128;
                     break;
                 }
                 // Three-way Left
@@ -586,7 +658,7 @@ namespace UnityEngine.Tilemaps
                 case 2 + 8 + 16 + 128 + 256:
                 case 2 + 4 + 8 + 16 + 128 + 256:
                 {
-                    mask = 2 + 8 + 16 + 128;
+                    convertedMask = 2 + 8 + 16 + 128;
                     break;
                 }
                 // Three-way Right
@@ -594,7 +666,7 @@ namespace UnityEngine.Tilemaps
                 case 2 + 16 + 32 + 64 + 128:
                 case 1 + 2 + 16 + 32 + 64 + 128:
                 {
-                    mask = 2 + 16 + 32 + 128;
+                    convertedMask = 2 + 16 + 32 + 128;
                     break;
                 }
                 // Three-way Top
@@ -602,7 +674,7 @@ namespace UnityEngine.Tilemaps
                 case 4 + 8 + 16 + 32 + 128:
                 case 1 + 4 + 8 + 16 + 32 + 128:
                 {
-                    mask = 8 + 16 + 32 + 128;
+                    convertedMask = 8 + 16 + 32 + 128;
                     break;
                 }
                 // Three-way Bottom
@@ -610,7 +682,7 @@ namespace UnityEngine.Tilemaps
                 case 2 + 8 + 16 + 32 + 256:
                 case 2 + 8 + 16 + 32 + 64 + 256:
                 {
-                    mask = 2 + 8 + 16 + 32;
+                    convertedMask = 2 + 8 + 16 + 32;
                     break;
                 }
                 // Three-corner Top Left
@@ -618,7 +690,7 @@ namespace UnityEngine.Tilemaps
                 case 2 + 4 + 8 + 16 + 32 + 256:
                 case 2 + 4 + 8 + 16 + 32 + 64 + 256:
                 {
-                    mask = 2 + 4 + 8 + 16 + 32;
+                    convertedMask = 2 + 4 + 8 + 16 + 32;
                     break;
                 }
                 // Three-corner Bottom Left
@@ -626,7 +698,7 @@ namespace UnityEngine.Tilemaps
                 case 4 + 8 + 16 + 32 + 128 + 256:
                 case 1 + 4 + 8 + 16 + 32 + 128 + 256:
                 {
-                    mask = 8 + 16 + 32 + 128 + 256;
+                    convertedMask = 8 + 16 + 32 + 128 + 256;
                     break;
                 }
                 // Three-corner Top Right
@@ -634,7 +706,7 @@ namespace UnityEngine.Tilemaps
                 case 1 + 2 + 8 + 16 + 32 + 256:
                 case 1 + 2 + 8 + 16 + 32 + 64 + 256:
                 {
-                    mask = 1 + 2 + 8 + 16 + 32;
+                    convertedMask = 1 + 2 + 8 + 16 + 32;
                     break;
                 }
                 // Three-corner Bottom Right
@@ -642,7 +714,7 @@ namespace UnityEngine.Tilemaps
                 case 4 + 8 + 16 + 32 + 64 + 128:
                 case 1 + 4 + 8 + 16 + 32 + 64 + 128:
                 {
-                    mask = 8 + 16 + 32 + 64 + 128;
+                    convertedMask = 8 + 16 + 32 + 64 + 128;
                     break;
                 }
                 // Left Side Top Right Corner
@@ -650,7 +722,7 @@ namespace UnityEngine.Tilemaps
                 case 2 + 4 + 16 + 32 + 64 + 128:
                 case 1 + 2 + 4 + 16 + 32 + 64 + 128:
                 {
-                    mask = 2 + 4 + 16 + 32 + 128;
+                    convertedMask = 2 + 4 + 16 + 32 + 128;
                     break;
                 }
                 // Left Side Bottom Right Corner
@@ -658,7 +730,7 @@ namespace UnityEngine.Tilemaps
                 case 2 + 16 + 32 + 64 + 128 + 256:
                 case 1 + 2 + 16 + 32 + 64 + 128 + 256:
                 {
-                    mask = 2 + 16 + 32 + 128 + 256;
+                    convertedMask = 2 + 16 + 32 + 128 + 256;
                     break;
                 }
                 // Right Side Top Left Corner
@@ -666,7 +738,7 @@ namespace UnityEngine.Tilemaps
                 case 1 + 2 + 8 + 16 + 128 + 256:
                 case 1 + 2 + 4 + 8 + 16 + 128 + 256:
                 {
-                    mask = 1 + 2 + 8 + 16 + 128;
+                    convertedMask = 1 + 2 + 8 + 16 + 128;
                     break;
                 }
                 // Right Side Bottom Left Corner
@@ -674,7 +746,7 @@ namespace UnityEngine.Tilemaps
                 case 2 + 8 + 16 + 64 + 128 + 256:
                 case 2 + 4 + 8 + 16 + 64 + 128 + 256:
                 {
-                    mask = 2 + 8 + 16 + 64 + 128;
+                    convertedMask = 2 + 8 + 16 + 64 + 128;
                     break;
                 }
                 // Single
@@ -694,12 +766,130 @@ namespace UnityEngine.Tilemaps
                 case 4 + 16 + 64 + 256:
                 case 1 + 4 + 16 + 64 + 256:
                 {
-                    mask = 16;
+                    convertedMask = 16;
                     break;
                 }
             }
+        }
 
-            return mask;
+        /// <summary>
+        /// Returns the type of data struct used for this AutoEntityIdTile
+        /// </summary>
+        public override Type structType => typeof(AutoEntityIdTileDataStruct);
+
+        /// <summary>
+        /// An AutoEntityIdTile refreshes the 3x3 block around its cell, so it reaches one cell
+        /// in each direction on the X and Y axes.
+        /// </summary>
+        public override int3 maxRefreshExtent => new int3(1, 1, 0);
+
+        /// <summary>
+        /// Copies the data struct used for this AutoEntityIdTile to the outPtr buffer
+        /// for use in Unity Jobs.
+        /// </summary>
+        /// <param name="tilemap">The Tilemap the data struct is copied for.</param>
+        /// <param name="outPtr">Data buffer to copy data struct from AutoEntityIdTile to.</param>
+        public override unsafe void CopyDataStruct(Tilemap tilemap, void* outPtr)
+        {
+            UnsafeUtility.CopyStructureToPtr(ref m_Data, outPtr);
+        }
+
+        /// <summary>
+        /// Returns the delegate function to refresh tiles for AutoEntityIdTile for use in Unity Jobs
+        /// </summary>
+        protected override unsafe RefreshTileJobDelegate refreshTileJobDelegate => RefreshTileJob;
+        /// <summary>
+        /// Returns the delegate function to get Tile Data for AutoEntityIdTile for use in Unity Jobs
+        /// </summary>
+        protected override unsafe GetTileDataJobDelegate getTileDataJobDelegate => GetTileDataJob;
+        /// <summary>
+        /// Returns null as AutoEntityIdTile has no Tile Animation Data
+        /// </summary>
+        protected override GetTileAnimationDataJobDelegate getTileAnimationDataJobDelegate => null;
+
+        [BurstCompile]
+        [MonoPInvokeCallback(typeof(RefreshTileJobDelegate))]
+        static unsafe void RefreshTileJob(int count, int3* position, void* data,
+            ref TilemapRefreshStruct tilemapRefreshStruct)
+        {
+            var refreshPositions = new NativeArray<int3>(9, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+            for (var i = 0; i < count; ++i)
+            {
+                var pos = *(position + i);
+                for (var y = -1; y <= 1; ++y)
+                {
+                    for (var x = -1; x <= 1; ++x)
+                    {
+                        refreshPositions[(y + 1) * 3 + x + 1] = pos + new int3(x, y, 0);
+                    }
+                }
+                tilemapRefreshStruct.RefreshTiles(refreshPositions);
+            }
+            refreshPositions.Dispose();
+        }
+
+        [BurstCompile]
+        [MonoPInvokeCallback(typeof(GetTileDataJobDelegate))]
+        static unsafe void GetTileDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileData* outTileData)
+        {
+            var dataStruct = UnsafeUtility.AsRef<AutoEntityIdTileDataStruct>(data);
+            var entityIds = new NativeArray<EntityId>(9, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+            var jobRandom = new Unity.Mathematics.Random();
+            for (var i = 0; i < count; ++i)
+            {
+                ref int3 inPos = ref *(position + i);
+                ref TileData tileData = ref *(outTileData + i);
+                UnsafeUtility.CopyPtrToStructure(UnsafeUtility.AddressOf(ref dataStruct.defaultTileData), out tileData);
+
+                var boundsInt = new BoundsInt(-1, -1, 0, 3, 3, 1);
+                tilemapDataStruct.GetTilesFromBlockOffset(inPos, boundsInt, entityIds);
+
+                uint mask = 0;
+                for (var idx = 0; idx < entityIds.Length; ++idx)
+                {
+                    if (entityIds[idx] == dataStruct.entityId)
+                    {
+                        mask |= (uint) 1 << idx;
+                    }
+                }
+
+                uint outMask = 0;
+                switch (dataStruct.maskType)
+                {
+                    case AutoTileMaskType.Mask_2x2:
+                        Convert2x2Mask(mask, ref outMask);
+                        break;
+                    case AutoTileMaskType.Mask_3x3:
+                        Convert3x3Mask(mask, ref outMask);
+                        break;
+                };
+
+                if (dataStruct.masktoSpriteEntityIdMap.TryGetValue(outMask, out var spriteEntityIds))
+                {
+                    if (spriteEntityIds.Length > 0)
+                    {
+                        if (dataStruct.spriteRandom > 0 && spriteEntityIds.Length > 1)
+                        {
+                            var rPos = inPos.GetHashCode() ^ dataStruct.entityId.GetHashCode();
+                            var r = UnsafeUtility.As<int, uint>(ref rPos);
+                            jobRandom.InitState(r);
+                            tileData.spriteEntityId = spriteEntityIds[jobRandom.NextInt(spriteEntityIds.Length)];
+                        }
+                        else
+                        {
+                            tileData.spriteEntityId = spriteEntityIds[0];
+                        }
+                    }
+                }
+
+                if (dataStruct.hasPhysicsShape && tileData.colliderType == Tile.ColliderType.Sprite)
+                {
+                    if (dataStruct.entityIdToPhysicsShapeMap.TryGetValue(tileData.spriteEntityId, out var hasPhysicsShape))
+                    {
+                        tileData.colliderType = hasPhysicsShape ? Tile.ColliderType.Sprite : Tile.ColliderType.None;
+                    }
+                }
+            }
         }
     }
 }

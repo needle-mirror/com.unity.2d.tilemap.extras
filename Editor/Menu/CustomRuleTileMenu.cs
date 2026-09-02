@@ -29,6 +29,7 @@ public class #SCRIPTNAME# : RuleTile<#SCRIPTNAME#.Neighbor> {
     }
 }";
 
+#if !TILEMAP_EXTRAS_HIDE_TILE_MENU
         private static string tempCustomRuleTilePath;
 
         [MenuItem("Assets/Create/2D/Tiles/Custom Rule Tile Script", false, (int)ETilesMenuItemOrder.CustomRuleTile)]
@@ -39,5 +40,6 @@ public class #SCRIPTNAME# : RuleTile<#SCRIPTNAME#.Neighbor> {
             File.WriteAllText(tempCustomRuleTilePath, customRuleTileScript);
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile(tempCustomRuleTilePath, "NewCustomRuleTile.cs");
         }
+#endif
     }
 }

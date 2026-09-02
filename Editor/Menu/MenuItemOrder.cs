@@ -1,3 +1,4 @@
+using Unity.Tilemaps;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -16,7 +17,13 @@ namespace UnityEditor.Tilemaps
         RandomTile = 200,
         WeightedRandomTile,
         PipelineTile,
-        TerrainTile
+        TerrainTile,
+        EntityIdTile = 300,
+        AnimatedEntityIdTile,
+        AutoEntityIdTile,
+        RuleEntityIdTile,
+        IsometricRuleEntityIdTile,
+        HexagonalRuleEntityIdTile
     }
 
     internal enum EBrushMenuItemOrder
@@ -28,6 +35,7 @@ namespace UnityEditor.Tilemaps
 
     internal static partial class AssetCreation
     {
+#if !TILEMAP_EXTRAS_HIDE_TILE_MENU
         [MenuItem("Assets/Create/2D/Tiles/Animated Tile", priority = (int)ETilesMenuItemOrder.AnimatedTile)]
         private static void CreateAnimatedTile()
         {
@@ -74,5 +82,45 @@ namespace UnityEditor.Tilemaps
         {
             ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<RuleTile>(), "New Rule Tile.asset");
         }
+
+#endif
+
+#if !TILEMAP_EXTRAS_HIDE_ENTITY_ID_TILE_MENU
+        [MenuItem("Assets/Create/2D/Tiles/Entity Id Tile", priority = (int)ETilesMenuItemOrder.EntityIdTile)]
+        private static void CreateEntityIdTile()
+        {
+            ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<EntityIdTile>(), "New Entity Id Tile.asset");
+        }
+
+        [MenuItem("Assets/Create/2D/Tiles/Animated Entity Id Tile", priority = (int)ETilesMenuItemOrder.AnimatedEntityIdTile)]
+        private static void CreateAnimatedEntityIdTile()
+        {
+            ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<AnimatedEntityIdTile>(), "New Animated Entity Id Tile.asset");
+        }
+
+        [MenuItem("Assets/Create/2D/Tiles/Auto Entity Id Tile", priority = (int)ETilesMenuItemOrder.AutoEntityIdTile)]
+        private static void CreateAutoEntityIdTile()
+        {
+            ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<AutoEntityIdTile>(), "New Auto Entity Id Tile.asset");
+        }
+
+        [MenuItem("Assets/Create/2D/Tiles/Rule Entity Id Tile", priority = (int)ETilesMenuItemOrder.RuleEntityIdTile)]
+        private static void CreateRuleEntityIdTile()
+        {
+            ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<RuleEntityIdTile>(), "New Rule Entity Id Tile.asset");
+        }
+
+        [MenuItem("Assets/Create/2D/Tiles/Isometric Rule Entity Id Tile", priority = (int)ETilesMenuItemOrder.IsometricRuleEntityIdTile)]
+        private static void CreateIsometricRuleEntityIdTile()
+        {
+            ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<IsometricRuleEntityIdTile>(), "New Isometric Rule Entity Id Tile.asset");
+        }
+
+        [MenuItem("Assets/Create/2D/Tiles/Hexagonal Rule Entity Id Tile", priority = (int)ETilesMenuItemOrder.HexagonalRuleEntityIdTile)]
+        private static void CreateHexagonalRuleEntityIdTile()
+        {
+            ProjectWindowUtil.CreateAsset(ScriptableObject.CreateInstance<HexagonalRuleEntityIdTile>(), "New Hexagonal Rule Entity Id Tile.asset");
+        }
+#endif
     }
 }

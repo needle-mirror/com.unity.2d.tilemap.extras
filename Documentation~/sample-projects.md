@@ -9,7 +9,7 @@ To use the sample projects, [install the 2D Tilemap Extras package](install.md) 
 ## Initial setup
 
 1. From the main menu, select **Window** &gt; **Package Manager** to open the Package Manager window.
-2. Select **All Packages** then **2D Tilemap Extras**.
+2. Select **All Packages** then **Graphics Test Framework**.
 3. Select the **Samples** tab.
 4. Select **Import** next to a sample.
 
@@ -21,11 +21,11 @@ Go to the **Tiles** subfolder and drag the **Waterfall** tile to a tile palette,
 
 ## Pipe Rule Tile
 
-Go to the **Tiles** subfolder and drag the **Pipes** tile to a tile palette, then paint with it. The **Pipes** tile is a rule tile that paints different tiles depending on the surrounding tiles in four directions. For more information, refer to [Create a rule tile](RuleTile.md).
+Go to the **Tiles** subfolder and drag the **Pipes** tile to a tile palette, then paint with it. The **Pipes** tile is a rule tile that paints different tiles depending on the surrounding tiles in eight directions. For more information, refer to [Create a rule tile](RuleTile.md).
 
 ## Dungeon Rule Tile
 
-Go to the **Tiles** subfolder and drag the **Dungeon** tile to a tile palette, then paint with it. The **Dungeon** tile is a rule tile that paints different tiles depending on the surrounding tiles in eight directions. For more information, refer to [Create a rule tile](RuleTile.md).
+Go to the **Tiles** subfolder and drag the **Dungeon** tile to a tile palette, then paint with it. The **Dungeon** tile is a rule tile that paints different tiles depending on the surrounding tiles in four directions. For more information, refer to [Create a rule tile](RuleTile.md).
 
 ## Auto Tile (3×3)
 
