@@ -4,6 +4,11 @@ All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [4.1.2] - 2026-09-21
+### Changed
+- [RuleTile] Optimise GetTileAnimationData to skip rule matching when no TilingRule has Animation output. (UUM-143629)
+- [RuleTile] Fix matching for GetTileAnimationData to stop at exact rule matched. (UUM-143629)
+
 ## [4.1.1] - 2026-07-22
 ### Changed
 - Documentation updates.
