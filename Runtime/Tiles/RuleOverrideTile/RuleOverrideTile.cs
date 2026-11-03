@@ -133,6 +133,8 @@ namespace UnityEngine.Tilemaps
             m_InstanceTile = instanceTile;
 
 #if UNITY_EDITOR
+            if (AssetDatabase.IsAssetImportWorkerProcess())
+                return;
             if (AssetDatabase.Contains(this))
                 AssetDatabase.AddObjectToAsset(instanceTile, this);
             EditorUtility.SetDirty(this);
@@ -283,6 +285,9 @@ namespace UnityEngine.Tilemaps
 
             foreach (var kvp in customData)
                 kvp.Key.SetValue(m_InstanceTile, kvp.Value);
+
+            // FromJsonOverwrite does not reset the instance tile's non-serialized rule caches
+            m_InstanceTile.UpdateNeighborPositions();
         }
 
         /// <summary>

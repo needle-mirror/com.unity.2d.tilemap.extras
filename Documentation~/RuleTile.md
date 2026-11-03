@@ -28,7 +28,7 @@ In the example, the rule paints the **Default Sprite** by default, but if it det
 
 ![The Scene view with a tilemap that contains an upside-down T of the example rule tiles. The bottom tile uses the T pipe shape.](Images/rule-tile-pipe-scene-view.png)
 
-If you change the rules or sprites after you set up the rule tile, the rule tile updates the tilemap based on the new rules and sprites. 
+If you change the rules or sprites after you set up the rule tile, the rule tile updates the tilemap based on the new rules and sprites.
 
 You can also detect and paint GameObjects instead of sprites. For more information, refer to [Rule Tile Inspector window reference](RuleTile-Inspector.md).
 

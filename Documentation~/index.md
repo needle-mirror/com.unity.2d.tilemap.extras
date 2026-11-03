@@ -19,4 +19,4 @@ To fetch the source code for the scripts in this package so you can customize th
 ## Additional resources
 
 - [Tilemaps](https://docs.unity3d.com/Manual/tilemaps/tilemaps-landing.html)
-- [2D game art, animation, and lighting for artists](https://unity.com/resources/2d-game-art-animation-lighting-unity-6-3-lts?isGated=false) 
+- [2D game art, animation, and lighting for artists](https://unity.com/resources/2d-game-art-animation-lighting-unity-6-3-lts?isGated=false)

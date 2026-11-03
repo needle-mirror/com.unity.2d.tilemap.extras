@@ -22,11 +22,6 @@ namespace Unity.Tilemaps
         "https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@latest/index.html?subfolder=/manual/EntityIdTile.html")]
     public class RuleEntityIdTile : EntityIdTileBase
     {
-        private static Dictionary<Tilemap, KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>>>
-            m_CacheTilemapsNeighborPositions = new();
-
-        private static TileBase[] m_AllocatedUsedTileArr = Array.Empty<TileBase>();
-
         [SerializeField]
         private Sprite m_DefaultSprite;
         [SerializeField]
@@ -135,7 +130,6 @@ namespace Unity.Tilemaps
         /// <param name="refBounds">Bounds of the neighboring positions</param>
         protected void UpdateNeighborPositions(ref NativeHashSet<int3> refNeighborPositions, ref BoundsInt refBounds)
         {
-            m_CacheTilemapsNeighborPositions.Clear();
             m_NeighborPositionsDirty = true;
 
             var positions = refNeighborPositions;
@@ -523,7 +517,7 @@ namespace Unity.Tilemaps
             {
                 var curpos = position.ToInt3();
                 var neighborOffset = neighborPosition;
-                GetOffsetPosition(ref curpos, ref neighborOffset);
+                GetOffsetPositionReverse(ref curpos, ref neighborOffset);
                 refreshPositions[i++] = curpos.ToVector3Int();
             }
             refreshPositions[i] = position;
@@ -545,7 +539,7 @@ namespace Unity.Tilemaps
                 {
                     var offsetPosition = pos;
                     var neighborOffset = neighborPosition;
-                    GetOffsetPosition(ref offsetPosition, ref neighborOffset);
+                    GetOffsetPositionReverse(ref offsetPosition, ref neighborOffset);
                     refreshPositions[j++] = offsetPosition;
                 }
                 refreshPositions[j] = pos;
@@ -782,93 +776,6 @@ namespace Unity.Tilemaps
                     break;
                 }
             }
-        }
-
-        private static bool IsTilemapUsedTilesChange(Tilemap tilemap,
-            out KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>> hashSet)
-        {
-            if (!m_CacheTilemapsNeighborPositions.TryGetValue(tilemap, out hashSet))
-                return true;
-
-            var oldUsedTiles = hashSet.Key;
-            var newUsedTilesCount = tilemap.GetUsedTilesCount();
-            if (newUsedTilesCount != oldUsedTiles.Count)
-                return true;
-
-            if (m_AllocatedUsedTileArr.Length < newUsedTilesCount)
-                Array.Resize(ref m_AllocatedUsedTileArr, newUsedTilesCount);
-
-            tilemap.GetUsedTilesNonAlloc(m_AllocatedUsedTileArr);
-            for (var i = 0; i < newUsedTilesCount; i++)
-            {
-                var newUsedTile = m_AllocatedUsedTileArr[i];
-                if (!oldUsedTiles.Contains(newUsedTile))
-                    return true;
-            }
-
-            return false;
-        }
-
-        private static KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>> CachingTilemapNeighborPositions(
-            Tilemap tilemap)
-        {
-            var usedTileCount = tilemap.GetUsedTilesCount();
-            var usedTiles = new HashSet<TileBase>();
-            var cachedNeighborPositions = new HashSet<Vector3Int>();
-
-            if (m_AllocatedUsedTileArr.Length < usedTileCount)
-                Array.Resize(ref m_AllocatedUsedTileArr, usedTileCount);
-
-            tilemap.GetUsedTilesNonAlloc(m_AllocatedUsedTileArr);
-
-            for (var i = 0; i < usedTileCount; i++)
-            {
-                var tile = m_AllocatedUsedTileArr[i];
-                usedTiles.Add(tile);
-                RuleEntityIdTile ruleEntityIdTile = null;
-
-                if (tile is RuleEntityIdTile rt)
-                    ruleEntityIdTile = rt;
-                if (ruleEntityIdTile)
-                    foreach (Vector3Int neighborPosition in ruleEntityIdTile.neighborPositions)
-                        cachedNeighborPositions.Add(neighborPosition);
-            }
-
-            var value = new KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>>(usedTiles, cachedNeighborPositions);
-            m_CacheTilemapsNeighborPositions[tilemap] = value;
-            return value;
-        }
-
-        private static bool NeedRelease()
-        {
-            foreach (var keypair in m_CacheTilemapsNeighborPositions)
-                if (keypair.Key == null)
-                    return true;
-
-            return false;
-        }
-
-        private static void ReleaseDestroyedTilemapCacheData()
-        {
-            if (!NeedRelease())
-                return;
-
-            var hasCleared = false;
-            var keys = new Tilemap[m_CacheTilemapsNeighborPositions.Count];
-            var i = 0;
-            foreach (var key in m_CacheTilemapsNeighborPositions.Keys)
-            {
-                keys[i++] = key;
-            }
-            foreach (var key in keys)
-                if (key == null && m_CacheTilemapsNeighborPositions.Remove(key))
-                    hasCleared = true;
-
-            if (hasCleared)
-                // TrimExcess
-                m_CacheTilemapsNeighborPositions =
-                    new Dictionary<Tilemap, KeyValuePair<HashSet<TileBase>, HashSet<Vector3Int>>>(
-                        m_CacheTilemapsNeighborPositions);
         }
 
         /// <summary>

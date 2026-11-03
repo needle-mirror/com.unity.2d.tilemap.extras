@@ -10,7 +10,7 @@ namespace UnityEditor.Tilemaps
     public static class RuleTileTemplateUtility
     {
         /// <summary>
-        /// Applies an RuleTileTemplate to an RuleTile with a source Texture2D 
+        /// Applies an RuleTileTemplate to an RuleTile with a source Texture2D
         /// </summary>
         /// <param name="template">RuleTileTemplate to apply.</param>
         /// <param name="texture">Source Texture2D containing Sprites for the RuleTileTemplate.</param>

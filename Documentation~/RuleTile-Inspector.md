@@ -7,10 +7,10 @@ For more information, refer to [Create a rule tile](RuleTile.md).
 | **Property** | **Description** |
 |:--|:--|
 | **Default Sprite** | Sets the sprite Unity paints if the surrounding tiles don't match the rules in the **Tiling Rules** section. |
-| **Default GameObject** | Sets the prefab Unity adds if the surrounding tiles don't match the rules in the **Tiling Rules** section. Drag a prefab from the **Project** window to this property. You can't drag an existing instance of a GameObject from the **Hierarchy** window. | 
+| **Default GameObject** | Sets the prefab Unity adds if the surrounding tiles don't match the rules in the **Tiling Rules** section. Drag a prefab from the **Project** window to this property. You can't drag an existing instance of a GameObject from the **Hierarchy** window. |
 | **Default Collider** | Sets the shape Unity uses to check for collisions with the tile. The options are:<ul><li>**None**: The tile doesn't collide with anything.</li><li>**Sprite**: Unity uses the shape from the [Custom Physics Shape tab](https://docs.unity3d.com/Manual/sprite/sprite-editor/custom-physics-shape-editor-reference.html) of the Sprite Editor window.</li><li>**Grid**: Unity uses the shape of the tilemap cell.</li></ul> |
 | **Number of Tiling Rules** | Sets the number of rules in the **Tiling Rules** section. |
-| **Extend Neighbor** | Extends the 3 × 3 rule grid when you change a rule in the grid, so you can set rules for surrounding tiles further away. | 
+| **Extend Neighbor** | Extends the 3 × 3 rule grid when you change a rule in the grid, so you can set rules for surrounding tiles further away. |
 | **Add** (**+**) | Adds a new rule to the **Tiling Rules** section. |
 | **Remove** (**-**) | Removes a rule. Select a rule section then select this button. |
 

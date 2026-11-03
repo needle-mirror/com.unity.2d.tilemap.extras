@@ -1,13 +1,20 @@
 # Changelog
 
-All notable changes to this package will be documented in this file.
+## [10.0.2] - 2026-11-03
+### Fixed
+- [AdvancedRuleOverrideTileEditor] Clear Rule Overrides when the Rule Tile to override is unassigned
+- [RuleTileEditor] Fix IndexOutOfRangeException when a TilingRule has no Sprite entry
+- [HexagonalRuleEntityIdTile] Fix animation rule skipping rules without animations set
+- [RuleEntityIdTile] Fix neighboring tiles not refreshing when a RuleEntityIdTile is placed or erased if the tile does not have an opposite rule
+- [RuleOverrideTile] Fix RuleOverrideTile and AdvancedRuleOverrideTile not animating after the RuleTile's rule output is changed to Animation
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+### Changed
+- [RuleOverrideTile] Fix exception from AssetDatabase.AddObjectToAsset when the tile is loaded in an asset import worker
 
 ## [10.0.1] - 2026-10-08
 ### Fixed
 - Added correct .buginfo file.
-
+-
 ## [10.0.0] - 2026-09-02
 ### Added
 - [AutoTileEditor] Add asset preview for AutoTile

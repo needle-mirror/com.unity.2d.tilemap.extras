@@ -12,6 +12,7 @@ namespace UnityEditor
     public class AdvancedRuleOverrideTileEditor : RuleOverrideTileEditor
     {
         private int m_MissingOriginalRuleIndex;
+        private RuleTile m_PreviousTile;
         private ReorderableList m_RuleList;
 
         private readonly List<KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>> m_Rules = new();
@@ -30,6 +31,8 @@ namespace UnityEditor
         /// </summary>
         public override void OnEnable()
         {
+            m_PreviousTile = overrideTile ? overrideTile.m_Tile : null;
+
             if (m_RuleList == null)
             {
                 m_RuleList = new ReorderableList(m_Rules,
@@ -63,10 +66,24 @@ namespace UnityEditor
 
             DrawCustomFields();
 
+            if (m_PreviousTile && !overrideTile.m_Tile)
+            {
+                Undo.RecordObject(overrideTile, "Clear Rule Overrides");
+                overrideTile.m_OverrideTilingRules.Clear();
+                SaveTile();
+            }
+
+            m_PreviousTile = overrideTile.m_Tile;
+
             if (overrideTile.m_Tile)
             {
                 ValidateRuleTile(overrideTile.m_Tile);
                 overrideTile.GetOverrides(m_Rules, ref m_MissingOriginalRuleIndex);
+            }
+            else
+            {
+                m_Rules.Clear();
+                m_MissingOriginalRuleIndex = 0;
             }
 
             m_RuleList.DoLayoutList();

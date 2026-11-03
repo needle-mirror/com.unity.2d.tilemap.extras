@@ -95,22 +95,25 @@ namespace UnityEngine.Tilemaps
             overrides.Clear();
 
             if (m_Tile)
+            {
                 foreach (var originalRule in m_Tile.m_TilingRules)
                 {
                     var overrideRule = this[originalRule];
                     overrides.Add(
                         new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>(originalRule, overrideRule));
                 }
+                validCount = overrides.Count;
 
-            validCount = overrides.Count;
-
-            foreach (var overrideRule in m_OverrideTilingRules)
-                if (!overrides.Exists(o => o.Key.m_Id == overrideRule.m_Id))
-                {
-                    var originalRule = new RuleTile.TilingRule { m_Id = overrideRule.m_Id };
-                    overrides.Add(
-                        new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>(originalRule, overrideRule));
-                }
+                foreach (var overrideRule in m_OverrideTilingRules)
+                    if (!overrides.Exists(o => o.Key.m_Id == overrideRule.m_Id))
+                    {
+                        var originalRule = new RuleTile.TilingRule { m_Id = overrideRule.m_Id };
+                        overrides.Add(
+                            new KeyValuePair<RuleTile.TilingRule, RuleTile.TilingRuleOutput>(originalRule, overrideRule));
+                    }
+            }
+            else
+                validCount = 0;
         }
 
         /// <summary>

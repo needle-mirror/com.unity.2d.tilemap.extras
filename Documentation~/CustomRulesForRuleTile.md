@@ -49,7 +49,7 @@ Create a new type of rule for the grid in the **Rule Tile** Inspector window.
     }
     ```
 
-    When you create an instance of the new rule tile, select **3** as the rule when you click the grid in the **Tiling Rules** section of the **Inspector** window. 
+    When you create an instance of the new rule tile, select **3** as the rule when you click the grid in the **Tiling Rules** section of the **Inspector** window.
 
 3. Override the `RuleMatch` method to define the new rule. `RuleMatch` runs every time Unity checks the neighbor of a tile. Use a `switch` statement to return `true` or `false` depending on a condition. For example:
 

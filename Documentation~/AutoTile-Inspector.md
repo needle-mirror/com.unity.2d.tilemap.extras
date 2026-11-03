@@ -1,6 +1,6 @@
 # Auto Tile Inspector window reference
 
-Explore the properties and settings you use to paint an environment using a spritesheet of floor layouts. 
+Explore the properties and settings you use to paint an environment using a spritesheet of floor layouts.
 
 For more information, refer to [Create an auto tile](AutoTile.md).
 
@@ -11,7 +11,7 @@ For more information, refer to [Create an auto tile](AutoTile.md).
 | **Tile Collider** | Sets the shape Unity uses to check for collisions with the tile. The options are:<ul><li>**None**: The tile doesn't collide with anything.</li><li>**Sprite**: Unity uses the shape from the [Custom Physics Shape tab](https://docs.unity3d.com/Manual/sprite/sprite-editor/custom-physics-shape-editor-reference.html) of the Sprite Editor window.</li><li>**Grid**: Unity uses the shape of the tilemap cell.</li></ul> |
 | **Has Physics Shape** | Checks whether the Sprite used has a physics shape. If not, Unity sets **Tile Collider** to **None**. |
 | **Mask Type** | Sets the number of surrounding tiles Unity checks to identify a floor layout. The options are: <ul><li>**Mask_2x2**: Checks the group of 4 tiles that the tile is part of. There are 16 possible floor layouts.</li><li>**Mask_3x3**: Checks the group of 8 tiles that the tile is part of. There are 48 possible floor layouts.</li></ul> |
-| **Random** | Randomly picks a sprite if multiple sprites have the same mask. Otherwise, uses the first sprite with the mask. | 
+| **Random** | Randomly picks a sprite if multiple sprites have the same mask. Otherwise, uses the first sprite with the mask. |
 | **Used Textures** | Sets the number of textures. |
 | **Textures** | Displays the textures the auto tile uses. To select a texture, drag a texture from the **Project** window, or select the picker (**⊙**). |
 | **Add** (**+**) | Adds a new texture. |

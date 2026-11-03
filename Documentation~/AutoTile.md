@@ -43,7 +43,7 @@ When you drag in the spritesheet, Unity displays each sprite with a grey outline
 
 For example:
 
-- If your texture has 2 × 2 floor layouts, draw an L shape of red squares for the layout that has a corner wall. 
+- If your texture has 2 × 2 floor layouts, draw an L shape of red squares for the layout that has a corner wall.
 - If your texture has a 3 × 3 layout, draw a T shape of red squares for the layout that has a T-junction.
 
 **Note:** The center square in a 3 × 3 layout enables and disables the rule.

@@ -51,7 +51,7 @@ namespace UnityEngine.Tilemaps
         public AutoTile.AutoTileMaskType maskType;
 
         /// <summary>
-        /// Positional Data for detecting AutoTile Sprites 
+        /// Positional Data for detecting AutoTile Sprites
         /// </summary>
         public List<SpriteData> sprites;
 

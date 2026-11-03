@@ -307,6 +307,7 @@ namespace UnityEditor
             {
                 if (!LoopCheck(tile))
                 {
+                    Undo.RecordObject(overrideTile, "Change Rule Tile to Override");
                     overrideTile.m_Tile = tile;
                     SaveTile();
                 }

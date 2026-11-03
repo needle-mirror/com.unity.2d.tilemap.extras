@@ -5,7 +5,7 @@ To paint a line of tiles, use the line brush in the **Tile Palette** window. Fol
 1. Open the [**Tile Palette** window](https://docs.unity3d.com/Manual/tilemaps/tile-palettes/tile-palette-editor-reference.html).
 2. In the Brush Inspector section at the bottom, set the brush to **Line Brush**.
 3. Select the **Paint with Active Brush** (<span class="iconClr-Animation-Brush" aria-label="Brush"></span>) tool and select a tile.
-4. Click once in the **Scene** view to start the line, and again to end the line. 
+4. Click once in the **Scene** view to start the line, and again to end the line.
 
 To avoid gaps when you paint diagonal lines, enable **Fill Gaps** in the Brush Inspector window.
 

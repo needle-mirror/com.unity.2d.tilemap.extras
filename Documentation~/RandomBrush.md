@@ -19,7 +19,7 @@ Follow these steps:
 2. Select the **Pick** (<span class="icon-EditorUI-Colorpicker" aria-label="Colorpicker"></span>) tool in the toolbar of the **Tile Palette** window.
 3. Select individual tiles from the tile palette. Each tile becomes a new tile set, which is an option the random brush chooses from.
 
-    You can also set **Number of Tiles** to the number of options you want, then drag tiles from the **Project** window to the numbered **Tile** fields. 
+    You can also set **Number of Tiles** to the number of options you want, then drag tiles from the **Project** window to the numbered **Tile** fields.
 
 4. Select the **Paint with Active Brush** (<span class="iconClr-Animation-Brush" aria-label="Brush"></span>) tool.
 5. Paint onto the **Scene** view.

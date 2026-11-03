@@ -862,12 +862,25 @@ namespace UnityEditor
         }
 
         /// <summary>
+        ///     Ensures that a Rule has an entry for its first output Sprite. Rules added or resized through the
+        ///     Inspector's Debug Mode, or duplicated from such a Rule, can end up with no Sprite entry at all.
+        /// </summary>
+        /// <param name="tilingRule">Rule to validate the Sprite entry for</param>
+        private static void ValidateSpriteEntry(RuleTile.TilingRuleOutput tilingRule)
+        {
+            if (tilingRule.m_Sprites == null || tilingRule.m_Sprites.Length == 0)
+                tilingRule.m_Sprites = new Sprite[1];
+        }
+
+        /// <summary>
         ///     Draws a Sprite field for the Rule
         /// </summary>
         /// <param name="rect">Rect to draw Sprite Inspector in</param>
         /// <param name="tilingRule">Rule to draw Sprite Inspector for</param>
         public virtual void SpriteOnGUI(Rect rect, RuleTile.TilingRuleOutput tilingRule)
         {
+            ValidateSpriteEntry(tilingRule);
+
             tilingRule.m_Sprites[0] =
                 EditorGUI.ObjectField(rect, tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
 
@@ -1037,7 +1050,10 @@ namespace UnityEditor
                     Undo.RegisterCompleteObjectUndo(tile, "Drag and Drop to Rule Tile");
                     ResizeRuleTileList(dragAndDropSprites.Count);
                     for (var i = 0; i < dragAndDropSprites.Count; ++i)
+                    {
+                        ValidateSpriteEntry(tile.m_TilingRules[i]);
                         tile.m_TilingRules[i].m_Sprites[0] = dragAndDropSprites[i];
+                    }
                     DragAndDropClear();
                     GUI.changed = true;
                     EditorUtility.SetDirty(tile);

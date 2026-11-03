@@ -20,13 +20,13 @@ To add GameObjects to the top level of the **Hierarchy** window instead of makin
 
 ### Cells
 
-The **Cells** section lists the GameObjects the brush paints with. 
+The **Cells** section lists the GameObjects the brush paints with.
 
 Each GameObject has its own **Element** section. The number of GameObjects depends on the **Size** property.
 
 | **Property** | **Sub-property** | **Description** |
 |:--|:--|:--|
-| **Number** | N/A | The number of the GameObject, for example **Element 0**. | 
+| **Number** | N/A | The number of the GameObject, for example **Element 0**. |
 | N/A | **Game Object** | Sets the GameObject the brush paints with. To select a GameObject, drag it from the **Hierarchy** window, or select the picker (**⊙**). |
 | N/A | **Offset** | Sets the position the brush paints the GameObject, relative to its element position. For example, (0.5, 0.5, 0) paints the GameObject half a cell to the right and up. |
 | N/A | **Scale** | Sets the scale of the GameObject. The default is (1, 1, 1), which is the size of one tilemap cell. |

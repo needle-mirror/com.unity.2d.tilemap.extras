@@ -341,7 +341,7 @@ namespace Unity.Tilemaps
             {
                 var curpos = position.ToInt3();
                 var neighborOffset = neighborPosition;
-                GetOffsetPosition(ref curpos, ref neighborOffset);
+                GetOffsetPositionReverse(ref curpos, ref neighborOffset, m_FlatTop);
                 refreshPositions[i++] = curpos.ToVector3Int();
             }
             refreshPositions[i] = position;
@@ -363,7 +363,7 @@ namespace Unity.Tilemaps
                 {
                     var offsetPosition = pos;
                     var neighborOffset = neighborPosition;
-                    GetOffsetPosition(ref offsetPosition, ref neighborOffset);
+                    GetOffsetPositionReverse(ref offsetPosition, ref neighborOffset, dataStruct.flatTop);
                     refreshPositions[j++] = offsetPosition;
                 }
                 refreshPositions[j] = pos;
@@ -453,21 +453,24 @@ namespace Unity.Tilemaps
                 return false;
 
             var tilemapData = new TilemapDataStruct(tilemap.GetComponent<Tilemap>());
+            var pos = position.ToInt3();
             for (var j = 0; j < m_Data.ruleMatchOutputs.Length; j++)
             {
                 var ruleMatchOutput = m_Data.ruleMatchOutputs[j];
                 var transform = AffineTransform.identity;
-                if (ruleMatchOutput.spriteOutput == RuleMatchSerializable.OutputSprite.Animation)
+                var ruleMatch = m_Data.ruleMatchInputs[j];
+                // The first Rule which matches decides the Tile, so a Rule which is not animated
+                // hides the animated Rules below it.
+                if (RuleMatches(ref ruleMatch, ref tilemapData, ref m_Data, ref pos, ref transform))
                 {
-                    var ruleMatch = m_Data.ruleMatchInputs[j];
-                    var pos = position.ToInt3();
-                    if (RuleMatches(ref ruleMatch, ref tilemapData, ref m_Data, ref pos, ref transform))
+                    if (ruleMatchOutput.spriteOutput == RuleMatchSerializable.OutputSprite.Animation)
                     {
                         tileAnimationData.animatedSprites = m_TilingRules[j].m_Sprites;
                         tileAnimationData.animationSpeed =
                             m_Data.random.NextFloat(ruleMatchOutput.minAnimationSpeed, ruleMatchOutput.maxAnimationSpeed);
                         return true;
                     }
+                    return false;
                 }
             }
             return false;
@@ -488,19 +491,21 @@ namespace Unity.Tilemaps
                 for (var j = 0; j < dataStruct.ruleMatchInputs.Length; j++)
                 {
                     var ruleMatchOutput = dataStruct.ruleMatchOutputs[j];
-                    if (ruleMatchOutput.spriteOutput == RuleMatchSerializable.OutputSprite.Animation)
+                    var ruleMatch = dataStruct.ruleMatchInputs[j];
+                    var pos = inPos;
+                    var transform = AffineTransform.identity;
+                    // The first Rule which matches decides the Tile, so a Rule which is not animated
+                    // hides the animated Rules below it.
+                    if (RuleMatches(ref ruleMatch, ref tilemapDataStruct, ref dataStruct, ref pos, ref transform))
                     {
-                        var ruleMatch = dataStruct.ruleMatchInputs[j];
-                        var pos = inPos;
-                        var transform = AffineTransform.identity;
-                        if (RuleMatches(ref ruleMatch, ref tilemapDataStruct, ref dataStruct, ref pos, ref transform))
+                        if (ruleMatchOutput.spriteOutput == RuleMatchSerializable.OutputSprite.Animation)
                         {
                             if (ruleMatchOutput.sprites.IsCreated)
                                 tileAnimationData.animatedSpritesEntityIds = ruleMatchOutput.sprites;
                             tileAnimationData.animationSpeed =
                                 dataStruct.random.NextFloat(ruleMatchOutput.minAnimationSpeed, ruleMatchOutput.maxAnimationSpeed);
-                            break;
                         }
+                        break;
                     }
                 }
             }
