@@ -4,6 +4,18 @@ Discover new features and performance improvements in the latest updates to 2D T
 
 For more information, refer to the [changelog](../changelog/CHANGELOG.html).
 
+## Version 11.0.0
+
+### Support for the 2D Physics Core package
+
+Use the new Physics Area Tilemap component to give the tiles of a tilemap physics shapes from the [2D Physics Core](https://docs.unity3d.com/Packages/com.unity.2d.physics@latest) package. The component keeps the shapes up to date as you paint or erase tiles, and lets you find which tile a body touches from contact and trigger events.
+
+For more information, refer to the following:
+
+- [Add a Physics Area Tilemap component](PhysicsAreaTilemap.md)
+- [Add physics areas to tilemaps](PhysicsAreaTilemap-landing.md)
+- [React to collisions and triggers on tiles](PhysicsAreaTilemap-events.md)
+
 ## Version 10.0.0
 
 ### Entity tiles

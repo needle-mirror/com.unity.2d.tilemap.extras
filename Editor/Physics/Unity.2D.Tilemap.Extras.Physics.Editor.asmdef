@@ -1,0 +1,27 @@
+{
+    "name": "Unity.2D.Tilemap.Extras.Physics.Editor",
+    "rootNamespace": "",
+    "references": [
+        "Unity.2D.Tilemap.Extras.Physics",
+        "Unity.U2D.Physics"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "ENABLE_TILEMAP_EXTRAS_PHYSICS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.2d.physics",
+            "expression": "2.0.0",
+            "define": "ENABLE_TILEMAP_EXTRAS_PHYSICS"
+        }
+    ],
+    "noEngineReferences": false
+}

@@ -267,7 +267,7 @@ namespace Unity.Tilemaps
 
         [BurstCompile]
         [MonoPInvokeCallback(typeof(RefreshTileJobDelegate))]
-        static unsafe void RefreshTileJob(int count, int3* position, void* data, ref TilemapRefreshStruct tilemapRefreshStruct)
+        internal static unsafe void RefreshTileJob(int count, int3* position, void* data, ref TilemapRefreshStruct tilemapRefreshStruct)
         {
             for (var i = 0; i < count; ++i)
             {
@@ -278,7 +278,7 @@ namespace Unity.Tilemaps
 
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GetTileDataJobDelegate))]
-        static unsafe void GetTileDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileData* outTileData)
+        internal static unsafe void GetTileDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileData* outTileData)
         {
             AnimatedEntityIdData tileData = UnsafeUtility.AsRef<AnimatedEntityIdData>(data);
             for (var i = 0; i < count; ++i)
@@ -289,7 +289,7 @@ namespace Unity.Tilemaps
 
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GetTileAnimationDataJobDelegate))]
-        static unsafe void GetTileAnimationDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileAnimationEntityIdData* outTileAnimationEntityIdData)
+        internal static unsafe void GetTileAnimationDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileAnimationEntityIdData* outTileAnimationEntityIdData)
         {
             AnimatedEntityIdData tileData = UnsafeUtility.AsRef<AnimatedEntityIdData>(data);
             float animationStartTime = tileData.m_AnimationStartTime;

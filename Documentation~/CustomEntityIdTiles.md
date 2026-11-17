@@ -87,7 +87,7 @@ Follow these steps:
     [BurstCompile]
     // Required attribute for the Jobs system
     [MonoPInvokeCallback(typeof(RefreshTileJobDelegate))]
-    static unsafe void RefreshTileJob(int count, int3* position, void* data, ref TilemapRefreshStruct tilemapRefreshStruct)
+    internal static unsafe void RefreshTileJob(int count, int3* position, void* data, ref TilemapRefreshStruct tilemapRefreshStruct)
     {
         // Call the RefreshTile method for each tile instance on the tilemap
         for (var i = 0; i < count; ++i) {
@@ -110,7 +110,7 @@ Follow these steps:
 
     [BurstCompile]
     [MonoPInvokeCallback(typeof(GetTileDataJobDelegate))]
-    static unsafe void GetTileDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileData* outTileData)
+    internal static unsafe void GetTileDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileData* outTileData)
     {
         var myTileData = UnsafeUtility.AsRef<MyTileData>(data);
 

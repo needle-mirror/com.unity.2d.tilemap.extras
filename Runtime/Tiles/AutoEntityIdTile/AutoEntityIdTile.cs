@@ -380,7 +380,7 @@ namespace Unity.Tilemaps
         }
 
         [BurstCompile]
-        private static void Convert2x2Mask(uint inMask, ref uint convertedMask)
+        internal static void Convert2x2Mask(uint inMask, ref uint convertedMask)
         {
             // 4 8
             // 1 2
@@ -396,7 +396,7 @@ namespace Unity.Tilemaps
         }
 
         [BurstCompile]
-        private static void Convert3x3Mask(uint inMask, ref uint convertedMask)
+        internal static void Convert3x3Mask(uint inMask, ref uint convertedMask)
         {
             convertedMask = inMask;
             // 64 128 256
@@ -809,7 +809,7 @@ namespace Unity.Tilemaps
 
         [BurstCompile]
         [MonoPInvokeCallback(typeof(RefreshTileJobDelegate))]
-        static unsafe void RefreshTileJob(int count, int3* position, void* data,
+        internal static unsafe void RefreshTileJob(int count, int3* position, void* data,
             ref TilemapRefreshStruct tilemapRefreshStruct)
         {
             var refreshPositions = new NativeArray<int3>(9, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
@@ -830,7 +830,7 @@ namespace Unity.Tilemaps
 
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GetTileDataJobDelegate))]
-        static unsafe void GetTileDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileData* outTileData)
+        internal static unsafe void GetTileDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileData* outTileData)
         {
             var dataStruct = UnsafeUtility.AsRef<AutoEntityIdTileDataStruct>(data);
             var entityIds = new NativeArray<EntityId>(9, Allocator.Temp, NativeArrayOptions.UninitializedMemory);

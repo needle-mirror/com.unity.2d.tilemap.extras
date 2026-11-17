@@ -1,20 +1,24 @@
 # Changelog
 
-## [10.0.2] - 2026-11-03
+All notable changes to this package will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+
+## [11.0.0] - 2026-11-17
+### Added
+- [PhysicsAreaTilemap] A 2D Physics Core component that builds shapes from a Tilemap's occupied cells, either as polygons per cell or as chain segments along the merged outline, and keeps them up to date as tiles change. Available when the `com.unity.2d.physics` package is installed.
+
 ### Fixed
 - [AdvancedRuleOverrideTileEditor] Clear Rule Overrides when the Rule Tile to override is unassigned
 - [RuleTileEditor] Fix IndexOutOfRangeException when a TilingRule has no Sprite entry
 - [HexagonalRuleEntityIdTile] Fix animation rule skipping rules without animations set
 - [RuleEntityIdTile] Fix neighboring tiles not refreshing when a RuleEntityIdTile is placed or erased if the tile does not have an opposite rule
 - [RuleOverrideTile] Fix RuleOverrideTile and AdvancedRuleOverrideTile not animating after the RuleTile's rule output is changed to Animation
+- Fixed UAC2017 "Failed to generate a Burst direct call" warnings. (UUM-160239)
 
 ### Changed
 - [RuleOverrideTile] Fix exception from AssetDatabase.AddObjectToAsset when the tile is loaded in an asset import worker
 
-## [10.0.1] - 2026-10-08
-### Fixed
-- Added correct .buginfo file.
--
 ## [10.0.0] - 2026-09-02
 ### Added
 - [AutoTileEditor] Add asset preview for AutoTile

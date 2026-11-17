@@ -527,7 +527,7 @@ namespace Unity.Tilemaps
 
         [BurstCompile]
         [MonoPInvokeCallback(typeof(RefreshTileJobDelegate))]
-        static unsafe void RefreshTileJob(int count, int3* position, void* data, ref TilemapRefreshStruct tilemapRefreshStruct)
+        internal static unsafe void RefreshTileJob(int count, int3* position, void* data, ref TilemapRefreshStruct tilemapRefreshStruct)
         {
             var dataStruct = UnsafeUtility.AsRef<RuleEntityIdTileDataStruct>(data);
             var refreshPositions = new NativeArray<int3>(dataStruct.neighborPositions.Count + 1, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
@@ -573,7 +573,7 @@ namespace Unity.Tilemaps
 
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GetTileDataJobDelegate))]
-        static unsafe void GetTileDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileData* outTileData)
+        internal static unsafe void GetTileDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileData* outTileData)
         {
             var dataStruct = UnsafeUtility.AsRef<RuleEntityIdTileDataStruct>(data);
             for (var i = 0; i < count; ++i)
@@ -815,7 +815,7 @@ namespace Unity.Tilemaps
 
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GetTileAnimationDataJobDelegate))]
-        private static unsafe void GetTileAnimationDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileAnimationEntityIdData* outTileAnimationEntityIdData)
+        internal static unsafe void GetTileAnimationDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileAnimationEntityIdData* outTileAnimationEntityIdData)
         {
             var dataStruct = UnsafeUtility.AsRef<RuleEntityIdTileDataStruct>(data);
             if (!dataStruct.hasAnimationRule)
@@ -931,7 +931,7 @@ namespace Unity.Tilemaps
         /// <param name="rotation">Rotation in degrees.</param>
         /// <returns>Rotated position of Tile.</returns>
         [BurstCompile]
-        private static void GetRotatedPosition(ref int3 position, int rotation)
+        internal static void GetRotatedPosition(ref int3 position, int rotation)
         {
             switch (rotation)
             {
@@ -955,7 +955,7 @@ namespace Unity.Tilemaps
         /// <param name="mirrorY">Mirror in the Y Axis.</param>
         /// <returns>Mirrored position of Tile.</returns>
         [BurstCompile]
-        private static void GetMirroredPosition(ref int3 position, bool mirrorX, bool mirrorY)
+        internal static void GetMirroredPosition(ref int3 position, bool mirrorX, bool mirrorY)
         {
             if (mirrorX)
                 position.x *= -1;
@@ -970,7 +970,7 @@ namespace Unity.Tilemaps
         /// <param name="offset">Offset for the position.</param>
         /// <returns>The offset position.</returns>
         [BurstCompile]
-        private static void GetOffsetPosition(ref int3 position, ref int3 offset)
+        internal static void GetOffsetPosition(ref int3 position, ref int3 offset)
         {
             position += offset;
         }
@@ -982,7 +982,7 @@ namespace Unity.Tilemaps
         /// <param name="offset">Offset for the position.</param>
         /// <returns>The reversed offset position.</returns>
         [BurstCompile]
-        private static void GetOffsetPositionReverse(ref int3 position, ref int3 offset)
+        internal static void GetOffsetPositionReverse(ref int3 position, ref int3 offset)
         {
             position -= offset;
         }

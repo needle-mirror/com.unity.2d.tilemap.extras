@@ -351,7 +351,7 @@ namespace Unity.Tilemaps
 
         [BurstCompile]
         [MonoPInvokeCallback(typeof(RefreshTileJobDelegate))]
-        static unsafe void RefreshTileJob(int count, int3* position, void* data, ref TilemapRefreshStruct tilemapRefreshStruct)
+        internal new static unsafe void RefreshTileJob(int count, int3* position, void* data, ref TilemapRefreshStruct tilemapRefreshStruct)
         {
             var dataStruct = UnsafeUtility.AsRef<HexagonalRuleEntityIdTileDataStruct>(data);
             var refreshPositions = new NativeArray<int3>(dataStruct.neighborPositions.Count + 1, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
@@ -396,7 +396,7 @@ namespace Unity.Tilemaps
 
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GetTileDataJobDelegate))]
-        static unsafe void GetTileDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileData* outTileData)
+        internal new static unsafe void GetTileDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileData* outTileData)
         {
             var dataStruct = UnsafeUtility.AsRef<HexagonalRuleEntityIdTileDataStruct>(data);
             for (var i = 0; i < count; ++i)
@@ -478,7 +478,7 @@ namespace Unity.Tilemaps
 
         [BurstCompile]
         [MonoPInvokeCallback(typeof(GetTileAnimationDataJobDelegate))]
-        private static unsafe void GetTileAnimationDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileAnimationEntityIdData* outTileAnimationEntityIdData)
+        internal new static unsafe void GetTileAnimationDataJob(int count, int3* position, void* data, ref TilemapDataStruct tilemapDataStruct, TileAnimationEntityIdData* outTileAnimationEntityIdData)
         {
             var dataStruct = UnsafeUtility.AsRef<HexagonalRuleEntityIdTileDataStruct>(data);
             if (!dataStruct.hasAnimationRule)
@@ -669,7 +669,7 @@ namespace Unity.Tilemaps
         /// <param name="tilemapPosition">Tilemap Position to convert.</param>
         /// <param name="worldPosition">Converted World Position.</param>
         [BurstCompile]
-        private static void TilemapPositionToWorldPosition(in int3 tilemapPosition, out float3 worldPosition)
+        internal static void TilemapPositionToWorldPosition(in int3 tilemapPosition, out float3 worldPosition)
         {
             worldPosition = new float3(tilemapPosition.x, tilemapPosition.y, tilemapPosition.z);
             if (tilemapPosition.y % 2 != 0)
@@ -683,7 +683,7 @@ namespace Unity.Tilemaps
         /// <param name="worldPosition">World Position to convert.</param>
         /// <param name="tilemapPosition">Converted Tile Position.</param>
         [BurstCompile]
-        private static void WorldPositionToTilemapPosition(in float3 worldPosition, out int3 tilemapPosition)
+        internal static void WorldPositionToTilemapPosition(in float3 worldPosition, out int3 tilemapPosition)
         {
             var worldPos = worldPosition;
             worldPos.y /= m_TilemapToWorldYScale;
@@ -756,7 +756,7 @@ namespace Unity.Tilemaps
         /// <param name="offset">Offset for the position.</param>
         /// <returns>The offset position.</returns>
         [BurstCompile]
-        private static void GetOffsetPosition(ref int3 position, ref int3 offset)
+        internal new static void GetOffsetPosition(ref int3 position, ref int3 offset)
         {
             var offsetPosition = position + offset;
             if (offset.y % 2 != 0 && position.y % 2 != 0)
@@ -772,7 +772,7 @@ namespace Unity.Tilemaps
         /// <param name="flatTop">Whether Tile is Flat Top.</param>
         /// <returns>The reversed offset position.</returns>
         [BurstCompile]
-        private static void GetOffsetPositionReverse(ref int3 position, ref int3 offset, bool flatTop)
+        internal static void GetOffsetPositionReverse(ref int3 position, ref int3 offset, bool flatTop)
         {
             var rotatedOffset = offset;
             GetRotatedPosition(ref rotatedOffset, 180, flatTop);
@@ -787,7 +787,7 @@ namespace Unity.Tilemaps
         /// <param name="flatTop">Whether Tile is Flat Top.</param>
         /// <returns>Rotated position of Tile.</returns>
         [BurstCompile]
-        private static void GetRotatedPosition(ref int3 position, int rotation, bool flatTop)
+        internal static void GetRotatedPosition(ref int3 position, int rotation, bool flatTop)
         {
             if (rotation != 0)
             {
@@ -818,7 +818,7 @@ namespace Unity.Tilemaps
         /// <param name="flatTop">Whether Tile is Flat Top.</param>
         /// <returns>Mirrored position of Tile.</returns>
         [BurstCompile]
-        private static void GetMirroredPosition(ref int3 position, bool mirrorX, bool mirrorY, bool flatTop)
+        internal static void GetMirroredPosition(ref int3 position, bool mirrorX, bool mirrorY, bool flatTop)
         {
             if (mirrorX || mirrorY)
             {
